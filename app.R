@@ -4,16 +4,18 @@ library(shinycssloaders)
 library(dplyr)
 library(ggplot2)
 library(omnideconv)
+library(RColorBrewer)
 
 
 deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnotation = NULL, usr_batch = NULL){
   
+  
   # possible Methods for signature interchangability
   methods_reduced = c("Bisque" = "bisque", "BSeq-sc" = "bseqsc", "CDSeq" = "cdseq", "CIBERSORTx" = "cibersortx", "CPM" = "cpm", "DWLS" = "dwls", "MOMF" = "momf")
+  methods_interchangeable = c("Bisque" = "bisque", "CIBERSORTx" = "cibersortx", "DWLS" = "dwls", "MOMF" = "momf")
   
-  
-  # box definitions
-  data_upload_box = box(title = "Upload your Data", status="primary", solidHeader = TRUE, 
+  # box definitions ---------------------------------------------------------
+  data_upload_box = box(title = "Upload your Data", status="primary", solidHeader = TRUE, height = "31.5em", 
                         helpText("If no file is provided the analysis will be run with a sample dataset"), 
                         fileInput("userBulk", "Upload Bulk RNAseq Data"),
                         div(style="margin-top: -20px"), 
@@ -22,21 +24,31 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                         fileInput("userCellTypes", "Upload Cell Type Annotations"), 
                         div(style="margin-top: -20px"), 
                         fileInput("userBatchId", "Upload Batch IDs"))
+
+
+
   
-  settings_box = box(title="Deconvolution Settings", status="primary", solidHeader = TRUE, 
+  settings_box = box(title="Deconvolution Settings", status="primary", solidHeader = TRUE, height = "31.5em", 
                      img(src="logo.jpg", width = "100%"), br(),
                      selectInput("deconvMethod", "Deconvolution Method", choices = omnideconv::deconvolution_methods),
                      conditionalPanel(
-                       condition = "input.deconvMethod == 'bisque'|| input.deconvMethod == 'cibersortx' || input.deconvMethod == 'dwls' || input.deconvMethod == 'momf'", 
+                       condition = "input.deconvMethod == 'bisque'|| input.deconvMethod == 'cibersortx' || input.deconvMethod == 'dwls' || input.deconvMethod == 'momf'",
                        selectInput("sigMethod", "Signature Calculation Method", choices = methods_reduced)
                      ),
                      actionButton("deconvolute", "Deconvolute"))
   
-  deconv_box = box(title="Deconvolution Result", status = "warning", solidHeader = TRUE, width = 12, 
-                   plotly::plotlyOutput("distPlot") %>% withSpinner())
+  deconv_barplot_box = box(title="Deconvolution Barplot", status = "warning", solidHeader = TRUE, width = 12, 
+                           plotly::plotlyOutput("barPlot") %>% withSpinner())
+  
+  deconv_boxplot_box = box(title="Deconvolution Boxplot", status="warning", solidHeader = TRUE, width = 12, 
+                           plotly::plotlyOutput("boxPlot") %>% withSpinner())
   
   
-  ##### BEGIN UI DEFINITION ####´
+  
+
+  # ui definition  ----------------------------------------------------------
+
+
   ui =  dashboardPage(
     dashboardHeader(title = "Omnideconv"),
     dashboardSidebar(sidebarMenu(
@@ -44,14 +56,14 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       menuItem("Further Information", tabName= "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow( deconv_box)),
+      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow( deconv_barplot_box), fluidRow(deconv_boxplot_box)),
       tabItem(tabName="fInfo", fluidRow(h2("Test")))
     ))
   )
   
-  #### END UI DEFINITION ####
 
-  #####BEGIN SERVER ##########
+  # server definition  ------------------------------------------------------
+  
   server = shinyServer(function(input, output) {
     values = reactiveValues() # storing everything
     
@@ -79,7 +91,18 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
-      values$deconvolution_result = 
+      signature_Method = input$sigMethod
+      if (!(input$deconvMethod %in% methods_interchangeable)){
+        signature_Method = input$deconvMethod
+      }
+      message(paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, " Signature: ", signature_Method))
+      
+      #### At this Point the correct Variables for the Deconvolution are: 
+      #### Deconvolution Method: input$deconvMethod
+      #### Signature Calculation Method: signature_Method
+      
+      
+      values$deconvolution_result =
         omnideconv::deconvolute(
           bulk_gene_expression = values$bulk,
           signature = signature(),
@@ -91,15 +114,16 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       }
     )
     
-    # render the deconvolution
-    output$distPlot = plotly::renderPlotly({
+    # barplot
+    output$barPlot = plotly::renderPlotly({
       data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result))%>%
         as.data.frame() %>%
         tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction")
       
       plot = ggplot(data, aes(y = samples, x = as.numeric(fraction), fill=cell_type, 
                               text=paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
-        geom_bar( stat="identity") + 
+        # geom_bar( stat="identity") + 
+        geom_col() + 
         labs(x = "predicted fraction", y = "sample", fill="cell type") 
       # theme_fivethirtyeight()
       
@@ -112,9 +136,32 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                                                      "pan2d", "autoScale2d", "select2d" )) %>%
         plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
     })
-  }) ####END OF Shiny Server
-  
-  #######END SERVER ########
+    
+    
+    # boxplot
+    output$boxPlot = plotly::renderPlotly({
+      data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result))%>%
+        as.data.frame() %>%
+        tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction") 
+      
+      plot = ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill=cell_type)) +
+        geom_boxplot() + 
+        labs(x = "cell type", y = "predicted fraction", fill="cell type")
+        #scale_fill_brewer(palette = "Paired")
+      
+      
+      plotly::ggplotly(plot) %>%
+        plotly::config(displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = "boxplot.png"),
+                       modeBarButtonsToRemove = list("hoverClosestCartesian",
+                                                     "hoverCompareCartesian",
+                                                     "zoomIn2d", "zoomOut2d",
+                                                     "zoom2d", "resetScale2d",
+                                                     "pan2d", "autoScale2d")
+                       ) %>%
+        plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
+    })
+  })
+
   
   shiny::shinyApp(ui = ui, server = server)
 }
