@@ -37,11 +37,9 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                      ),
                      actionButton("deconvolute", "Deconvolute"))
   
-  deconv_barplot_box = box(title="Deconvolution Barplot", status = "warning", solidHeader = TRUE, width = 12, 
+  deconv_barplot_box = box(title="Deconvolution Result", status = "warning", solidHeader = TRUE, width = 12, 
+                           selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina")),
                            plotly::plotlyOutput("barPlot") %>% withSpinner())
-  
-  deconv_boxplot_box = box(title="Deconvolution Boxplot", status="warning", solidHeader = TRUE, width = 12, 
-                           plotly::plotlyOutput("boxPlot") %>% withSpinner())
   
   
   
@@ -56,7 +54,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       menuItem("Further Information", tabName= "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow( deconv_barplot_box), fluidRow(deconv_boxplot_box)),
+      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow( deconv_barplot_box)),
       tabItem(tabName="fInfo", fluidRow(h2("Test")))
     ))
   )
@@ -114,54 +112,51 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       }
     )
     
-    # barplot
-    output$barPlot = plotly::renderPlotly({
-      data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result))%>%
+
+    # Plots -------------------------------------------------------------------
+    
+    output$barPlot  = plotly::renderPlotly({
+      data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result)) %>%
         as.data.frame() %>%
         tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction")
+    
+      #### potential calc of tooltip text
       
-      plot = ggplot(data, aes(y = samples, x = as.numeric(fraction), fill=cell_type, 
-                              text=paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
-        # geom_bar( stat="identity") + 
-        geom_col() + 
-        labs(x = "predicted fraction", y = "sample", fill="cell type") 
-      # theme_fivethirtyeight()
+      plot = ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill=cell_type)) 
+    
+      if (input$plotMethod == "bar"){
+        plot = plot + geom_col(aes(y = samples, x = as.numeric(fraction), fill = cell_type, 
+                                   text=paste0("Cell Type: ", cell_type, "\nFraction: ", 
+                                   sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+                      labs(x = "predicted fraction", y = "sample", fill = "cell type")
+      } else if (input$plotMethod == "jitter"){
+        plot = plot + geom_jitter(aes(color = cell_type, text = paste0("Sample: ", samples, "\nFraction: ", 
+                                      sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+                      labs(x = "cell type", y = "predicted fraction", color="cell type", fill= "")
+      } else if (input$plotMethod == "scatter"){
+        plot = plot + geom_point(aes(color = cell_type, text = paste0("Sample: ", samples, "\nFraction: ", 
+                                                                       sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+          labs(x = "cell type", y = "predicted fraction", color="cell type", fill= "")
+      } else if (input$plotMethod == "box"){
+        plot = plot + geom_boxplot(aes(text="")) + # optional aes(color= cell_type), black bars get invisible
+                      labs(x = "cell type", y = "predicted fraction", fill="cell type")
+      } else if (input$plotMethod == "sina"){
+        plot = plot + geom_violin(aes(alpha = 0.1, text = ""), colour = "grey", fill="grey") + 
+                      ggforce::geom_sina(aes(text="")) +
+                      labs(x = "cell type", y = "predicted fraction", alpha = "", fill = "cell type")
+      }
       
+      # render
       plotly::ggplotly(plot, tooltip = c("text"))%>%
-        plotly::config(displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = "plot.png"), 
-                       modeBarButtonsToRemove = list("hoverCLosestCartesian", 
-                                                     "hoverCompareCartesian", 
-                                                     "zoomIn2d", "zoomOut2d", 
-                                                     "lasso2d", "zoom2d", 
-                                                     "pan2d", "autoScale2d", "select2d" )) %>%
-        plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
-    })
-    
-    
-    # boxplot
-    output$boxPlot = plotly::renderPlotly({
-      data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result))%>%
-        as.data.frame() %>%
-        tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction") 
-      
-      plot = ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill=cell_type)) +
-        geom_boxplot() + 
-        labs(x = "cell type", y = "predicted fraction", fill="cell type")
-        #scale_fill_brewer(palette = "Paired")
-      
-      
-      plotly::ggplotly(plot) %>%
-        plotly::config(displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = "boxplot.png"),
-                       modeBarButtonsToRemove = list("hoverClosestCartesian",
-                                                     "hoverCompareCartesian",
-                                                     "zoomIn2d", "zoomOut2d",
-                                                     "zoom2d", "resetScale2d",
-                                                     "pan2d", "autoScale2d")
-                       ) %>%
+        plotly::config(displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = paste0(input$plotMethod, "_plot")),
+                           modeBarButtonsToRemove = list("hoverCLosestCartesian",
+                                                         "hoverCompareCartesian",
+                                                         "zoomIn2d", "zoomOut2d",
+                                                         "lasso2d", "zoom2d",
+                                                         "pan2d", "autoScale2d", "select2d" )) %>%
         plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
     })
   })
-
   
   shiny::shinyApp(ui = ui, server = server)
 }
