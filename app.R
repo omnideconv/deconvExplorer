@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
 library(dplyr)
+library(knitr)
 library(ggplot2)
 library(omnideconv)
 library(RColorBrewer)
@@ -37,11 +38,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                      ),
                      actionButton("deconvolute", "Deconvolute"))
   
-  deconv_barplot_box = box(title="Deconvolution Result", status = "warning", solidHeader = TRUE, width = 12, 
-                           selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina")),
-                           plotly::plotlyOutput("barPlot") %>% withSpinner())
+  deconv_plot_box = box(title="Deconvolution Plot", status = "warning", solidHeader = TRUE, width = 12, 
+                        selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina", "Heatmap" = "heatmap")),
+                        plotly::plotlyOutput("plotBox") %>% withSpinner())
   
-  
+  deconv_table_box = box(title="Deconvolution Table", status = "warning", solidHeader = TRUE, width = 12, 
+                         DT::dataTableOutput("tableBox") %>%  withSpinner())
   
 
   # ui definition  ----------------------------------------------------------
@@ -54,8 +56,8 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       menuItem("Further Information", tabName= "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow( deconv_barplot_box)),
-      tabItem(tabName="fInfo", fluidRow(h2("Test")))
+      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box), fluidRow(deconv_table_box)),
+      tabItem(tabName="fInfo")
     ))
   )
   
@@ -80,7 +82,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     signature = reactive(omnideconv::build_model(
       single_cell_object = values$single_cell, 
       cell_type_annotations = values$cell_annotations, 
-      method = input$deconvMethod, 
+      method = input$sigMethod, 
       batch_ids = values$batch_ids, 
       bulk_gene_expression = values$bulk
     ))
@@ -115,7 +117,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
 
     # Plots -------------------------------------------------------------------
     
-    output$barPlot  = plotly::renderPlotly({
+    output$plotBox  = plotly::renderPlotly({
       data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result)) %>%
         as.data.frame() %>%
         tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction")
@@ -141,9 +143,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
         plot = plot + geom_boxplot(aes(text="")) + # optional aes(color= cell_type), black bars get invisible
                       labs(x = "cell type", y = "predicted fraction", fill="cell type")
       } else if (input$plotMethod == "sina"){
-        plot = plot + geom_violin(aes(alpha = 0.1, text = ""), colour = "grey", fill="grey") + 
+        plot = plot + geom_violin(aes(alpha = 0.1, hoverinfo="none"), colour = "grey", fill="grey") + 
                       ggforce::geom_sina(aes(text="")) +
                       labs(x = "cell type", y = "predicted fraction", alpha = "", fill = "cell type")
+      } else if (input$plotMethod == "heatmap"){
+        plot = plot + geom_tile(aes(y = samples, fill = as.numeric(fraction), text = sprintf("%1.2f%%", 100*as.numeric(fraction)))) + 
+                      labs(x = "cell type", y = "sample", fill = "predicted fraction")
       }
       
       # render
@@ -156,6 +161,16 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                                                          "pan2d", "autoScale2d", "select2d" )) %>%
         plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
     })
+    
+    output$tableBox = DT::renderDataTable({
+                      DT::datatable(values$deconvolution_result, 
+                                    extensions = "Buttons", 
+                                    options = list(dom = "Bfrtip", 
+                                                   buttons = c("copy", "csv", "excel", "pdf"))) %>%
+                        DT::formatPercentage(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
+                      
+      })
+   
   })
   
   shiny::shinyApp(ui = ui, server = server)
