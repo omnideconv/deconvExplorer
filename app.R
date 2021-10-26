@@ -1,11 +1,15 @@
-library(shiny)
+# library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
 library(dplyr)
-library(knitr)
 library(ggplot2)
 library(omnideconv)
 library(RColorBrewer)
+
+### only for development
+omnideconv::set_cibersortx_credentials("zacklcon@uni-mainz.de", "cbfa9894785f173421ffc7c69a805630")
+### 
+
 
 
 deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnotation = NULL, usr_batch = NULL){
@@ -57,11 +61,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     )),
     dashboardBody(tabItems(
       tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box), fluidRow(deconv_table_box)),
-      tabItem(tabName="fInfo")
+      tabItem(tabName="fInfo", fluidPage(includeMarkdown("omnideconv_vignette.md")))
     ))
   )
   
 
+  
   # server definition  ------------------------------------------------------
   
   server = shinyServer(function(input, output) {
@@ -95,7 +100,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       if (!(input$deconvMethod %in% methods_interchangeable)){
         signature_Method = input$deconvMethod
       }
-      message(paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, " Signature: ", signature_Method))
+      message(paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, ", Signature: ", signature_Method))
       
       #### At this Point the correct Variables for the Deconvolution are: 
       #### Deconvolution Method: input$deconvMethod
@@ -124,31 +129,39 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     
       #### potential calc of tooltip text
       
-      plot = ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill=cell_type)) 
+      plot = ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill=cell_type, text=""))
     
       if (input$plotMethod == "bar"){
         plot = plot + geom_col(aes(y = samples, x = as.numeric(fraction), fill = cell_type, 
-                                   text=paste0("Cell Type: ", cell_type, "\nFraction: ", 
-                                   sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
-                      labs(x = "predicted fraction", y = "sample", fill = "cell type")
+                              text=paste0("Cell Type: ", cell_type, "\nFraction: ", 
+                              sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+                      labs(x = "estimated fraction", y = "sample", fill = "cell type")
+        
       } else if (input$plotMethod == "jitter"){
         plot = plot + geom_jitter(aes(color = cell_type, text = paste0("Sample: ", samples, "\nFraction: ", 
-                                      sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
-                      labs(x = "cell type", y = "predicted fraction", color="cell type", fill= "")
+                                  sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+                      labs(x = "cell type", y = "estimated fraction", color="cell type", fill= "")
+        
       } else if (input$plotMethod == "scatter"){
         plot = plot + geom_point(aes(color = cell_type, text = paste0("Sample: ", samples, "\nFraction: ", 
-                                                                       sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
-          labs(x = "cell type", y = "predicted fraction", color="cell type", fill= "")
+                                 sprintf("%1.2f%%", 100*as.numeric(fraction))))) +
+                      labs(x = "cell type", y = "estimated fraction", color="cell type", fill= "")
+        
       } else if (input$plotMethod == "box"){
-        plot = plot + geom_boxplot(aes(text="")) + # optional aes(color= cell_type), black bars get invisible
-                      labs(x = "cell type", y = "predicted fraction", fill="cell type")
+        plot = plot + geom_boxplot(aes(text="")) + 
+                      labs(x = "cell type", y = "estimated fraction", fill="cell type")
+        
       } else if (input$plotMethod == "sina"){
-        plot = plot + geom_violin(aes(alpha = 0.1, hoverinfo="none"), colour = "grey", fill="grey") + 
-                      ggforce::geom_sina(aes(text="")) +
-                      labs(x = "cell type", y = "predicted fraction", alpha = "", fill = "cell type")
+        plot = plot + geom_violin(colour = "grey", fill="grey") + 
+                      ggforce::geom_sina() +
+                      labs(x = "cell type", y = "estimated fraction", alpha = "", fill = "cell type")
+        
       } else if (input$plotMethod == "heatmap"){
-        plot = plot + geom_tile(aes(y = samples, fill = as.numeric(fraction), text = sprintf("%1.2f%%", 100*as.numeric(fraction)))) + 
-                      labs(x = "cell type", y = "sample", fill = "predicted fraction")
+        plot = plot + geom_tile(aes(y = samples, fill = as.numeric(fraction), text =  sprintf("%1.2f%%", 100*as.numeric(fraction)))) + 
+                      #geom_text(aes(y = samples, x = cell_type, label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
+                      labs(x = "cell type", y = "sample", fill = "estimated fraction") +
+                      scale_fill_gradient(low = "white", high = "blue") + 
+                      guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
       }
       
       # render
