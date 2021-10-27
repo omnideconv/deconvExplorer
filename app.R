@@ -7,12 +7,6 @@ library(omnideconv)
 library(RColorBrewer)
 library(waiter)
 
-### only for development
-omnideconv::set_cibersortx_credentials("zacklcon@uni-mainz.de", "cbfa9894785f173421ffc7c69a805630")
-### 
-
-
-
 deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnotation = NULL, usr_batch = NULL){
   
   
