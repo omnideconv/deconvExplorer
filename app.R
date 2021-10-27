@@ -5,6 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(omnideconv)
 library(RColorBrewer)
+library(waiter)
 
 ### only for development
 omnideconv::set_cibersortx_credentials("zacklcon@uni-mainz.de", "cbfa9894785f173421ffc7c69a805630")
@@ -40,7 +41,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
                        condition = "input.deconvMethod == 'bisque'|| input.deconvMethod == 'cibersortx' || input.deconvMethod == 'dwls' || input.deconvMethod == 'momf'",
                        selectInput("sigMethod", "Signature Calculation Method", choices = methods_reduced)
                      ),
-                     actionButton("deconvolute", "Deconvolute"))
+                     conditionalPanel(
+                       condition = "input.deconvMethod == 'bseqsc'",
+                       fileInput("userMarker", "Marker Genes")
+                     ),
+                     actionButton("deconvolute", "Deconvolute"), 
+                     waiter::useWaitress(),)
   
   deconv_plot_box = box(title="Deconvolution Plot", status = "warning", solidHeader = TRUE, width = 12, 
                         selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina", "Heatmap" = "heatmap")),
@@ -60,7 +66,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       menuItem("Further Information", tabName= "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName="deconv", fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box), fluidRow(deconv_table_box)),
+      tabItem(tabName="deconv", fluidPage(fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box, deconv_table_box))),
       tabItem(tabName="fInfo", fluidPage(includeMarkdown("omnideconv_vignette.md")))
     ))
   )
@@ -70,6 +76,9 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
   # server definition  ------------------------------------------------------
   
   server = shinyServer(function(input, output) {
+   
+    waitress = Waitress$new("#deconvolute", infinite=TRUE)
+    
     values = reactiveValues() # storing everything
     
     ### ersetzten mit dem laden der user Uploads!
@@ -96,6 +105,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
+      waitress$start()
       signature_Method = input$sigMethod
       if (!(input$deconvMethod %in% methods_interchangeable)){
         signature_Method = input$deconvMethod
@@ -116,6 +126,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
           cell_type_annotations = values$cell_annotations,
           batch_ids = values$batch_ids
         )
+      waitress$close()
       }
     )
     
