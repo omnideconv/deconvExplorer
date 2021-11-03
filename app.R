@@ -65,12 +65,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     dashboardHeader(title = "Omnideconv"),
     dashboardSidebar(sidebarMenu(
       menuItem("Deconvolution", tabName = "deconv"), 
-      menuItem("Benchmarking", tabName = "benchmark"),
+      menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName= "fInfo")
     )),
     dashboardBody(tabItems(
       tabItem(tabName="deconv", fluidPage(fluidRow(deconv_all_results), fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box))),
-      tabItem(tabName="benchmark", fluidPage(textOutput("test"))), 
+      tabItem(tabName="benchmark", fluidPage()), 
       tabItem(tabName="fInfo", fluidPage(includeMarkdown("omnideconv_vignette.md")))
     ))
   )
@@ -91,7 +91,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     
     all_deconvolutions = reactiveValues()
     
-    
+    ### es gibt eine reactive values to list funktion für den export!
     
     
     # methods= unname(omnideconv::deconvolution_methods)
@@ -114,7 +114,12 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     # 
     
     
-    
+    # idea: change values$deconv/signature to a named list (name= deconv/signature), the plot function would need to be changed to take a named list
+    # (in values$deconvolution, etc) as an input, so everytime the list updates the plots are recalced, 
+    # running a new deconv: list is overwritten and only the newest result is displayed
+    # adding deconvs to the plot with conditional buttons (add / remove), condition checks list for selected deconvolution 
+    # idea: values only contains uploaded data and a list of deconvolution results, not doubled! The plot function then takes the list of 
+    # "to Plot" deconvolutions as an input and collects the datasets from all_deconvolutions
     
     
     waitress = Waitress$new("#deconvolute", infinite=TRUE)
@@ -144,6 +149,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       waitress$start()
+      
       signature_Method = input$signatureMethod
       if (!(input$deconvMethod %in% methods_interchangeable)){
         signature_Method = input$deconvMethod
@@ -152,17 +158,18 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
       message(paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, ", Signature: ", signature_Method))
      
       # save reactive siganture to values
-      values$signature = signature()
+      signature = signature()
+      # values$signature = signature()
       
       #### At this Point the correct Variables for the Deconvolution are: 
       #### Deconvolution Method: input$deconvMethod
       #### Signature Calculation Method: signature_Method
       #### Signature: values$signature
       
-      values$deconvolution_result =
+      deconvolution_result =
         omnideconv::deconvolute(
           bulk_gene_expression = values$bulk,
-          signature = values$signature,
+          signature = signature,
           method = input$deconvMethod,
           single_cell_object = values$single_cell,
           cell_type_annotations = values$cell_annotations,
@@ -170,7 +177,7 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
         )
       
       # insert result into the all_deconvolutions reactive Value
-      all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] = list(values$deconvolution_result, values$signature)
+      all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] = list(deconvolution_result, signature)
       
       # update select input for selection, just the deconv Method
       deconv_choices = names(all_deconvolutions) %>%
@@ -187,8 +194,8 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     observeEvent(input$loadDeconvolution, {
       result = all_deconvolutions[[paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod)]]
       message(typeof(result))
-      # values$deconvolution_result = result[1]
-      # values$signature = result[2]
+      values$deconvolution_result = result[[1]]
+      values$signature = result[[2]]
     })
     
     # update signature Method choices when selecting deconvolution to load 
@@ -209,10 +216,6 @@ deconvExplorer = function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnota
     
 
     # Plots -------------------------------------------------------------------
-    
-    output$test = renderText({
-      names(all_deconvolutions)
-    })
     
     output$plotBox  = plotly::renderPlotly({
       data = cbind(values$deconvolution_result, samples = rownames(values$deconvolution_result)) %>%
