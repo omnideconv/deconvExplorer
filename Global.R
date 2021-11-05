@@ -1,26 +1,26 @@
-#library(ggplot2)
+# library(ggplot2)
 
-plot_deconvolution <- function (to_plot_list, plotMethod, all_deconvolutions) {
-  
+plot_deconvolution <- function(to_plot_list, plotMethod, all_deconvolutions) {
+
   # load all deconvolutions from all_deconvolutions into a list
   deconvolution_list <- list()
-  for (deconvolution in to_plot_list){
+  for (deconvolution in to_plot_list) {
     deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
   }
-  
+
   # preformat data
-  deconvolution_list <- lapply(deconvolution_list, function (deconvolution){
-    cbind (deconvolution, samples = rownames(deconvolution)) %>% 
-      as.data.frame() %>% 
-      tidyr::pivot_longer(!samples, names_to="cell_type", values_to = "fraction")
+  deconvolution_list <- lapply(deconvolution_list, function(deconvolution) {
+    cbind(deconvolution, samples = rownames(deconvolution)) %>%
+      as.data.frame() %>%
+      tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction")
   })
-  
-  # add all different plots together and add facet information 
-  data <-  do.call("rbind", deconvolution_list)
-  data$facets <- rep(to_plot_list, each=nrow(data) / length(to_plot_list))
-  
+
+  # add all different plots together and add facet information
+  data <- do.call("rbind", deconvolution_list)
+  data$facets <- rep(to_plot_list, each = nrow(data) / length(to_plot_list))
+
   plot <- ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill = cell_type, text = ""))
-  
+
   if (plotMethod == "bar") {
     plot <- plot + geom_col(aes(
       y = samples, x = as.numeric(fraction), fill = cell_type,
@@ -29,7 +29,7 @@ plot_deconvolution <- function (to_plot_list, plotMethod, all_deconvolutions) {
         sprintf("%1.2f%%", 100 * as.numeric(fraction))
       )
     )) +
-      #facet_wrap(~data$facets) +
+      # facet_wrap(~data$facets) +
       labs(x = "estimated fraction", y = "sample", fill = "cell type")
   } else if (plotMethod == "jitter") {
     plot <- plot + geom_jitter(aes(color = cell_type, text = paste0(
@@ -57,9 +57,9 @@ plot_deconvolution <- function (to_plot_list, plotMethod, all_deconvolutions) {
       scale_fill_gradient(low = "white", high = "blue") +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
   }
-  
-  plot <- plot + facet_wrap(~data$facets)
-  
+
+  plot <- plot + facet_wrap(~ data$facets)
+
   # render
   plotly::ggplotly(plot, tooltip = c("text")) %>%
     plotly::config(
@@ -73,5 +73,4 @@ plot_deconvolution <- function (to_plot_list, plotMethod, all_deconvolutions) {
       )
     ) %>%
     plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
-  
 }
