@@ -9,10 +9,7 @@ library(waiter)
 
 source("Global.R")
 
-
-
 deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnotation = NULL, usr_batch = NULL) {
-
 
   # possible Methods for signature interchangability
   methods_reduced <- c("Bisque" = "bisque", "BSeq-sc" = "bseqsc", "CDSeq" = "cdseq", "CIBERSORTx" = "cibersortx", "CPM" = "cpm", "DWLS" = "dwls", "MOMF" = "momf")
@@ -31,9 +28,6 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     fileInput("userBatchId", "Upload Batch IDs")
   )
 
-
-
-
   settings_box <- box(
     title = "Deconvolution Settings", status = "primary", solidHeader = TRUE, height = "31.5em",
     img(src = "logo.jpg", width = "100%"), br(),
@@ -48,22 +42,26 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     ),
     actionButton("deconvolute", "Deconvolute"),
     waiter::useWaitress(),
+    actionButton("deconvoluteAll", "Deconvolute All")
   )
 
   deconv_plot_box <- box(
     title = "Deconvolution Plot", status = "warning", solidHeader = TRUE, width = 12,
     selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina", "Heatmap" = "heatmap")),
+    selectInput("facets", "Group Plots By", choices = c("Deconvolution Method" = "method", "Cell Type" = "cell_type", "Sample" = "sample")),
     plotly::plotlyOutput("plotBox") %>% withSpinner()
   )
 
   deconv_table_box <- box(
     title = "Deconvolution Table", status = "warning", solidHeader = TRUE, width = 12,
+    selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL),
     DT::dataTableOutput("tableBox") %>% withSpinner()
   )
 
   deconv_signature_box <- box(
     title = "Deconvolution Signature", status = "info", solidHeader = TRUE, width = 12,
     downloadButton("signatureDownload", "Download Signature"),
+    selectInput("signatureToTable", "Signature", choices = NULL),
     DT::dataTableOutput("signatureBox") %>% withSpinner()
   )
   deconv_all_results <- box(
@@ -72,9 +70,7 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     selectInput("computedSignatureMethod", "Signature Method", choices = NULL),
     actionButton("loadDeconvolution", "Load Deconvolution Result"),
     actionButton("addToPlot", "Compare: Add to Plot"),
-    actionButton("removeFromPlot", "Compare: Remove from Plot") # ,
-    # downloadButton("downloadSession", "Download Session"),
-    # fileInput("uploadSession", "Upload Session File")
+    actionButton("removeFromPlot", "Compare: Remove from Plot")
   )
 
 
@@ -86,11 +82,11 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       title = "Omnideconv",
       dropdownMenu(
         type = "task",
-        icon = icon("download"),
+        icon = icon("bookmark", lib = "glyphicon"),
         headerText = "Use session to proceed your work later",
         badgeStatus = NULL,
-        notificationItem(text = downloadButton("downloadSession", "Download Session")),
-        notificationItem(text = fileInput("uploadSession", "Upload Session File"))
+        notificationItem(text = downloadButton("downloadSession", "Download Session"), icon = icon("", verify_fa = FALSE)),
+        notificationItem(text = fileInput("uploadSession", "Upload Session File"), icon = icon("", verfiy_fa = FALSE), status = "primary")
       )
     ),
     dashboardSidebar(sidebarMenu(
@@ -100,13 +96,11 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       menuItem("Further Information", tabName = "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName = "deconv", fluidPage(fluidRow(deconv_all_results), fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box))), # remove 3 ), # deconv_table_box, deconv_signature_box))),
-      tabItem(tabName = "benchmark", fluidPage()),
+      tabItem(tabName = "deconv", fluidPage(fluidRow(deconv_all_results), fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box))),
+      tabItem(tabName = "benchmark", fluidPage(fluidRow())),
       tabItem(tabName = "fInfo", fluidPage(includeMarkdown("omnideconv_vignette.md")))
     ))
   )
-
-
 
   # server definition  ------------------------------------------------------
 
@@ -115,15 +109,6 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
 
     all_deconvolutions <- reactiveValues()
-
-    ### es gibt eine reactive values to list funktion für den export!
-
-
-    # methods= unname(omnideconv::deconvolution_methods)
-    #
-    # df = data.frame(matrix(nrow = length(methods), ncol = length (methods)))
-    # rownames(df) = methods
-    # colnames(df) = methods
 
     # for later: run all possible combinations! i and j cover all valid
     # deconvolution / signature combinations
@@ -137,20 +122,6 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     #   df[i, i] = "X" # todo: skip the ones already inserted in for loop above
     # }
     #
-
-
-    # idea: change values$deconv/signature to a named list (name= deconv/signature), the plot function would need to be changed to take a named list
-    # (in values$deconvolution, etc) as an input, so everytime the list updates the plots are recalced,
-    # running a new deconv: list is overwritten and only the newest result is displayed
-    # adding deconvs to the plot with conditional buttons (add / remove), condition checks list for selected deconvolution
-    # idea: values only contains uploaded data and a list of deconvolution results, not doubled! The plot function then takes the list of
-    # "to Plot" deconvolutions as an input and collects the datasets from all_deconvolutions
-
-    # TODO:
-    # - Plot Funktion für mehrere Ergebnisse Optimieren
-    # - what to do with the signatures? right now, just save them, but is it possible to recycle them?
-
-
     waitress <- Waitress$new("#deconvolute", infinite = TRUE)
 
     values <- reactiveValues() # storing the current deconvolution
@@ -164,11 +135,9 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     # values$deconvolution_result <- readRDS("deconvolution_example.rds")
     values$deconvolution_result <- c("bisque_bisque")
     all_deconvolutions[["bisque_bisque"]] <- list(readRDS("deconvolution_example.rds"), readRDS("signature_example.rds"))
-
+    # updateTableSelection()
 
     # Observers and Eventhandling ---------------------------------------------
-
-
 
     # restore session with file upload
     observeEvent(input$uploadSession, {
@@ -176,8 +145,10 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
       for (deconvolution in names(sessionFile)) {
         all_deconvolutions[[deconvolution]] <- sessionFile[[deconvolution]]
-        message("Loaded Deconvolution: ", deconvolution)
+        showNotification(paste0("Loaded Deconvolution: ", deconvolution))
+        # message("Loaded Deconvolution: ", deconvolution)
       }
+      updateTableSelection()
     })
 
     signature <- reactive(omnideconv::build_model(
@@ -192,14 +163,15 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
       waitress$start()
+      showNotification("Deconvolution started", type = "warning")
 
       signature_Method <- input$signatureMethod
       if (!(input$deconvMethod %in% methods_interchangeable)) {
         signature_Method <- input$deconvMethod
       }
-      message(
-        paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, ", Signature: ", signature_Method)
-      )
+      # message(
+      #   paste0("Starting Deconvolution. Deconvolution: ", input$deconvMethod, ", Signature: ", signature_Method)
+      # )
 
       signature <- signature()
 
@@ -217,10 +189,12 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- list(deconvolution_result, signature)
 
       waitress$close()
+      showNotification("Deconvolution finished", type = "message")
     })
 
-    # update Deconvolution Method choices when all_deconvolution changes
+    # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
+      # deconvolution to load
       deconv_choices <- names(all_deconvolutions) %>%
         strsplit("_") %>%
         unlist()
@@ -244,11 +218,13 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       updateSelectInput(session, inputId = "computedSignatureMethod", choices = signature_choices)
     })
 
-
     # add Deconvolution to To Plot list
     observeEvent(input$addToPlot, {
       tmp <- values$deconvolution_result
       values$deconvolution_result <- c(tmp, getSelectionToPlot())
+
+      # update selection choices for the tables
+      updateTableSelection()
     })
 
     # remove deconvolution from To Plot list
@@ -256,12 +232,18 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       tmp <- values$deconvolution_result
       tmp <- tmp[!tmp %in% getSelectionToPlot()]
       values$deconvolution_result <- tmp
+
+      # update selection choices for the tables
+      updateTableSelection()
     })
 
     # load Deconvolution result
     observeEvent(input$loadDeconvolution, {
       values$deconvolution_result <- c(getSelectionToPlot())
-      values$signature <- c(getSelectionToPlot())
+      # values$signature <- c(getSelectionToPlot())
+
+      # update selection choices for the tables
+      updateTableSelection()
     })
 
     # observe the selection to plot and show buttons if conditions match
@@ -277,12 +259,14 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
     # Plots -------------------------------------------------------------------
 
-    output$plotBox <- plotly::renderPlotly(plot_deconvolution(values$deconvolution_result, input$plotMethod, all_deconvolutions))
+    output$plotBox <- plotly::renderPlotly(plot_deconvolution(values$deconvolution_result, input$plotMethod, input$facets, all_deconvolutions))
 
     output$tableBox <- DT::renderDataTable({
       # update: work with a list of  deconvoltutions from values$deconvolution
+      req(input$deconvolutionToTable)
+      deconvolution <- all_deconvolutions[[input$deconvolutionToTable]][[1]]
 
-      DT::datatable(values$deconvolution_result,
+      DT::datatable(deconvolution,
         extensions = "Buttons",
         options = list(
           dom = "Bfrtip",
@@ -294,8 +278,11 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
     output$signatureBox <- DT::renderDataTable({
       # update: work with a list of  sigantures from values$signature
+      req(input$signatureToTable)
 
-      DT::datatable(values$signature) # %>%
+      signature <- all_deconvolutions[[input$signatureToTable]][[2]]
+
+      DT::datatable(signature) # %>%
       # DT::formatRound(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
     })
 
@@ -305,13 +292,15 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
         paste("signature", ".csv", sep = "")
       },
       content = function(file) {
-        write.csv(values$signature, file)
+        data <- all_deconvolutions[[input$signatureToTable]][[2]]
+        write.csv(data, file)
       }
     )
 
     output$downloadSession <- downloadHandler(
       filename = function() {
-        paste0("session.rds")
+        # paste0("session.rds")
+        paste0("omnideconv_", Sys.Date(), ".rds")
       },
       content = function(file) {
         saveRDS(reactiveValuesToList(all_deconvolutions), file)
@@ -323,10 +312,14 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     getSelectionToPlot <- function() {
       return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
     }
+
+    updateTableSelection <- function() {
+      updateSelectInput(session, inputId = "deconvolutionToTable", choices = values$deconvolution_result)
+      updateSelectInput(session, inputId = "signatureToTable", choices = values$deconvolution_result)
+    }
   })
 
   shiny::shinyApp(ui = ui, server = server)
 }
-
 
 deconvExplorer()

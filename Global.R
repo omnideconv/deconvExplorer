@@ -1,64 +1,122 @@
-# library(ggplot2)
 
-plot_deconvolution <- function(to_plot_list, plotMethod, all_deconvolutions) {
+# axis definition ---------------------------------------------------------
 
-  # load all deconvolutions from all_deconvolutions into a list
+axis <- list(
+  "method" = list( # x, y, fill/color
+    "bar" = list("fraction", "sample", "cell_type"),
+    "jitter" = list("fraction", "cell_type", "cell_type"),
+    "scatter" = list("fraction", "cell_type", "cell_type"),
+    "box" = list("cell_type", "fraction", "cell_type"),
+    "sina" = list("cell_type", "fraction", "cell_type"),
+    "heatmap" = list("cell_type", "sample", "fraction")
+  ),
+  "cell_type" = list(
+    "bar" = list("fraction", "sample", "method"),
+    "jitter" = list("fraction", "method", "sample"),
+    "scatter" = list("fraction", "method", "sample"),
+    "box" = list("method", "fraction", "method"),
+    "sina" = list("method", "fraction", "cell_type"),
+    "heatmap" = list("sample", "method", "fraction")
+  ),
+  "sample" = list(
+    "bar" = list("cell_type", "fraction", "method"),
+    "jitter" = list("cell_type", "fraction", "method"),
+    "scatter" = list("cell_type", "fraction", "method"),
+    "box" = list("method", "fraction", "method"),
+    "sina" = list("method", "fraction", "method"),
+    "heatmap" = list("cell_type", "method", "fraction")
+  )
+)
+
+# aes definition  ---------------------------------------------------------
+getAes <- function(facets, plotMethod) {
+  x <- axis[[facets]][[plotMethod]][[1]]
+  y <- axis[[facets]][[plotMethod]][[2]]
+  col <- axis[[facets]][[plotMethod]][[3]]
+
+  if (plotMethod %in% c("jitter", "scatter")) {
+    return(ggplot2::aes_string(x = x, y = y, col = col))
+  } else if (plotMethod == "sina") { # does not work with aes_string, using aes_
+    return(ggplot2::aes_(x = as.name(x), y = as.name(y), col = as.name(col)))
+  } else {
+    return(ggplot2::aes_string(x = x, y = y, fill = col))
+  }
+}
+
+getLabs <- function(facets, plotMethod) {
+  x <- axis[[facets]][[plotMethod]][[1]]
+  y <- axis[[facets]][[plotMethod]][[2]]
+  col <- axis[[facets]][[plotMethod]][[3]]
+  if (plotMethod %in% c("jitter", "scatter")) {
+    return(ggplot2::labs(x = x, y = y, col = col))
+  } else {
+    return(ggplot2::labs(x = x, y = y, fill = col))
+  }
+}
+
+# functions ---------------------------------------------------------------
+
+plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions) {
+  # load deconvolutions from all_deconvolutions into a list
   deconvolution_list <- list()
   for (deconvolution in to_plot_list) {
     deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
   }
 
-  # preformat data
+  # preformat data into a dataframe
   deconvolution_list <- lapply(deconvolution_list, function(deconvolution) {
-    cbind(deconvolution, samples = rownames(deconvolution)) %>%
+    cbind(deconvolution, sample = rownames(deconvolution)) %>%
       as.data.frame() %>%
-      tidyr::pivot_longer(!samples, names_to = "cell_type", values_to = "fraction")
+      tidyr::pivot_longer(!sample, names_to = "cell_type", values_to = "fraction")
   })
 
   # add all different plots together and add facet information
   data <- do.call("rbind", deconvolution_list)
-  data$facets <- rep(to_plot_list, each = nrow(data) / length(to_plot_list))
+  data$fraction <- as.numeric(data$fraction) # change datatype of column
+  data$method <- rep(to_plot_list, each = nrow(data) / length(to_plot_list)) # add computation method as column
 
-  plot <- ggplot(data, aes(x = reorder(cell_type, desc(cell_type)), y = as.numeric(fraction), fill = cell_type, text = ""))
+  # calculate tooltip based on chosen "group by"
+  tooltip <- switch(facets,
+    "method" = aes(
+      text = paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nSample: ", sample)
+    ),
+    "cell_type" = aes(
+      text = paste0("Sample: ", sample, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nMethod: ", method)
+    ),
+    "sample" = aes(
+      text = paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nMethod: ", method)
+    )
+  )
+
+  # put plot together
+  plot <- ggplot(data, getAes(facets, plotMethod))
+  plot <- plot + facet_wrap(~ data[[facets]])
 
   if (plotMethod == "bar") {
-    plot <- plot + geom_col(aes(
-      y = samples, x = as.numeric(fraction), fill = cell_type,
-      text = paste0(
-        "Cell Type: ", cell_type, "\nFraction: ",
-        sprintf("%1.2f%%", 100 * as.numeric(fraction))
-      )
-    )) +
-      # facet_wrap(~data$facets) +
-      labs(x = "estimated fraction", y = "sample", fill = "cell type")
+    plot <- plot + geom_col(tooltip)+
+      getLabs(facets, plotMethod)
   } else if (plotMethod == "jitter") {
-    plot <- plot + geom_jitter(aes(color = cell_type, text = paste0(
-      "Sample: ", samples, "\nFraction: ",
-      sprintf("%1.2f%%", 100 * as.numeric(fraction))
-    ))) +
-      labs(x = "cell type", y = "estimated fraction", color = "cell type", fill = "")
+    plot <- plot + geom_jitter(tooltip) +
+      getLabs(facets, plotMethod)
   } else if (plotMethod == "scatter") {
-    plot <- plot + geom_point(aes(color = cell_type, text = paste0(
-      "Sample: ", samples, "\nFraction: ",
-      sprintf("%1.2f%%", 100 * as.numeric(fraction))
-    ))) +
-      labs(x = "cell type", y = "estimated fraction", color = "cell type", fill = "")
+    plot <- plot + geom_point(tooltip) +
+      getLabs(facets, plotMethod)
   } else if (plotMethod == "box") {
-    plot <- plot + geom_boxplot(aes(text = "")) +
-      labs(x = "cell type", y = "estimated fraction", fill = "cell type")
+    plot <- plot + geom_boxplot(tooltip) +
+      coord_flip() +
+      getLabs(facets, plotMethod)
   } else if (plotMethod == "sina") {
-    plot <- plot + geom_violin(colour = "grey", fill = "grey") +
-      ggforce::geom_sina() +
-      labs(x = "cell type", y = "estimated fraction", alpha = "", fill = "cell type")
+    plot <- plot + ggforce::geom_sina() +
+      coord_flip() +
+      getLabs(facets, plotMethod)
   } else if (plotMethod == "heatmap") {
-    plot <- plot + geom_tile(aes(y = samples, fill = as.numeric(fraction), text = sprintf("%1.2f%%", 100 * as.numeric(fraction)))) +
-      # geom_text(aes(y = samples, x = cell_type, label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
-      labs(x = "cell type", y = "sample", fill = "estimated fraction") +
+    plot <- plot + geom_tile(tooltip) +
+      # geom_text(aes(label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
+      getLabs(facets, plotMethod) +
+      theme(axis.text.x = element_text(angle = 90)) +
       scale_fill_gradient(low = "white", high = "blue") +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
   }
-
-  plot <- plot + facet_wrap(~ data$facets)
 
   # render
   plotly::ggplotly(plot, tooltip = c("text")) %>%
