@@ -93,7 +93,7 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
   plot <- plot + facet_wrap(~ data[[facets]])
 
   if (plotMethod == "bar") {
-    plot <- plot + geom_col(tooltip)+
+    plot <- plot + geom_col(tooltip) +
       getLabs(facets, plotMethod)
   } else if (plotMethod == "jitter") {
     plot <- plot + geom_jitter(tooltip) +
@@ -122,6 +122,72 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
   plotly::ggplotly(plot, tooltip = c("text")) %>%
     plotly::config(
       displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = paste0(plotMethod, "_plot")),
+      modeBarButtonsToRemove = list(
+        "hoverCLosestCartesian",
+        "hoverCompareCartesian",
+        "zoomIn2d", "zoomOut2d",
+        "lasso2d", "zoom2d",
+        "pan2d", "autoScale2d", "select2d"
+      )
+    ) %>%
+    plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
+}
+
+plot_benchmark <- function(to_plot_list, all_deconvolutions) {
+  # import and preformat data
+
+  # View(to_plot_list) works,
+  deconvolution_list <- list()
+  for (deconvolution in to_plot_list) {
+    # deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
+    deconvolution_list[deconvolution] <- all_deconvolutions[[deconvolution]][1]
+  }
+
+  # add samples and deconvolution method
+  deconvolution_list <- lapply(deconvolution_list, function(x) cbind(x, sample = rownames(x)))
+  deconvolution_list <- lapply(names(deconvolution_list), function(x) {
+    cbind(deconvolution_list[[x]], method = rep(x, nrow(deconvolution_list[[x]])))
+  }) 
+
+  deconvolution_list <- lapply(deconvolution_list, function(x) {
+    tidyr::pivot_longer(data.frame(x), !c("sample", "method"),
+      names_to = "cell_type", values_to = "predicted_fraction"
+    )
+  })
+
+  # combine to one dataframe
+  data <- do.call("rbind", deconvolution_list)
+
+  # preformat reference data
+  ref <- omnideconv::RefData
+  ref$sample <- rownames(ref)
+  ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "true_fraction")
+
+  # merge the reference data with the deconvolution results
+  data <- merge(ref, data, by = c("sample", "cell_type"))
+
+  # change datatype to numeric
+  data$predicted_fraction <- as.numeric(data$predicted_fraction)
+  data$true_fraction <- as.numeric(data$true_fraction)
+
+  # calculate max width/heigth -> plot symmetric and line @ ´45 Degrees
+  max_value <- max(max(data$true_fraction), max(data$predicted_fraction)) + 0.1
+
+  # create plot
+  plot <- ggplot(data, aes(
+    x = true_fraction, y = predicted_fraction, color = cell_type,
+    text = paste0("Sample: ", sample, "\nTrue: ", true_fraction, "\nPredicted: ", predicted_fraction)
+  )) +
+    geom_point(size = 4) +
+    facet_wrap(~method) +
+    geom_abline(color = "black") +
+    labs(x = "True Fraction", y = "predicted Fraction", color = "cell type") +
+    coord_cartesian(xlim = c(0, max_value), ylim = c(0, max_value))
+
+  # render
+  plotly::ggplotly(plot, tooltip = c("text")) %>%
+    plotly::config(
+      displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = paste0("plotMethod", "_plot")),
       modeBarButtonsToRemove = list(
         "hoverCLosestCartesian",
         "hoverCompareCartesian",
