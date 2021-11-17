@@ -1,24 +1,43 @@
 # library(shiny)
-library(shinydashboard)
-library(shinycssloaders)
-library(dplyr)
-library(ggplot2)
-library(omnideconv)
-library(RColorBrewer)
-library(waiter)
-library(rintrojs)
+# library(shinydashboard)
+# library(shinycssloaders)
+# library(dplyr)
+# library(ggplot2)
+# #library(omnideconv)
+# library(RColorBrewer)
+# library(waiter)
+# library(rintrojs)
 
-source("Global.R")
+# source("./R/Global.R")
 
-deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnotation = NULL, usr_batch = NULL) {
+#' Run DeconvExplorer
+#'
+#' @param usr_bulk Bulk Sequencing data which will be deconvoluted
+#' @param usr_singleCell Single Cell Data which is used to calculate the signature matrix
+#' @param usr_cellAnnotation Cell Type annotations for the single cell data
+#' @param usr_batch Batch IDs, only for some deconvolution methods
+#'
+#' @export
+deconvExplorer <- function(usr_bulk = NULL,
+                           usr_singleCell = NULL,
+                           usr_cellAnnotation = NULL,
+                           usr_batch = NULL) {
 
   # possible Methods for signature interchangability
-  methods_reduced <- c("Bisque" = "bisque", "BSeq-sc" = "bseqsc", "CDSeq" = "cdseq", "CIBERSORTx" = "cibersortx", "CPM" = "cpm", "DWLS" = "dwls", "MOMF" = "momf")
-  methods_interchangeable <- c("Bisque" = "bisque", "CIBERSORTx" = "cibersortx", "DWLS" = "dwls", "MOMF" = "momf")
+  methods_reduced <- c(
+    "Bisque" = "bisque", "BSeq-sc" = "bseqsc",
+    "CDSeq" = "cdseq", "CIBERSORTx" = "cibersortx",
+    "CPM" = "cpm", "DWLS" = "dwls", "MOMF" = "momf"
+  )
+  methods_interchangeable <- c(
+    "Bisque" = "bisque", "CIBERSORTx" = "cibersortx",
+    "DWLS" = "dwls", "MOMF" = "momf"
+  )
 
   # box definitions ---------------------------------------------------------
-  data_upload_box <- box(
-    title = "Upload your Data", status = "primary", solidHeader = TRUE, height = "31.5em",
+  data_upload_box <- shinydashboard::box(
+    title = "Upload your Data", status = "primary",
+    solidHeader = TRUE, height = "31.5em",
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -32,14 +51,22 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     )
   )
 
-  settings_box <- box(
-    title = "Deconvolution Settings", status = "primary", solidHeader = TRUE, height = "31.5em",
+  settings_box <- shinydashboard::box(
+    title = "Deconvolution Settings", status = "primary",
+    solidHeader = TRUE, height = "31.5em",
     introBox(
-      img(src = "logo.jpg", width = "100%"), br(),
-      selectInput("deconvMethod", "Deconvolution Method", choices = omnideconv::deconvolution_methods),
+      img(src = system.file("www", "logo.jpg", package = "DeconvExplorer"), width = "100%"), br(),
+      selectInput("deconvMethod", "Deconvolution Method",
+        choices = omnideconv::deconvolution_methods
+      ),
       conditionalPanel(
-        condition = "input.deconvMethod == 'bisque'|| input.deconvMethod == 'cibersortx' || input.deconvMethod == 'dwls' || input.deconvMethod == 'momf'",
-        selectInput("signatureMethod", "Signature Calculation Method", choices = methods_reduced)
+        condition = "input.deconvMethod == 'bisque'||
+                    input.deconvMethod == 'cibersortx' ||
+                    input.deconvMethod == 'dwls' ||
+                      input.deconvMethod == 'momf'",
+        selectInput("signatureMethod", "Signature Calculation Method",
+          choices = methods_reduced
+        )
       ),
       conditionalPanel(
         condition = "input.deconvMethod == 'bseqsc'",
@@ -52,29 +79,49 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     )
   )
 
-  deconv_plot_box <- box(
-    title = "Deconvolution Plot", status = "warning", solidHeader = TRUE, width = 12,
+  deconv_plot_box <- shinydashboard::box(
+    title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
+    status = "warning", solidHeader = TRUE, width = 12,
     introBox(
-      selectInput("plotMethod", "Plot as: ", choices = c("Bar Plot" = "bar", "Scatter" = "scatter", "Jitter Plot" = "jitter", "Box Plot" = "box", "Sina Plot" = "sina", "Heatmap" = "heatmap")),
-      selectInput("facets", "Group Plots By", choices = c("Deconvolution Method" = "method", "Cell Type" = "cell_type", "Sample" = "sample")),
-      plotly::plotlyOutput("plotBox") %>% withSpinner(),
+      selectInput("plotMethod", "Plot as: ",
+        choices = c(
+          "Bar Plot" = "bar", "Scatter" = "scatter",
+          "Jitter Plot" = "jitter", "Box Plot" = "box",
+          "Sina Plot" = "sina", "Heatmap" = "heatmap"
+        )
+      ),
+      selectInput("facets", "Group Plots By",
+        choices = c(
+          "Deconvolution Method" = "method",
+          "Cell Type" = "cell_type", "Sample" = "sample"
+        )
+      ),
+      shinycssloaders::withSpinner(
+        plotly::plotlyOutput("plotBox")
+      ),
       data.step = 4, data.intro = "View the deconvolution results and compare "
     )
   )
 
-  deconv_table_box <- box(
-    title = "Deconvolution Table", status = "warning", solidHeader = TRUE, width = 12,
+  deconv_table_box <- shinydashboard::box(
+    title = span("Deconvolution Table ", icon("th", lib = "glyphicon")),
+    status = "warning", solidHeader = TRUE, width = 12,
     selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL),
-    DT::dataTableOutput("tableBox") %>% withSpinner()
+    shinycssloaders::withSpinner(
+      DT::dataTableOutput("tableBox")
+    )
   )
 
-  deconv_signature_box <- box(
-    title = "Deconvolution Signature", status = "info", solidHeader = TRUE, width = 12,
+  deconv_signature_box <- shinydashboard::box(
+    title = span("Deconvolution Signature ", icon("fingerprint")),
+    status = "info", solidHeader = TRUE, width = 12,
     downloadButton("signatureDownload", "Download Signature"),
     selectInput("signatureToTable", "Signature", choices = NULL),
-    DT::dataTableOutput("signatureBox") %>% withSpinner()
+    shinycssloaders::withSpinner(
+      DT::dataTableOutput("signatureBox")
+    )
   )
-  deconv_all_results <- box(
+  deconv_all_results <- shinydashboard::box(
     title = "All Deconvolutions", status = "info", solidHeader = TRUE, width = 12,
     introBox(
       selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL),
@@ -86,7 +133,7 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     )
   )
 
-  benchmark_all_results <- box(
+  benchmark_all_results <- shinydashboard::box(
     title = "All Deconvolutions", status = "info", solidHeader = TRUE, width = 12,
     selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL),
     selectInput("computedSignatureMethod", "Signature Method", choices = NULL),
@@ -94,15 +141,17 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     actionButton("benchmark", "Benchmark")
   )
 
-  benchmark_plot_box <- box(
+  benchmark_plot_box <- shinydashboard::box(
     title = "Benchmark", status = "info", solidHeader = TRUE, width = 12,
-    plotly::plotlyOutput("benchmarkPlot") %>% withSpinner()
+    shinycssloaders::withSpinner(
+      plotly::plotlyOutput("benchmarkPlot")
+    )
   )
 
   # ui definition  ----------------------------------------------------------
 
 
-  ui <- dashboardPage(
+  de_ui <- dashboardPage(
     dashboardHeader(
       title = "Omnideconv",
       dropdownMenu(
@@ -110,16 +159,30 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
         icon = icon("question-circle"),
         headerText = "View a tour or look up the source code",
         badgeStatus = NULL,
-        notificationItem(text = actionButton("startTour", "Start Tour", icon = icon("directions")), icon = icon("", verify_fa = FALSE)),
-        notificationItem(text = actionButton("githubLink", "View the Code", onclick = "window.open('https://github.com/omnideconv', '_blank')", icon = icon("github")), icon = icon("", verify_fa = FALSE))
+        notificationItem(
+          text = actionButton("startTour", "Start Tour",
+            icon = icon("directions")
+          ),
+          icon = icon("", verify_fa = FALSE)
+        ),
+        notificationItem(text = actionButton("githubLink", "View the Code",
+          onclick = "window.open('https://github.com/omnideconv', '_blank')",
+          icon = icon("github")
+        ), icon = icon("", verify_fa = FALSE))
       ),
       dropdownMenu(
         type = "task",
         icon = icon("bookmark", lib = "glyphicon"),
         headerText = "Use session to proceed your work later",
         badgeStatus = NULL,
-        notificationItem(text = downloadButton("downloadSession", "Download Session"), icon = icon("", verify_fa = FALSE)),
-        notificationItem(text = fileInput("uploadSession", "Upload Session File"), icon = icon("", verfiy_fa = FALSE), status = "primary")
+        notificationItem(
+          text = downloadButton("downloadSession", "Download Session"),
+          icon = icon("", verify_fa = FALSE)
+        ),
+        notificationItem(
+          text = fileInput("uploadSession", "Upload Session File"),
+          icon = icon("", verfiy_fa = FALSE), status = "primary"
+        )
       )
     ),
     dashboardSidebar(sidebarMenu(
@@ -130,19 +193,28 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       menuItem("Further Information", tabName = "fInfo")
     )),
     dashboardBody(tabItems(
-      tabItem(tabName = "deconv", fluidPage(fluidRow(deconv_all_results), fluidRow(data_upload_box, settings_box), fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box))),
+      tabItem(tabName = "deconv", fluidPage(
+        fluidRow(deconv_all_results),
+        fluidRow(data_upload_box, settings_box),
+        fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
+      )),
       tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
-      tabItem(tabName = "fInfo", fluidPage(includeMarkdown("omnideconv_vignette.md")))
+      tabItem(tabName = "fInfo", fluidPage(
+        includeMarkdown(
+          system.file("extdata", "omnideconv_vignette.md", package = "DeconvExplorer")
+        )
+      ))
     ))
   )
 
   # server definition  ------------------------------------------------------
 
-  server <- shinyServer(function(input, output, session) {
+  de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
 
 
     all_deconvolutions <- reactiveValues()
+
 
     # for later: run all possible combinations! i and j cover all valid
     # deconvolution / signature combinations
@@ -168,7 +240,15 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
     # values$deconvolution_result <- readRDS("deconvolution_example.rds")
     values$deconvolution_result <- c("bisque_bisque")
-    all_deconvolutions[["bisque_bisque"]] <- list(readRDS("deconvolution_example.rds"), readRDS("signature_example.rds"))
+
+    all_deconvolutions[["bisque_bisque"]] <- list(
+      readRDS(
+        system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer")
+      ),
+      readRDS(
+        system.file("extdata", "signature_example.rds", package = "DeconvExplorer")
+      )
+    )
     # updateTableSelection()
 
     # Observers and Eventhandling ---------------------------------------------
@@ -212,7 +292,7 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
       if (!(input$deconvMethod %in% methods_interchangeable)) {
         signature_Method <- input$deconvMethod
       }
-      
+
       signature <- signature()
 
       deconvolution_result <-
@@ -235,9 +315,7 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
       # deconvolution to load
-      deconv_choices <- names(all_deconvolutions) %>%
-        strsplit("_") %>%
-        unlist()
+      deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
       updateSelectInput(session, inputId = "computedDeconvMethod", choices = deconv_choices)
     })
@@ -299,9 +377,21 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
 
     # Plots -------------------------------------------------------------------
 
-    output$plotBox <- plotly::renderPlotly(plot_deconvolution(values$deconvolution_result, input$plotMethod, input$facets, all_deconvolutions))
+    output$plotBox <- plotly::renderPlotly(
+      plot_deconvolution(
+        values$deconvolution_result,
+        input$plotMethod,
+        input$facets,
+        all_deconvolutions
+      )
+    )
 
-    output$benchmarkPlot <- plotly::renderPlotly(plot_benchmark(values$deconvolution_result, all_deconvolutions))
+    output$benchmarkPlot <- plotly::renderPlotly(
+      plot_benchmark(
+        values$deconvolution_result,
+        all_deconvolutions
+      )
+    )
 
 
     # Tables ------------------------------------------------------------------
@@ -365,7 +455,5 @@ deconvExplorer <- function(usr_bulk = NULL, usr_singleCell = NULL, usr_cellAnnot
     }
   })
 
-  shiny::shinyApp(ui = ui, server = server)
+  shiny::shinyApp(ui = de_ui, server = de_server)
 }
-
-deconvExplorer()

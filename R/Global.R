@@ -29,6 +29,13 @@ axis <- list(
 )
 
 # aes definition  ---------------------------------------------------------
+#' Construct Aesthetics for plot_deconvolution
+#'
+#' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
+#' @param plotMethod Type of Plot to be rendered ("bar", "jitter", "scatter", "box", "sina", "heatmap")
+#'
+#' @returns aesthetic mapping for ggplot based on the given parameters
+
 getAes <- function(facets, plotMethod) {
   x <- axis[[facets]][[plotMethod]][[1]]
   y <- axis[[facets]][[plotMethod]][[2]]
@@ -43,6 +50,13 @@ getAes <- function(facets, plotMethod) {
   }
 }
 
+#' Construct Label Naming Object for ggplot
+#'
+#' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
+#' @param plotMethod Type of Plot to be rendered ("bar", "jitter", "scatter", "box", "sina", "heatmap")
+#'
+#' @returns label object for the ggplot construction
+
 getLabs <- function(facets, plotMethod) {
   x <- axis[[facets]][[plotMethod]][[1]]
   y <- axis[[facets]][[plotMethod]][[2]]
@@ -55,6 +69,15 @@ getLabs <- function(facets, plotMethod) {
 }
 
 # functions ---------------------------------------------------------------
+
+#' Plot Deconvolution results
+#'
+#' @param to_plot_list List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")
+#' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "sina", "heatmap")
+#' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
+#' @param all_deconvolutions ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"
+#'
+#' @returns ggplot rendered by plotly
 
 plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions) {
   # load deconvolutions from all_deconvolutions into a list
@@ -136,7 +159,6 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
 plot_benchmark <- function(to_plot_list, all_deconvolutions) {
   # import and preformat data
 
-  # View(to_plot_list) works,
   deconvolution_list <- list()
   for (deconvolution in to_plot_list) {
     # deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
@@ -147,7 +169,7 @@ plot_benchmark <- function(to_plot_list, all_deconvolutions) {
   deconvolution_list <- lapply(deconvolution_list, function(x) cbind(x, sample = rownames(x)))
   deconvolution_list <- lapply(names(deconvolution_list), function(x) {
     cbind(deconvolution_list[[x]], method = rep(x, nrow(deconvolution_list[[x]])))
-  }) 
+  })
 
   deconvolution_list <- lapply(deconvolution_list, function(x) {
     tidyr::pivot_longer(data.frame(x), !c("sample", "method"),
@@ -170,7 +192,7 @@ plot_benchmark <- function(to_plot_list, all_deconvolutions) {
   data$predicted_fraction <- as.numeric(data$predicted_fraction)
   data$true_fraction <- as.numeric(data$true_fraction)
 
-  # calculate max width/heigth -> plot symmetric and line @ ´45 Degrees
+  # calculate max width/heigth -> plot symmetric and line @ 45 Degrees
   max_value <- max(max(data$true_fraction), max(data$predicted_fraction)) + 0.1
 
   # create plot
