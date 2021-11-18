@@ -30,10 +30,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - uses: actions/checkout@v2
-        with:
-          repository: omnideconv/omnideconv
 
       - uses: r-lib/actions/setup-pandoc@v1
 
