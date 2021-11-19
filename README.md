@@ -2,6 +2,8 @@
 
 [![R-CMD-check](https://github.com/omnideconv/DeconvExplorer/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/omnideconv/DeconvExplorer/actions/workflows/R-CMD-check.yaml)
 
+Shiny App for the omindeconv package. #toBeContinued
+
 
 ## Installation 
 ```
@@ -18,11 +20,11 @@ DeconvExplorer()
 DeconvExplorer(bulkExpressionData, SingleCellData, CellTypeAnnotations, BatchIDs)
 ```
 
-The Following formats are allowed for upload: 
+The Following formats are allowed for uploading data: 
 - here 
 - will 
 - be 
 - a 
 - list
 
-For more information about DeconvExplorer and omniDeconv please visit https://github.com/omnideconv
+For more information about DeconvExplorer and omnideconv please visit https://github.com/omnideconv
