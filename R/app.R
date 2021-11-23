@@ -265,10 +265,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     # handle user file upload 
     # ids: userBulk, userSingleCell, userCellTypes,userBatchId
     # from the App function: usr_bulk, usr_singleCell, usr_cellAnnotation, usr_batch
-    values$bulk <- {
-      req(input$userBulk || usr_bulk) # workd for both!
-      # todo
+    observeEvent(input$usr_bulk, {
+      
     }
+    )
 
     # restore session with file upload
     observeEvent(input$uploadSession, {
