@@ -22,7 +22,8 @@ Imports:
     ggforce, 
     stringr, 
     tidyr, 
-    utils
+    utils, 
+    markdown
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
