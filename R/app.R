@@ -44,9 +44,9 @@ deconvExplorer <- function(usr_bulk = NULL,
       div(style = "margin-top: -20px"),
       fileInput("userSingleCell", "Upload Single Cell RNASeq Data"),
       div(style = "margin-top: -20px"),
-      fileInput("userCellTypes", "Upload Cell Type Annotations"),
+      fileInput("userCellTypeAnnotations", "Upload Cell Type Annotations"),
       div(style = "margin-top: -20px"),
-      fileInput("userBatchId", "Upload Batch IDs"),
+      fileInput("userBatchIDs", "Upload Batch IDs"),
       data.step = 1, data.intro = "Upload your Data"
     )
   )
@@ -187,7 +187,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     ),
     dashboardSidebar(sidebarMenu(
       shinyjs::useShinyjs(),
-      introjsUI(),
+       introjsUI(),
       menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo")
@@ -211,10 +211,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
-
+    
 
     all_deconvolutions <- reactiveValues()
 
+    userData <- reactiveValues()
+    
+    # options
+    options(shiny.maxRequestSize=10*1024^2*100) # 1GB
 
     # for later: run all possible combinations! i and j cover all valid
     # deconvolution / signature combinations
@@ -249,8 +253,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         system.file("extdata", "signature_example.rds", package = "DeconvExplorer")
       )
     )
-    # updateTableSelection()
-
+    
     # Observers and Eventhandling ---------------------------------------------
 
     # start the tour
@@ -263,17 +266,34 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
     
     # handle user file upload 
-    # ids: userBulk, userSingleCell, userCellTypes,userBatchId
+    # ids: userBulk, userSingleCell, userCellTypeAnnotations,userBatchIDs
     # from the App function: usr_bulk, usr_singleCell, usr_cellAnnotation, usr_batch
-    observeEvent(input$usr_bulk, {
-      
-    }
-    )
+    
+    # User Upload: Bulk Expression Data, preuploaded files will be overwritten
+    observeEvent(input$userBulk, {
+      userData$bulk <- loadFile(input$userBulk)
+    })
+    
+    observeEvent(input$userSingleCell, {
+      userData$singleCell <- loadFile(input$userSingleCell)
+    })
+    
+    observeEvent(input$userCellTypeAnnotations, {
+      userData$cellTypeAnnotations <- loadFile(input$userCellTypeAnnotations)
+    })
+    
+    observeEvent(input$userBatchIDs, {
+      userData$batchIDs <- loadFile(input$userBatchIDs)
+    })
+    
+    observeEvent(input$userMarker, {
+      userData$marker <- loadFile(input$userMarker)
+    })
 
     # restore session with file upload
     observeEvent(input$uploadSession, {
       sessionFile <- readRDS(input$uploadSession$datapath)
-
+      message(input$uploadSession$datapath)
       for (deconvolution in names(sessionFile)) {
         all_deconvolutions[[deconvolution]] <- sessionFile[[deconvolution]]
         showNotification(paste0("Loaded Deconvolution: ", deconvolution))
@@ -294,15 +314,24 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
       waitress$start()
+      # showNotification("Deconvolution started", type = "warning")
+    
+      # todo check user uploads and load
+      # use sample file if nothing uploaded
+    
+      #check data here 
+      
       showNotification("Deconvolution started", type = "warning")
-
+      # check signature method interchangeability
       signature_Method <- input$signatureMethod
       if (!(input$deconvMethod %in% methods_interchangeable)) {
         signature_Method <- input$deconvMethod
       }
 
+      # get signature or calculate new one 
       signature <- signature()
-
+      
+      # deconvolute
       deconvolution_result <-
         omnideconv::deconvolute(
           bulk_gene_expression = values$bulk,
@@ -318,7 +347,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       waitress$close()
       showNotification("Deconvolution finished", type = "message")
-    })
+    }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
@@ -460,6 +489,34 @@ deconvExplorer <- function(usr_bulk = NULL,
     updateTableSelection <- function() {
       updateSelectInput(session, inputId = "deconvolutionToTable", choices = values$deconvolution_result)
       updateSelectInput(session, inputId = "signatureToTable", choices = values$deconvolution_result)
+    }
+    
+    loadFile <- function(file){
+      # load user file from path, path specified by fileInput()
+      
+      # get file extension 
+      path <- file$datapath
+      ext  <- tools::file_ext(path)
+      content <- NULL
+      
+      if (ext == "txt"){
+        # load txt from file
+        content <- utils::read.table(path)
+      } else if (ext=="csv") {
+        content <- vroom::vroom(path, delim=",")
+      } else if (ext=="tsv"){
+        content <- vroom::vroom(path, delim="\t") 
+      } else {
+        showNotification(paste("File extension ", ext, " not supported.
+                               Please view documentation for further information."), type ="error")
+      }
+      
+      # file is loaded, perform checks
+      if (!is.null(content)){
+        # check data ... (content, structure, gene names, etc.)
+        showNotification(paste("Successfully Loaded File: ", file$name), type="default")
+      }
+      content # case NULL = File not loaded, error already displayed to user
     }
   })
 

@@ -22,8 +22,11 @@ Imports:
     ggforce, 
     stringr, 
     tidyr, 
-    utils
+    utils,
+    tools, 
+    vroom
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
     github::omnideconv/omnideconv
+    
