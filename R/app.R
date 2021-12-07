@@ -171,6 +171,24 @@ deconvExplorer <- function(usr_bulk = NULL,
         ), icon = icon("", verify_fa = FALSE))
       ),
       dropdownMenu(
+        type="task", 
+        icon=icon("cog", lib="glyphicon"), 
+        headerText = "Set your CIBERSORTx Credentials", 
+        badgeStatus = NULL, 
+        notificationItem(
+          text=textInput("csxEmail", "Email Adress"),
+          icon=icon("", verify_fa =FALSE)
+        ),
+        notificationItem(
+          text=textInput("csxToken", "Token"),
+          icon=icon("", verify_fa=FALSE)
+        ),
+        notificationItem(
+          text=actionButton("setCSX", "Set CIBERSORTx Credentials"), 
+          icon=icon("", verify_fa=FALSE)
+        )
+      ),
+      dropdownMenu(
         type = "task",
         icon = icon("bookmark", lib = "glyphicon"),
         headerText = "Use session to proceed your work later",
@@ -286,6 +304,13 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     observeEvent(input$userMarker, {
       userData$marker <- loadFile(input$userMarker)
+    })
+    
+    # set CIBERSORTx Credentials from User Input
+    observeEvent(input$setCSX, {
+      req(input$csxEmail, input$csxToken) # email and token have to be set
+      omnideconv::set_cibersortx_credentials(input$csxEmail, input$csxToken)
+      showNotification("CIBERSORTx Credentials set")
     })
 
     # restore session with file upload
