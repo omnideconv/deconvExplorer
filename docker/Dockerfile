@@ -1,0 +1,43 @@
+#syntax=docker/dockerfile:1
+
+FROM rocker/r-base
+
+# github setup
+ARG GITHUB_PAT
+
+RUN apt-get update && apt-get install -y \
+    sudo \
+    pandoc \
+    pandoc-citeproc \
+    libcurl4-gnutls-dev \
+    libcairo2-dev \
+    libxt-dev \
+    libssl-dev \
+    libssh2-1-dev \
+    libgdal-dev \
+    libgeos-dev \
+    libproj-dev
+
+# last three are for scBio/CPM
+
+# omnideconv and DeconvExplorer
+
+RUN install2.r --error remotes
+RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
+RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
+
+RUN R -e "omnideconv::install_all_python()"
+
+RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
+
+# in case set python environment for reticulate
+# Sys.setenv...
+
+# Cibersort Source Code
+COPY CIBERSORT.R .
+RUN R -e "omnideconv::bseqsc_config(file = 'CIBERSORT.R')"
+
+EXPOSE 3838
+
+CMD ["R", "-e", "DeconvExplorer::deconvExplorer()"]
+
