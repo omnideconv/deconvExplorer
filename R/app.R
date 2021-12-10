@@ -325,14 +325,14 @@ deconvExplorer <- function(usr_bulk = NULL,
       updateTableSelection()
     })
 
-    signature <- reactive(omnideconv::build_model(
-      single_cell_object = userData$singleCell,
-      cell_type_annotations = userData$cellTypeAnnotations,
-      method = input$signatureMethod,
-      batch_ids = userData$batchIDs,
-      bulk_gene_expression = userData$bulk,
-      markers = userData$marker
-    ))
+    # signature <- reactive(omnideconv::build_model(
+    #   single_cell_object = userData$singleCell,
+    #   cell_type_annotations = userData$cellTypeAnnotations,
+    #   method = input$signatureMethod,
+    #   batch_ids = userData$batchIDs,
+    #   bulk_gene_expression = userData$bulk,
+    #   markers = userData$marker
+    # ))
 
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
@@ -345,15 +345,27 @@ deconvExplorer <- function(usr_bulk = NULL,
       #check data here 
       
       showNotification("Deconvolution started", type = "warning")
+      
       # check signature method interchangeability
+      # when not interchangeable set signatureMethod = DeconvMethod
       signature_Method <- input$signatureMethod
       if (!(input$deconvMethod %in% methods_interchangeable)) {
         signature_Method <- input$deconvMethod
       }
 
       # get signature or calculate new one 
-      signature <- signature()
+      #signature <- signature()
+      message("building signature")
+      signature <- omnideconv::build_model(
+        single_cell_object = userData$singleCell,
+        bulk_gene_expression = userData$bulk, 
+        method = signature_Method, 
+        batch_ids = userData$batchIDs, 
+        cell_type_annotations = userData$cellTypeAnnotations, 
+        markers = userData$marker
+      )
       
+      message("deconvoluting")
       # deconvolute
       deconvolution_result <-
         omnideconv::deconvolute(
@@ -474,7 +486,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$signatureBox <- DT::renderDataTable({
       # update: work with a list of  sigantures from userData$signature
-      req(input$signatureToTable)
+      req(input$signatureToTable, input$signatureToTable!="autogenes_autogenes")
 
       signature <- all_deconvolutions[[input$signatureToTable]][[2]]
 
