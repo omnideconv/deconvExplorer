@@ -338,7 +338,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         signature_Method <- input$deconvMethod
       }
 
-      showNotification("Building Signature", type = "warning")
+      showNotification(paste0("Building Signature: ", signature_Method), type = "warning")
 
       # get signature or calculate new one
       # signature <- signature()
@@ -350,9 +350,9 @@ deconvExplorer <- function(usr_bulk = NULL,
         cell_type_annotations = userData$cellTypeAnnotations,
         markers = userData$marker
       )
-
+      
       # deconvolute
-      showNotification("Deconvolution Started", type = "warning")
+      showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
         omnideconv::deconvolute(
           bulk_gene_expression = userData$bulk,
@@ -362,7 +362,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           cell_type_annotations = userData$cellTypeAnnotations,
           batch_ids = userData$batchIDs
         )
-
+      
       # insert result into the all_deconvolutions reactive Value
       all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- list(deconvolution_result, signature)
 
@@ -371,7 +371,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
-    observe({
+    observeEvent(all_deconvolutions,{
       # deconvolution to load
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
@@ -379,7 +379,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
     # update signature Method choices when selecting deconvolution to load
-    observeEvent(input$computedDeconvMethod, {
+    observe({ 
       signature_choices <- names(all_deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
