@@ -26,7 +26,6 @@ Imports:
     tools, 
     vroom,
     markdown
-
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
