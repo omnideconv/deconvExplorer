@@ -1,14 +1,3 @@
-# library(shiny)
-# library(shinydashboard)
-# library(shinycssloaders)
-# library(dplyr)
-# library(ggplot2)
-# #library(omnideconv)
-# library(RColorBrewer)
-# library(waiter)
-# library(rintrojs)
-
-# source("./R/Global.R")
 
 #' Run DeconvExplorer
 #'
@@ -44,10 +33,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       div(style = "margin-top: -20px"),
       fileInput("userSingleCell", "Upload Single Cell RNASeq Data"),
       div(style = "margin-top: -20px"),
-      fileInput("userCellTypes", "Upload Cell Type Annotations"),
+      fileInput("userCellTypeAnnotations", "Upload Cell Type Annotations"),
       div(style = "margin-top: -20px"),
-      fileInput("userBatchId", "Upload Batch IDs"),
-      data.step = 1, data.intro = "Upload your Data"
+      fileInput("userBatchIDs", "Upload Batch IDs"),
+      data.step = 1, data.intro = "Upload your Data. Allowed formats: txt, csv, tsv"
     )
   )
 
@@ -55,7 +44,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Deconvolution Settings", status = "primary",
     solidHeader = TRUE, height = "31.5em",
     introBox(
-      img(src = system.file("www", "logo.jpg", package = "DeconvExplorer"), width = "100%"), br(),
+      img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
       ),
@@ -172,6 +161,24 @@ deconvExplorer <- function(usr_bulk = NULL,
       ),
       dropdownMenu(
         type = "task",
+        icon = icon("cog", lib = "glyphicon"),
+        headerText = "Set your CIBERSORTx Credentials",
+        badgeStatus = NULL,
+        notificationItem(
+          text = textInput("csxEmail", "Email Adress"),
+          icon = icon("", verify_fa = FALSE)
+        ),
+        notificationItem(
+          text = textInput("csxToken", "Token"),
+          icon = icon("", verify_fa = FALSE)
+        ),
+        notificationItem(
+          text = actionButton("setCSX", "Set CIBERSORTx Credentials"),
+          icon = icon("", verify_fa = FALSE)
+        )
+      ),
+      dropdownMenu(
+        type = "task",
         icon = icon("bookmark", lib = "glyphicon"),
         headerText = "Use session to proceed your work later",
         badgeStatus = NULL,
@@ -212,9 +219,15 @@ deconvExplorer <- function(usr_bulk = NULL,
   de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
 
-
+    
+    # storing all calculated deconvolution
     all_deconvolutions <- reactiveValues()
 
+    userData <- reactiveValues()
+
+
+    # options
+    options(shiny.maxRequestSize = 10 * 1024^2 * 100) # 1GB
 
     # for later: run all possible combinations! i and j cover all valid
     # deconvolution / signature combinations
@@ -230,16 +243,15 @@ deconvExplorer <- function(usr_bulk = NULL,
     #
     waitress <- Waitress$new("#deconvolute", infinite = TRUE)
 
-    values <- reactiveValues() # storing the current deconvolution
-
     ### ersetzten mit dem laden der user Uploads!
-    values$single_cell <- omnideconv::single_cell_data_1
-    values$cell_annotations <- omnideconv::cell_type_annotations_1
-    values$batch_ids <- omnideconv::batch_ids_1
-    values$bulk <- omnideconv::bulk
+    userData$singleCell <- omnideconv::single_cell_data_1
+    userData$cellTypeAnnotations <- omnideconv::cell_type_annotations_1
+    userData$batchIDs <- omnideconv::batch_ids_1
+    userData$bulk <- omnideconv::bulk
+    # updateTableSelection()
 
-    # values$deconvolution_result <- readRDS("deconvolution_example.rds")
-    values$deconvolution_result <- c("bisque_bisque")
+    # userData$deconvolution_result <- readRDS("deconvolution_example.rds")
+    userData$deconvolution_result <- c("bisque_bisque")
 
     all_deconvolutions[["bisque_bisque"]] <- list(
       readRDS(
@@ -249,6 +261,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         system.file("extdata", "signature_example.rds", package = "DeconvExplorer")
       )
     )
+
     # updateTableSelection()
 
     # Observers and Eventhandling ---------------------------------------------
@@ -262,47 +275,92 @@ deconvExplorer <- function(usr_bulk = NULL,
       ))
     })
 
+
+    # User Upload: Bulk Expression Data, preuploaded files will be overwritten
+    observeEvent(input$userBulk, {
+      userData$bulk <- loadFile(input$userBulk)
+    })
+
+    observeEvent(input$userSingleCell, {
+      userData$singleCell <- loadFile(input$userSingleCell)
+    })
+
+    observeEvent(input$userCellTypeAnnotations, {
+      userData$cellTypeAnnotations <- loadFile(input$userCellTypeAnnotations, type = "vector")
+    })
+
+    observeEvent(input$userBatchIDs, {
+      userData$batchIDs <- loadFile(input$userBatchIDs, type = "vector")
+    })
+
+    observeEvent(input$userMarker, {
+      userData$marker <- loadFile(input$userMarker)
+    })
+
+    # set CIBERSORTx Credentials from User Input
+    observeEvent(input$setCSX, {
+      req(input$csxEmail, input$csxToken) # email and token have to be set
+      omnideconv::set_cibersortx_credentials(input$csxEmail, input$csxToken)
+      showNotification("CIBERSORTx Credentials set")
+    })
+
     # restore session with file upload
     observeEvent(input$uploadSession, {
       sessionFile <- readRDS(input$uploadSession$datapath)
-
+      message(input$uploadSession$datapath)
       for (deconvolution in names(sessionFile)) {
         all_deconvolutions[[deconvolution]] <- sessionFile[[deconvolution]]
         showNotification(paste0("Loaded Deconvolution: ", deconvolution))
         # message("Loaded Deconvolution: ", deconvolution)
       }
-      updateTableSelection()
+      # updateTableSelection()
     })
 
-    signature <- reactive(omnideconv::build_model(
-      single_cell_object = values$single_cell,
-      cell_type_annotations = values$cell_annotations,
-      method = input$signatureMethod,
-      batch_ids = values$batch_ids,
-      bulk_gene_expression = values$bulk
-    ))
+    # signature <- reactive(omnideconv::build_model(
+    #   single_cell_object = userData$singleCell,
+    #   cell_type_annotations = userData$cellTypeAnnotations,
+    #   method = input$signatureMethod,
+    #   batch_ids = userData$batchIDs,
+    #   bulk_gene_expression = userData$bulk,
+    #   markers = userData$marker
+    # ))
 
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
-      waitress$start()
-      showNotification("Deconvolution started", type = "warning")
 
+      waitress$start()
+
+      # check signature method interchangeability
+      # when not interchangeable set signatureMethod = DeconvMethod
       signature_Method <- input$signatureMethod
       if (!(input$deconvMethod %in% methods_interchangeable)) {
         signature_Method <- input$deconvMethod
       }
 
-      signature <- signature()
+      showNotification("Building Signature", type = "warning")
 
+      # get signature or calculate new one
+      # signature <- signature()
+      signature <- omnideconv::build_model(
+        single_cell_object = userData$singleCell,
+        bulk_gene_expression = userData$bulk,
+        method = signature_Method,
+        batch_ids = userData$batchIDs,
+        cell_type_annotations = userData$cellTypeAnnotations,
+        markers = userData$marker
+      )
+
+      # deconvolute
+      showNotification("Deconvolution Started", type = "warning")
       deconvolution_result <-
         omnideconv::deconvolute(
-          bulk_gene_expression = values$bulk,
+          bulk_gene_expression = userData$bulk,
           signature = signature,
           method = input$deconvMethod,
-          single_cell_object = values$single_cell,
-          cell_type_annotations = values$cell_annotations,
-          batch_ids = values$batch_ids
+          single_cell_object = userData$singleCell,
+          cell_type_annotations = userData$cellTypeAnnotations,
+          batch_ids = userData$batchIDs
         )
 
       # insert result into the all_deconvolutions reactive Value
@@ -310,7 +368,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       waitress$close()
       showNotification("Deconvolution finished", type = "message")
-    })
+    }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
@@ -338,35 +396,32 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # add Deconvolution to To Plot list
     observeEvent(input$addToPlot, {
-      tmp <- values$deconvolution_result
-      values$deconvolution_result <- c(tmp, getSelectionToPlot())
+      tmp <- userData$deconvolution_result
+      userData$deconvolution_result <- c(tmp, getSelectionToPlot())
 
-      # update selection choices for the tables
-      updateTableSelection()
+      # updateTableSelection()
     })
 
     # remove deconvolution from To Plot list
     observeEvent(input$removeFromPlot, {
-      tmp <- values$deconvolution_result
+      tmp <- userData$deconvolution_result
       tmp <- tmp[!tmp %in% getSelectionToPlot()]
-      values$deconvolution_result <- tmp
+      userData$deconvolution_result <- tmp
 
-      # update selection choices for the tables
-      updateTableSelection()
+      # updateTableSelection()
     })
 
     # load Deconvolution result
     observeEvent(input$loadDeconvolution, {
-      values$deconvolution_result <- c(getSelectionToPlot())
-      # values$signature <- c(getSelectionToPlot())
+      userData$deconvolution_result <- c(getSelectionToPlot())
+      # userData$signature <- c(getSelectionToPlot())
 
-      # update selection choices for the tables
-      updateTableSelection()
+      # updateTableSelection()
     })
 
     # observe the selection to plot and show buttons if conditions match
     observe({
-      if (getSelectionToPlot() %in% values$deconvolution_result) {
+      if (getSelectionToPlot() %in% userData$deconvolution_result) {
         shinyjs::hide("addToPlot")
         shinyjs::show("removeFromPlot")
       } else {
@@ -375,11 +430,17 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
     })
 
+    # update selection inputs if deconvolution result list gets changed
+    observeEvent(userData$deconvolution_result, {
+      updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
+      updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
+    })
+
     # Plots -------------------------------------------------------------------
 
     output$plotBox <- plotly::renderPlotly(
       plot_deconvolution(
-        values$deconvolution_result,
+        userData$deconvolution_result,
         input$plotMethod,
         input$facets,
         all_deconvolutions
@@ -388,7 +449,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$benchmarkPlot <- plotly::renderPlotly(
       plot_benchmark(
-        values$deconvolution_result,
+        userData$deconvolution_result,
         all_deconvolutions
       )
     )
@@ -398,10 +459,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
     output$tableBox <- DT::renderDataTable({
-      # update: work with a list of  deconvoltutions from values$deconvolution
+
+      # needs a deconvolution to be selected
       req(input$deconvolutionToTable)
+
+      # load deconvolution
       deconvolution <- all_deconvolutions[[input$deconvolutionToTable]][[1]]
 
+      # render table
       DT::datatable(deconvolution,
         extensions = "Buttons",
         options = list(
@@ -413,11 +478,19 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
     output$signatureBox <- DT::renderDataTable({
-      # update: work with a list of  sigantures from values$signature
-      req(input$signatureToTable)
+      # TODO: update: work with a list of  sigantures from userData$signature
 
+      # run only if variable contains correct signature
+      req(
+        !is.null(input$signatureToTable),
+        input$signatureToTable != "autogenes_autogenes", # will store a link to tmp file
+        input$signatureToTable != "scaden_scaden" # will store a link to tmp file
+      )
+
+      # load signature
       signature <- all_deconvolutions[[input$signatureToTable]][[2]]
 
+      # render table
       DT::datatable(signature) # %>%
       # DT::formatRound(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
     })
@@ -449,9 +522,51 @@ deconvExplorer <- function(usr_bulk = NULL,
       return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
     }
 
-    updateTableSelection <- function() {
-      updateSelectInput(session, inputId = "deconvolutionToTable", choices = values$deconvolution_result)
-      updateSelectInput(session, inputId = "signatureToTable", choices = values$deconvolution_result)
+    # updateTableSelection <- function() {
+    #   updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
+    #   updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
+    # }
+
+    # load user file, file information from fileInput()
+    loadFile <- function(file, type = "") {
+      # get file extension and path
+      path <- file$datapath
+      ext <- tools::file_ext(path)
+      content <- NULL
+
+      # load file, depending on extension
+      if (ext == "txt") {
+        content <- utils::read.table(path)
+      } else if (ext == "csv") {
+        content <- vroom::vroom(path, delim = ",")
+      } else if (ext == "tsv") {
+        content <- vroom::vroom(path, delim = "\t")
+      } else {
+        showNotification(paste("File extension ", ext, " not supported.
+                               Please view documentation for further information."), type = "error")
+      }
+
+      # file is loaded, perform checks
+      if (!is.null(content)) {
+        # check data ... (content, structure, gene names, etc.)
+
+        # convert to dataframe and set colnames
+        content <- as.data.frame(content)
+        rownames(content) <- content[, 1] # first column
+        content[, 1] <- NULL # remove first column
+
+        # if requested a vector turn into character vector
+        if (type == "vector") {
+          if (dim(content)[2] != 1) {
+            message("Wrong file dimensions for file ", file$name)
+          }
+          # turn into vector
+          content <- as.vector(t(content))
+        }
+
+        showNotification(paste("Successfully Loaded File: ", file$name), type = "default")
+      }
+      content # case NULL = File not loaded, error already displayed to user
     }
   })
 
