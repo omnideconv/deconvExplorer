@@ -199,19 +199,24 @@ deconvExplorer <- function(usr_bulk = NULL,
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo")
     )),
-    dashboardBody(tabItems(
-      tabItem(tabName = "deconv", fluidPage(
-        fluidRow(deconv_all_results),
-        fluidRow(data_upload_box, settings_box),
-        fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
-      )),
-      tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
-      tabItem(tabName = "fInfo", fluidPage(
-        includeMarkdown(
-          system.file("extdata", "omnideconv_vignette.md", package = "DeconvExplorer")
-        )
-      ))
-    ))
+    dashboardBody(
+      tags$head(tags$style(
+        HTML(".wrapper {height: auto !important; 
+             position:relative; overflow-x:hidden; overflow-y:hidden}"))),
+      tabItems(
+        tabItem(tabName = "deconv", fluidPage(
+          fluidRow(deconv_all_results),
+          fluidRow(data_upload_box, settings_box),
+          fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
+        )),
+        tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
+        tabItem(tabName = "fInfo", fluidPage(
+          includeMarkdown(
+            system.file("extdata", "omnideconv_vignette.md", package = "DeconvExplorer")
+          )
+        ))
+      )
+    )
   )
 
   # server definition  ------------------------------------------------------
@@ -219,7 +224,7 @@ deconvExplorer <- function(usr_bulk = NULL,
   de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
 
-    
+
     # storing all calculated deconvolution
     all_deconvolutions <- reactiveValues()
 
@@ -350,7 +355,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         cell_type_annotations = userData$cellTypeAnnotations,
         markers = userData$marker
       )
-      
+
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
@@ -362,7 +367,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           cell_type_annotations = userData$cellTypeAnnotations,
           batch_ids = userData$batchIDs
         )
-      
+
       # insert result into the all_deconvolutions reactive Value
       all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- list(deconvolution_result, signature)
 
@@ -371,7 +376,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
-    observeEvent(all_deconvolutions,{
+    observeEvent(all_deconvolutions, {
       # deconvolution to load
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
@@ -379,7 +384,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
     # update signature Method choices when selecting deconvolution to load
-    observe({ 
+    observe({
       signature_choices <- names(all_deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
