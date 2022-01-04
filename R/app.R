@@ -136,6 +136,19 @@ deconvExplorer <- function(usr_bulk = NULL,
       plotly::plotlyOutput("benchmarkPlot")
     )
   )
+  
+
+  # Signature Exploration Boxes ---------------------------------------------
+  signature_genesPerMethod <- shinydashboard::box(
+    title = "Genes per Method", status = "info", solidHeader = TRUE, width=6, 
+    # hier der Plot 
+  )
+  
+  signature_kappaPerMethod <- shinydashboard::box(
+    title = "Condition Number per Method", status = "info", solidHeader = TRUE, width=6, 
+    # hier der Plot 
+  )
+  
 
   # ui definition  ----------------------------------------------------------
 
@@ -196,6 +209,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       shinyjs::useShinyjs(),
       introjsUI(),
       menuItem("Deconvolution", tabName = "deconv"),
+      menuItem("Signature Exploration", tabName="signatureExploration"),
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo")
     )),
@@ -209,6 +223,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(data_upload_box, settings_box),
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
+        tabItem(tabName="signatureExploration", fluidPage(fluidRow(signature_genesPerMethod, signature_kappaPerMethod))),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
@@ -224,6 +239,10 @@ deconvExplorer <- function(usr_bulk = NULL,
   de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
 
+    # functions
+    getSelectionToPlot <- function() {
+      return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
+    }
 
     # storing all calculated deconvolution
     all_deconvolutions <- reactiveValues()
@@ -458,7 +477,25 @@ deconvExplorer <- function(usr_bulk = NULL,
         all_deconvolutions
       )
     )
+    
+    output$signatureGenesPerMethod <- renderPlot({
+      req(all_deconvolutions)
+      # get signatures
+      #signatures <- getAllSignatures()
+      # signatures <-
 
+      # plot
+
+      plot_signatureGenesPerMethod(getAllSignatures())
+    }
+    )
+
+    # output$kappaPerMethod <- renderPlot(
+    #   # get signatures 
+    #   
+    #   #plot 
+    #   #plot_conditionNumberPerMethod(signatures)
+    # )
 
     # Tables ------------------------------------------------------------------
 
@@ -523,14 +560,29 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions ---------------------------------------------------------------
 
-    getSelectionToPlot <- function() {
-      return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
-    }
+    # getSelectionToPlot <- function() {
+    #   return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
+    # }
 
     # updateTableSelection <- function() {
     #   updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
     #   updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
     # }
+    
+    getAllSignatures <- function(){
+      signatures <- list()
+
+      all_result <- reactiveValuesToList(all_deconvolutions)
+
+      for (result in all_results){
+        signatures[[name(result)]] <- result[[2]]
+      }
+      
+      return(signatures)
+
+      # all_deconvolutions[[input$signatureToTable]][[2]]
+
+    }
 
     # load user file, file information from fileInput()
     loadFile <- function(file, type = "") {
