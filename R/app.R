@@ -7,6 +7,9 @@
 #' @param usr_batch Batch IDs, only for some deconvolution methods
 #'
 #' @export
+
+
+
 deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
@@ -141,14 +144,20 @@ deconvExplorer <- function(usr_bulk = NULL,
   # Signature Exploration Boxes ---------------------------------------------
   signature_genesPerMethod <- shinydashboard::box(
     title = "Genes per Method", status = "info", solidHeader = TRUE, width=6, 
-    # hier der Plot 
+    shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
   )
   
   signature_kappaPerMethod <- shinydashboard::box(
     title = "Condition Number per Method", status = "info", solidHeader = TRUE, width=6, 
-    # hier der Plot 
+    shinycssloaders::withSpinner(plotOutput("kappaPerMethod"))
   )
   
+  signature_clusteredHeatmap <- shinydashboard::box(
+    title = "Clustered Signature", status ="info", solidHeader = TRUE, width=12, 
+    selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
+    shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
+    
+  )
 
   # ui definition  ----------------------------------------------------------
 
@@ -223,7 +232,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(data_upload_box, settings_box),
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
-        tabItem(tabName="signatureExploration", fluidPage(fluidRow(signature_genesPerMethod, signature_kappaPerMethod))),
+        tabItem(tabName="signatureExploration", fluidPage(fluidRow(signature_genesPerMethod, signature_kappaPerMethod), 
+                                                          fluidRow(signature_clusteredHeatmap))),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
@@ -287,6 +297,22 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
 
     # updateTableSelection()
+    
+
+    # Reactives ---------------------------------------------------------------
+    
+    # named list of available signatures 
+    allSignatures <- reactive({
+      signatures <- list()
+      
+      all_results <- reactiveValuesToList(all_deconvolutions)
+      for (i in 1:length(all_results)){
+        result <- all_results[[i]]
+        name <- names(all_results[i])
+        signatures[[name]] <- result[[2]]
+      }
+      signatures
+    })
 
     # Observers and Eventhandling ---------------------------------------------
 
@@ -417,6 +443,12 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       updateSelectInput(session, inputId = "computedSignatureMethod", choices = signature_choices)
     })
+    
+    # update Signature Tab Choices when new Deconvolution Added
+    
+    observe({
+      updateSelectInput(session, inputId = "signatureToHeatmap", choices = names(allSignatures()))
+    })
 
     # add Deconvolution to To Plot list
     observeEvent(input$addToPlot, {
@@ -479,23 +511,23 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
     
     output$signatureGenesPerMethod <- renderPlot({
-      req(all_deconvolutions)
-      # get signatures
-      #signatures <- getAllSignatures()
-      # signatures <-
-
-      # plot
-
-      plot_signatureGenesPerMethod(getAllSignatures())
+      req(all_deconvolutions) # result need to be calculated
+      plot_signatureGenesPerMethod(allSignatures())
     }
     )
 
-    # output$kappaPerMethod <- renderPlot(
-    #   # get signatures 
-    #   
-    #   #plot 
-    #   #plot_conditionNumberPerMethod(signatures)
-    # )
+    output$kappaPerMethod <- renderPlot({
+      req(all_deconvolutions)
+      plot_conditionNumberPerMethod(allSignatures())
+    }
+    )
+    
+    output$clusteredHeatmapOneSignature <- renderPlot({
+      req(all_deconvolutions, input$signatureToHeatmap)
+      
+      # nur eine signature
+      plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]])
+    })
 
     # Tables ------------------------------------------------------------------
 
@@ -569,20 +601,17 @@ deconvExplorer <- function(usr_bulk = NULL,
     #   updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
     # }
     
-    getAllSignatures <- function(){
-      signatures <- list()
-
-      all_result <- reactiveValuesToList(all_deconvolutions)
-
-      for (result in all_results){
-        signatures[[name(result)]] <- result[[2]]
-      }
-      
-      return(signatures)
-
-      # all_deconvolutions[[input$signatureToTable]][[2]]
-
-    }
+    # getAllSignatures <- function(){
+    #   signatures <- list()
+    #   
+    #   all_results <- reactiveValuesToList(all_deconvolutions)
+    #   for (i in 1:length(all_results)){
+    #     result <- all_results[[i]]
+    #     name <- names(all_results[i])
+    #     signatures[[name]] <- result[[2]]
+    #   }
+    #   return(signatures)
+    # }
 
     # load user file, file information from fileInput()
     loadFile <- function(file, type = "") {
