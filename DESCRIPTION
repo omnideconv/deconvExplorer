@@ -25,7 +25,9 @@ Imports:
     utils,
     tools, 
     vroom,
-    markdown
+    markdown,
+    bbplot,
+    ComplexHeatmap
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 

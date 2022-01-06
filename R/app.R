@@ -156,7 +156,16 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Clustered Signature", status ="info", solidHeader = TRUE, width=12, 
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
     shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
-    
+  )
+  
+  signature_upsetPlot <- shinydashboard::box(
+    title = "Upset Plot", status ="info", solidHeader = TRUE, width=6, 
+    shinycssloaders::withSpinner(plotOutput("signatureUpset"))
+  )
+  
+  signature_upsetStatistics <- shinydashboard::box(
+    title ="Upset Plot", status ="info", solidHeader = TRUE, width = 6
+    # Hier die Statistiken zum Upset Plot
   )
 
   # ui definition  ----------------------------------------------------------
@@ -233,7 +242,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
         tabItem(tabName="signatureExploration", fluidPage(fluidRow(signature_genesPerMethod, signature_kappaPerMethod), 
-                                                          fluidRow(signature_clusteredHeatmap))),
+                                                          fluidRow(signature_clusteredHeatmap),
+                                                          fluidRow(signature_upsetPlot))),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
@@ -527,6 +537,12 @@ deconvExplorer <- function(usr_bulk = NULL,
       
       # nur eine signature
       plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]])
+    })
+    
+    output$signatureUpset <- renderPlot({
+      req(all_deconvolutions)
+      
+      plot_signatureUpset(allSignatures())
     })
 
     # Tables ------------------------------------------------------------------

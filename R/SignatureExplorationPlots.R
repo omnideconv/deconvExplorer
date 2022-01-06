@@ -4,7 +4,6 @@
 #'
 #' @returns A Barplot
 #' 
-library(ggplot2)
 
 plot_signatureGenesPerMethod <- function(signatures) {
   df <- data.frame(method = character(), number_of_genes = numeric())
@@ -110,8 +109,31 @@ plot_signatureClustered <- function(signature){
                           # column_title_gp = gpar(fontsize=20, fontface="bold"), 
                           row_title = NULL, row_split = ncol(mat), row_names_side = "left", 
                           cluster_columns = TRUE, column_km = ncol(mat), 
-                          column_gap=unit(2, "mm"), border=TRUE)
+                          border=TRUE)
   
   #TODO Make Column Order deterministic!
   
+}
+
+plot_signatureUpset <- function(signatures){
+  # takes list of signatures
+  sets <- list()
+  # for (name in names(sigantures)){
+  #   sets[[name]] <- results[[name]][["X"]]
+  # }
+  
+  for (name in names(signatures)){
+    sets[[name]] <- rownames(signatures[[name]])
+  }
+  
+  # modes available: distinct, intersect and union 
+  mat <- ComplexHeatmap::make_comb_mat(sets, mode = "distinct")
+  
+  # optional subset if intersect then remove the single ones (full set)
+  #mat <- mat[comb_degree(mat)>=2]
+  
+  ComplexHeatmap::UpSet(mat, comb_order = order(
+    ComplexHeatmap::comb_size(mat), decreasing = TRUE))
+  
+  # here is something missing, should evaluate the data here.... 
 }
