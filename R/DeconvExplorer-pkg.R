@@ -24,7 +24,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom stats sd
 #' @importFrom bbplot bbc_style
-#' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size
+#' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size upset_top_annotation
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package

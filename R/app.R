@@ -159,13 +159,17 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
   
   signature_upsetPlot <- shinydashboard::box(
-    title = "Upset Plot", status ="info", solidHeader = TRUE, width=6, 
+    title = "UpSet Plot", status ="info", solidHeader = TRUE, width=8,
+    
     shinycssloaders::withSpinner(plotOutput("signatureUpset"))
   )
-  
-  signature_upsetStatistics <- shinydashboard::box(
-    title ="Upset Plot", status ="info", solidHeader = TRUE, width = 6
-    # Hier die Statistiken zum Upset Plot
+  signature_upsetPlotSettings <- shinydashboard::box(
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width=4, 
+    selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union")),
+    # link to help
+    tags$a(href="https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target="_blank", icon("question-circle"))
+    
+    # download of results
   )
 
   # ui definition  ----------------------------------------------------------
@@ -243,7 +247,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName="signatureExploration", fluidPage(fluidRow(signature_genesPerMethod, signature_kappaPerMethod), 
                                                           fluidRow(signature_clusteredHeatmap),
-                                                          fluidRow(signature_upsetPlot))),
+                                                          fluidRow(signature_upsetPlot, signature_upsetPlotSettings))),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
@@ -541,8 +545,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     output$signatureUpset <- renderPlot({
       req(all_deconvolutions)
-      
-      plot_signatureUpset(allSignatures())
+      message(names(allSignatures))
+      plot_signatureUpset(allSignatures(), mode=input$upsetMode)
     })
 
     # Tables ------------------------------------------------------------------

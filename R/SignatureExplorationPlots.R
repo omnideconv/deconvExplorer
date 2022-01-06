@@ -115,12 +115,31 @@ plot_signatureClustered <- function(signature){
   
 }
 
-plot_signatureUpset <- function(signatures){
+plot_signatureUpset <- function(signatures, mode="distinct"){
   # takes list of signatures
   sets <- list()
-  # for (name in names(sigantures)){
-  #   sets[[name]] <- results[[name]][["X"]]
-  # }
+  
+  for (name in names(signatures)){
+    sets[[name]] <- rownames(signatures[[name]])
+  }
+  
+  # modes available: distinct, intersect and union 
+  mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
+  
+  # optional subset if intersect then remove the single ones (full set)
+  #mat <- mat[comb_degree(mat)>=2]
+  
+  ComplexHeatmap::UpSet(mat, comb_order = order(
+    ComplexHeatmap::comb_size(mat), decreasing = TRUE),
+    top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE))
+  
+  # here is something missing, should evaluate the data here.... 
+}
+
+# helper, migth go elsewere in the code but belongs to upset plot function 
+download_signatureUpset <- function(signatures, combination){
+  # takes list of signatures
+  sets <- list()
   
   for (name in names(signatures)){
     sets[[name]] <- rownames(signatures[[name]])
@@ -129,11 +148,7 @@ plot_signatureUpset <- function(signatures){
   # modes available: distinct, intersect and union 
   mat <- ComplexHeatmap::make_comb_mat(sets, mode = "distinct")
   
-  # optional subset if intersect then remove the single ones (full set)
-  #mat <- mat[comb_degree(mat)>=2]
-  
-  ComplexHeatmap::UpSet(mat, comb_order = order(
-    ComplexHeatmap::comb_size(mat), decreasing = TRUE))
-  
-  # here is something missing, should evaluate the data here.... 
+  # hier: return intersection genes
 }
+
+
