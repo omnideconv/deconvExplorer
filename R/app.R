@@ -26,7 +26,7 @@ deconvExplorer <- function(usr_bulk = NULL,
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
     title = "Upload your Data", status = "primary",
-    solidHeader = TRUE, height = "31.5em",
+    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE,
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -42,7 +42,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "31.5em",
+    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE, 
     introBox(
       img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
       selectInput("deconvMethod", "Deconvolution Method",
@@ -64,6 +64,9 @@ deconvExplorer <- function(usr_bulk = NULL,
       actionButton("deconvolute", "Deconvolute"),
       waiter::useWaitress(),
       actionButton("deconvoluteAll", "Deconvolute All"),
+      # tags$div(sliderInput("slide1", "Slider1", min = 0, max=10, value=4),  style="display:inline-block"),
+      # tags$div(sliderInput("slide1=2", "Slider2", min = 0, max=10, value=4),  style="display:inline-block"),
+      # tags$div(sliderInput("slide3", "Slider3", min = 0, max=10, value=4),  style="display:inline-block"),
       data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
     )
   )
@@ -111,10 +114,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
   )
   deconv_all_results <- shinydashboard::box(
-    title = "All Deconvolutions", status = "info", solidHeader = TRUE, width = 12,
+    title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
     introBox(
-      selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL),
-      selectInput("computedSignatureMethod", "Signature Method", choices = NULL),
+      div(style="display:inline-block", selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL, width="15em")),
+      div(style="display:inline-block", selectInput("computedSignatureMethod", "Signature Method", choices = NULL, width="15em")),
       actionButton("loadDeconvolution", "Load Deconvolution Result"),
       actionButton("addToPlot", "Compare: Add to Plot"),
       actionButton("removeFromPlot", "Compare: Remove from Plot"),
@@ -205,8 +208,8 @@ deconvExplorer <- function(usr_bulk = NULL,
              position:relative; overflow-x:hidden; overflow-y:hidden}"))),
       tabItems(
         tabItem(tabName = "deconv", fluidPage(
-          fluidRow(deconv_all_results),
           fluidRow(data_upload_box, settings_box),
+          fluidRow(deconv_all_results),
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
