@@ -143,7 +143,8 @@ plot_signatureUpset <- function(signatures, mode = "distinct") {
       ComplexHeatmap::comb_size(mat),
       decreasing = TRUE
     ),
-    top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE)
+    top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE, numbers_gp=grid::gpar(fontsize="14", fontface="bold")),
+    pt_size=grid::unit(5, "mm"), lwd=5
   )
 
   # here is something missing, should evaluate the data here....

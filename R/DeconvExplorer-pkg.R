@@ -25,6 +25,7 @@
 #' @importFrom stats sd
 #' @importFrom bbplot bbc_style
 #' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size upset_top_annotation extract_comb
+#' @importFrom grid gpar unit
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package

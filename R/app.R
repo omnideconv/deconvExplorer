@@ -159,11 +159,11 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
 
   signature_upsetPlot <- shinydashboard::box(
-    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8,
+    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height="33em", 
     shinycssloaders::withSpinner(plotOutput("signatureUpset"))
   )
   signature_upsetPlotSettings <- shinydashboard::box(
-    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4,
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height="33em",
     selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union")),
     # link to help
     tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")),
