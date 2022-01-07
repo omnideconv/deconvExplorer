@@ -167,9 +167,14 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width=4, 
     selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union")),
     # link to help
-    tags$a(href="https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target="_blank", icon("question-circle"))
+    tags$a(href="https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target="_blank", icon("question-circle")),
     
     # download of results
+    checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"), 
+                       choices = NULL),
+    
+    downloadButton("upSetDownloadButton", label="Download Subset Genes")
+    
   )
 
   # ui definition  ----------------------------------------------------------
@@ -380,15 +385,6 @@ deconvExplorer <- function(usr_bulk = NULL,
       # updateTableSelection()
     })
 
-    # signature <- reactive(omnideconv::build_model(
-    #   single_cell_object = userData$singleCell,
-    #   cell_type_annotations = userData$cellTypeAnnotations,
-    #   method = input$signatureMethod,
-    #   batch_ids = userData$batchIDs,
-    #   bulk_gene_expression = userData$bulk,
-    #   markers = userData$marker
-    # ))
-
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
@@ -545,7 +541,12 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     output$signatureUpset <- renderPlot({
       req(all_deconvolutions)
-      message(names(allSignatures))
+      message(names(allSignatures()))
+      
+      # update checkbox of setting box before rendering the plot 
+      # needs to be done with every plot rerendering, data could have been changed!
+      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()))
+      
       plot_signatureUpset(allSignatures(), mode=input$upsetMode)
     })
 
@@ -590,6 +591,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
 
+    # Downloads ---------------------------------------------------------------
+
     output$signatureDownload <- downloadHandler(
       filename = function() {
         paste("signature", ".csv", sep = "")
@@ -609,29 +612,21 @@ deconvExplorer <- function(usr_bulk = NULL,
         saveRDS(reactiveValuesToList(all_deconvolutions), file)
       }
     )
-
-    # functions ---------------------------------------------------------------
-
-    # getSelectionToPlot <- function() {
-    #   return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
-    # }
-
-    # updateTableSelection <- function() {
-    #   updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
-    #   updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
-    # }
     
-    # getAllSignatures <- function(){
-    #   signatures <- list()
-    #   
-    #   all_results <- reactiveValuesToList(all_deconvolutions)
-    #   for (i in 1:length(all_results)){
-    #     result <- all_results[[i]]
-    #     name <- names(all_results[i])
-    #     signatures[[name]] <- result[[2]]
-    #   }
-    #   return(signatures)
-    # }
+    output$upSetDownloadButton <- downloadHandler(
+      filename = function(){
+        paste0("subset_", paste0(input$upSetDownloadSelection, collapse = "_"), ".txt")
+      },
+      content = function(file){
+        # get subset selection from checkbox
+        message(typeof(input$upSetDownloadSelection))
+        # Variable which contains the info: input$upSetDownloadSelection
+        data <- download_signatureUpset(allSignatures(), combination=input$upSetDownloadSelection, mode=input$upsetMode)
+        
+        # get genes from function
+        write.table(data, file)
+      }
+    )
 
     # load user file, file information from fileInput()
     loadFile <- function(file, type = "") {
