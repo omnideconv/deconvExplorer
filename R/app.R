@@ -44,7 +44,11 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Deconvolution Settings", status = "primary",
     solidHeader = TRUE, height = "31.5em",
     introBox(
-      img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
+      imageOutput("logo", height = "200px"), br(), 
+      #HTML('<img src="./inst/www/logo.jpg"/>'), 
+      #img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
+      #tags$img(src="logo.jpg"),
+      #img(src="logo.jpg"),
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
       ),
@@ -520,6 +524,16 @@ deconvExplorer <- function(usr_bulk = NULL,
         saveRDS(reactiveValuesToList(all_deconvolutions), file)
       }
     )
+    
+
+    # Images ------------------------------------------------------------------
+    output$logo <- renderImage({
+      list(src=system.file("www", "logo.jpg", package = "DeconvExplorer"),
+           contentType="image/jpeg", 
+           width="100%")
+    }, deleteFile = TRUE
+    )
+    
 
     # functions ---------------------------------------------------------------
 
