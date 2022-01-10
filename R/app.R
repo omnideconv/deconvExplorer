@@ -44,7 +44,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Deconvolution Settings", status = "primary",
     solidHeader = TRUE, height = "31.5em",
     introBox(
-      imageOutput("logo", height = "200px"), br(), 
+      imageOutput("logo", height = "auto"), br(), 
       #HTML('<img src="./inst/www/logo.jpg"/>'), 
       #img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
       #tags$img(src="logo.jpg"),
