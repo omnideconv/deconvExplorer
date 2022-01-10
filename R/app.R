@@ -75,22 +75,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
     introBox(
+      column(3,
       selectInput("plotMethod", "Plot as: ",
         choices = c(
           "Bar Plot" = "bar", "Scatter" = "scatter",
           "Jitter Plot" = "jitter", "Box Plot" = "box",
           "Sina Plot" = "sina", "Heatmap" = "heatmap"
         )
+      )
       ),
+      column(3,
       selectInput("facets", "Group Plots By",
         choices = c(
           "Deconvolution Method" = "method",
           "Cell Type" = "cell_type", "Sample" = "sample"
         )
-      ),
+      )),
+      column(12,
       shinycssloaders::withSpinner(
         plotly::plotlyOutput("plotBox")
-      ),
+      )),
       data.step = 4, data.intro = "View the deconvolution results and compare "
     )
   )
@@ -116,11 +120,12 @@ deconvExplorer <- function(usr_bulk = NULL,
   deconv_all_results <- shinydashboard::box(
     title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
     introBox(
-      div(style="display:inline-block", selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL, width="15em")),
-      div(style="display:inline-block", selectInput("computedSignatureMethod", "Signature Method", choices = NULL, width="15em")),
-      actionButton("loadDeconvolution", "Load Deconvolution Result"),
-      actionButton("addToPlot", "Compare: Add to Plot"),
-      actionButton("removeFromPlot", "Compare: Remove from Plot"),
+      column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
+      column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
+      column(4, 
+      actionButton("loadDeconvolution", "Load Deconvolution Result", style="margin-top: 1.7em"),
+      actionButton("addToPlot", "Compare: Add to Plot", style="margin-top: 1.7em"),
+      actionButton("removeFromPlot", "Compare: Remove from Plot", style="margin-top: 1.7em")),
       data.step = 3, data.intro = "Deconvolution results are stored and can be reloaded for visualization and comparison"
     )
   )
