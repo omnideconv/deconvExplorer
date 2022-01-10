@@ -26,7 +26,7 @@ deconvExplorer <- function(usr_bulk = NULL,
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
     title = "Upload your Data", status = "primary",
-    solidHeader = TRUE, height = "31.5em",
+    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE,
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -42,7 +42,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "31.5em",
+    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE, 
     introBox(
       imageOutput("logo", height = "auto"), br(), 
       #HTML('<img src="./inst/www/logo.jpg"/>'), 
@@ -68,6 +68,9 @@ deconvExplorer <- function(usr_bulk = NULL,
       actionButton("deconvolute", "Deconvolute"),
       waiter::useWaitress(),
       actionButton("deconvoluteAll", "Deconvolute All"),
+      # tags$div(sliderInput("slide1", "Slider1", min = 0, max=10, value=4),  style="display:inline-block"),
+      # tags$div(sliderInput("slide1=2", "Slider2", min = 0, max=10, value=4),  style="display:inline-block"),
+      # tags$div(sliderInput("slide3", "Slider3", min = 0, max=10, value=4),  style="display:inline-block"),
       data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
     )
   )
@@ -76,22 +79,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
     introBox(
+      column(3,
       selectInput("plotMethod", "Plot as: ",
         choices = c(
           "Bar Plot" = "bar", "Scatter" = "scatter",
           "Jitter Plot" = "jitter", "Box Plot" = "box",
           "Sina Plot" = "sina", "Heatmap" = "heatmap"
         )
+      )
       ),
+      column(3,
       selectInput("facets", "Group Plots By",
         choices = c(
           "Deconvolution Method" = "method",
           "Cell Type" = "cell_type", "Sample" = "sample"
         )
-      ),
+      )),
+      column(12,
       shinycssloaders::withSpinner(
         plotly::plotlyOutput("plotBox")
-      ),
+      )),
       data.step = 4, data.intro = "View the deconvolution results and compare "
     )
   )
@@ -115,13 +122,14 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
   )
   deconv_all_results <- shinydashboard::box(
-    title = "All Deconvolutions", status = "info", solidHeader = TRUE, width = 12,
+    title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
     introBox(
-      selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL),
-      selectInput("computedSignatureMethod", "Signature Method", choices = NULL),
-      actionButton("loadDeconvolution", "Load Deconvolution Result"),
-      actionButton("addToPlot", "Compare: Add to Plot"),
-      actionButton("removeFromPlot", "Compare: Remove from Plot"),
+      column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
+      column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
+      column(4, 
+      actionButton("loadDeconvolution", "Load Deconvolution Result", style="margin-top: 1.7em"),
+      actionButton("addToPlot", "Compare: Add to Plot", style="margin-top: 1.7em"),
+      actionButton("removeFromPlot", "Compare: Remove from Plot", style="margin-top: 1.7em")),
       data.step = 3, data.intro = "Deconvolution results are stored and can be reloaded for visualization and comparison"
     )
   )
@@ -209,8 +217,8 @@ deconvExplorer <- function(usr_bulk = NULL,
              position:relative; overflow-x:hidden; overflow-y:hidden}"))),
       tabItems(
         tabItem(tabName = "deconv", fluidPage(
-          fluidRow(deconv_all_results),
           fluidRow(data_upload_box, settings_box),
+          fluidRow(deconv_all_results),
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
