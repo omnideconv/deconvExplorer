@@ -45,13 +45,11 @@ deconvExplorer <- function(usr_bulk = NULL,
     solidHeader = TRUE, height = "31.5em", #collapsible = TRUE, 
     introBox(
       imageOutput("logo", height = "auto"), br(), 
-      #HTML('<img src="./inst/www/logo.jpg"/>'), 
-      #img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
-      #tags$img(src="logo.jpg"),
-      #img(src="logo.jpg"),
+      column(6,
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
-      ),
+      )),
+      column(6,
       conditionalPanel(
         condition = "input.deconvMethod == 'bisque'||
                     input.deconvMethod == 'cibersortx' ||
@@ -60,17 +58,16 @@ deconvExplorer <- function(usr_bulk = NULL,
         selectInput("signatureMethod", "Signature Calculation Method",
           choices = methods_reduced
         )
-      ),
+      )),
+      column(6,
       conditionalPanel(
         condition = "input.deconvMethod == 'bseqsc'",
         fileInput("userMarker", "Marker Genes")
-      ),
+      )),
+      column(12,
       actionButton("deconvolute", "Deconvolute"),
       waiter::useWaitress(),
-      actionButton("deconvoluteAll", "Deconvolute All"),
-      # tags$div(sliderInput("slide1", "Slider1", min = 0, max=10, value=4),  style="display:inline-block"),
-      # tags$div(sliderInput("slide1=2", "Slider2", min = 0, max=10, value=4),  style="display:inline-block"),
-      # tags$div(sliderInput("slide3", "Slider3", min = 0, max=10, value=4),  style="display:inline-block"),
+      actionButton("deconvoluteAll", "Deconvolute All")),
       data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
     )
   )
