@@ -330,15 +330,6 @@ deconvExplorer <- function(usr_bulk = NULL,
       # updateTableSelection()
     })
 
-    # signature <- reactive(omnideconv::build_model(
-    #   single_cell_object = userData$singleCell,
-    #   cell_type_annotations = userData$cellTypeAnnotations,
-    #   method = input$signatureMethod,
-    #   batch_ids = userData$batchIDs,
-    #   bulk_gene_expression = userData$bulk,
-    #   markers = userData$marker
-    # ))
-
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
@@ -411,8 +402,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$addToPlot, {
       tmp <- userData$deconvolution_result
       userData$deconvolution_result <- c(tmp, getSelectionToPlot())
-
-      # updateTableSelection()
     })
 
     # remove deconvolution from To Plot list
@@ -420,16 +409,11 @@ deconvExplorer <- function(usr_bulk = NULL,
       tmp <- userData$deconvolution_result
       tmp <- tmp[!tmp %in% getSelectionToPlot()]
       userData$deconvolution_result <- tmp
-
-      # updateTableSelection()
     })
 
     # load Deconvolution result
     observeEvent(input$loadDeconvolution, {
       userData$deconvolution_result <- c(getSelectionToPlot())
-      # userData$signature <- c(getSelectionToPlot())
-
-      # updateTableSelection()
     })
 
     # observe the selection to plot and show buttons if conditions match
@@ -443,10 +427,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
     })
 
-    # update selection inputs if deconvolution result list gets changed
-    observeEvent(userData$deconvolution_result, {
-      updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
-      updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
+    # update selection inputs if deconvolution gets added
+    observe({
+      updateSelectInput(session, inputId = "deconvolutionToTable", choices = names(all_deconvolutions))
+      updateSelectInput(session, inputId = "signatureToTable", choices = names(all_deconvolutions))
     })
 
     # Plots -------------------------------------------------------------------
