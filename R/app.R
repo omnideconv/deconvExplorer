@@ -25,8 +25,8 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
-    title = "Upload your Data", status = "primary",
-    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE,
+    title = "Upload your Data", status = "primary", 
+    solidHeader = TRUE, height = "30em", #collapsible = TRUE,
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -42,16 +42,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE, 
+    solidHeader = TRUE, height = "30em", #collapsible = TRUE, 
     introBox(
       imageOutput("logo", height = "auto"), br(), 
-      #HTML('<img src="./inst/www/logo.jpg"/>'), 
-      #img(src = system.file("www", "logo.jpg", package = "DeconvExplorer")), br(), # , width = "100%"
-      #tags$img(src="logo.jpg"),
-      #img(src="logo.jpg"),
+      column(6,
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
-      ),
+      )),
+      column(6,
       conditionalPanel(
         condition = "input.deconvMethod == 'bisque'||
                     input.deconvMethod == 'cibersortx' ||
@@ -60,17 +58,16 @@ deconvExplorer <- function(usr_bulk = NULL,
         selectInput("signatureMethod", "Signature Calculation Method",
           choices = methods_reduced
         )
-      ),
+      )),
+      column(6,
       conditionalPanel(
         condition = "input.deconvMethod == 'bseqsc'",
         fileInput("userMarker", "Marker Genes")
-      ),
+      )),
+      column(12,
       actionButton("deconvolute", "Deconvolute"),
       waiter::useWaitress(),
-      actionButton("deconvoluteAll", "Deconvolute All"),
-      # tags$div(sliderInput("slide1", "Slider1", min = 0, max=10, value=4),  style="display:inline-block"),
-      # tags$div(sliderInput("slide1=2", "Slider2", min = 0, max=10, value=4),  style="display:inline-block"),
-      # tags$div(sliderInput("slide3", "Slider3", min = 0, max=10, value=4),  style="display:inline-block"),
+      actionButton("deconvoluteAll", "Deconvolute All")),
       data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
     )
   )
@@ -333,15 +330,6 @@ deconvExplorer <- function(usr_bulk = NULL,
       # updateTableSelection()
     })
 
-    # signature <- reactive(omnideconv::build_model(
-    #   single_cell_object = userData$singleCell,
-    #   cell_type_annotations = userData$cellTypeAnnotations,
-    #   method = input$signatureMethod,
-    #   batch_ids = userData$batchIDs,
-    #   bulk_gene_expression = userData$bulk,
-    #   markers = userData$marker
-    # ))
-
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       ### todo: add deconvolution to the "to plot" list
@@ -388,8 +376,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
-    observeEvent(all_deconvolutions, {
-      # deconvolution to load
+    observe({
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
       updateSelectInput(session, inputId = "computedDeconvMethod", choices = deconv_choices)
@@ -415,8 +402,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$addToPlot, {
       tmp <- userData$deconvolution_result
       userData$deconvolution_result <- c(tmp, getSelectionToPlot())
-
-      # updateTableSelection()
     })
 
     # remove deconvolution from To Plot list
@@ -424,16 +409,11 @@ deconvExplorer <- function(usr_bulk = NULL,
       tmp <- userData$deconvolution_result
       tmp <- tmp[!tmp %in% getSelectionToPlot()]
       userData$deconvolution_result <- tmp
-
-      # updateTableSelection()
     })
 
     # load Deconvolution result
     observeEvent(input$loadDeconvolution, {
       userData$deconvolution_result <- c(getSelectionToPlot())
-      # userData$signature <- c(getSelectionToPlot())
-
-      # updateTableSelection()
     })
 
     # observe the selection to plot and show buttons if conditions match
@@ -447,10 +427,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
     })
 
-    # update selection inputs if deconvolution result list gets changed
-    observeEvent(userData$deconvolution_result, {
-      updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
-      updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
+    # update selection inputs if deconvolution gets added
+    observe({
+      updateSelectInput(session, inputId = "deconvolutionToTable", choices = names(all_deconvolutions))
+      updateSelectInput(session, inputId = "signatureToTable", choices = names(all_deconvolutions))
     })
 
     # Plots -------------------------------------------------------------------
@@ -541,7 +521,6 @@ deconvExplorer <- function(usr_bulk = NULL,
            width="100%")
     }, deleteFile = TRUE
     )
-    
 
     # functions ---------------------------------------------------------------
 
