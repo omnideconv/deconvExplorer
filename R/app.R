@@ -25,8 +25,8 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
-    title = "Upload your Data", status = "primary",
-    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE,
+    title = "Upload your Data", status = "primary", 
+    solidHeader = TRUE, height = "30em", #collapsible = TRUE,
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -42,7 +42,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "31.5em", #collapsible = TRUE, 
+    solidHeader = TRUE, height = "30em", #collapsible = TRUE, 
     introBox(
       imageOutput("logo", height = "auto"), br(), 
       column(6,
@@ -385,8 +385,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     }) # end deconvolution´
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
-    observeEvent(all_deconvolutions, {
-      # deconvolution to load
+    observe({
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
       updateSelectInput(session, inputId = "computedDeconvMethod", choices = deconv_choices)
@@ -538,7 +537,6 @@ deconvExplorer <- function(usr_bulk = NULL,
            width="100%")
     }, deleteFile = TRUE
     )
-    
 
     # functions ---------------------------------------------------------------
 
