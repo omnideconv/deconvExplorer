@@ -118,7 +118,11 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
 
   if (plotMethod == "bar") {
     plot <- plot + geom_col(tooltip) +
-      getLabs(facets, plotMethod)
+      getLabs(facets, plotMethod) +
+      theme(panel.grid.major.y = ggplot2::element_blank(),
+            axis.text.y = ggplot2::element_text(size=12),
+            axis.ticks.x = ggplot2::element_line(colour = "#333333"), 
+            axis.ticks.length = grid::unit(0.26, "cm"))
   } else if (plotMethod == "jitter") {
     plot <- plot + geom_jitter(tooltip) +
       getLabs(facets, plotMethod)
@@ -141,6 +145,8 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
       scale_fill_gradient(low = "white", high = "blue") +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
   }
+  
+  # set label sizes for all plots 
 
   # render
   plotly::ggplotly(plot, tooltip = c("text")) %>%
