@@ -155,7 +155,8 @@ deconvExplorer <- function(usr_bulk = NULL,
   signature_clusteredHeatmap <- shinydashboard::box(
     title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
-    shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
+    shinycssloaders::withSpinner(InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput("clusteredHeatmapOneSignature"))
+    #shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
   )
 
   signature_upsetPlot <- shinydashboard::box(
@@ -533,13 +534,21 @@ deconvExplorer <- function(usr_bulk = NULL,
       plot_conditionNumberPerMethod(allSignatures())
     })
 
-    output$clusteredHeatmapOneSignature <- renderPlot({
+    # output$clusteredHeatmapOneSignature <- renderPlot({
+    #   req(all_deconvolutions, input$signatureToHeatmap)
+    # 
+    #   # nur eine signature
+    #   plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]])
+    #   
+    #   # make interactive
+    # })
+    
+    # plot interactive heatmap 
+    observe({
       req(all_deconvolutions, input$signatureToHeatmap)
-
-      # nur eine signature
-      plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]])
+      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature")
     })
-
+    # UpSet Plot
     output$signatureUpset <- renderPlot({
       req(all_deconvolutions)
 

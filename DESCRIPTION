@@ -28,7 +28,8 @@ Imports:
     markdown,
     bbplot,
     ComplexHeatmap,
-    grid
+    grid,
+    InteractiveComplexHeatmap
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 

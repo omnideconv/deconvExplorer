@@ -104,7 +104,7 @@ plot_signatureClustered <- function(signature) {
   rownames(mat) <- df$X # set gene names
 
   # Plot with complex heatmap
-  ComplexHeatmap::Heatmap(t(mat),
+  heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     # column_title = "10. Clustered Heatmap of Signature \nLog10 and z-scored, k-means partitioned",
     # column_title_gp = gpar(fontsize=20, fontface="bold"),
@@ -112,6 +112,8 @@ plot_signatureClustered <- function(signature) {
     cluster_columns = TRUE, column_km = ncol(mat),
     border = TRUE
   )
+  
+  heatmap
 
   # TODO Make Column Order deterministic!
 }
