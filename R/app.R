@@ -164,13 +164,15 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
   signature_upsetPlotSettings <- shinydashboard::box(
     title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height="33em",
-    selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union")),
+    column(11, 
+    selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union"))),
+    column(1,
     # link to help
-    tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")),
-
+    tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")), style="margin-top:2em"),
+    
     # download of results
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
-      choices = NULL
+      choices = NULL, inline=TRUE
     ),
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
@@ -540,11 +542,10 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$signatureUpset <- renderPlot({
       req(all_deconvolutions)
-      message(names(allSignatures()))
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
-      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()))
+      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline=TRUE)
 
       plot_signatureUpset(allSignatures(), mode = input$upsetMode)
     })
@@ -618,7 +619,6 @@ deconvExplorer <- function(usr_bulk = NULL,
       },
       content = function(file) {
         # get subset selection from checkbox
-        message(typeof(input$upSetDownloadSelection))
         # Variable which contains the info: input$upSetDownloadSelection
         data <- download_signatureUpset(allSignatures(), combination = input$upSetDownloadSelection, mode = input$upsetMode)
 
