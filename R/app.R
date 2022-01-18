@@ -677,6 +677,13 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
       content # case NULL = File not loaded, error already displayed to user
     }
+    
+
+  # functions ---------------------------------------------------------------
+  brush_action=function(df, input, output, session){
+    
+  }
+    
   })
 
   shiny::shinyApp(ui = de_ui, server = de_server)
