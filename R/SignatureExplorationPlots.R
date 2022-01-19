@@ -113,7 +113,9 @@ plot_signatureClustered <- function(signature) {
     border = TRUE
   )
   
-  heatmap
+  #heatmap <- ComplexHeatmap::draw(heatmap)
+  
+  return (heatmap)
 
   # TODO Make Column Order deterministic!
 }
