@@ -156,18 +156,16 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
     #InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput("clusteredHeatmapOneSignature", layout = "1|(2-3)")
-    InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature", width = "1200px", containment = TRUE)
+    InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature", width = "1220px", containment = TRUE)
     #shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
   )
   
   signature_clusteredHeatmapSubPlot <- shinydashboard::box(
-    title="Sub Heatmap", status="info", solidHeader = TRUE, width= 7, 
-    InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature")
-  )
-  
-  signature_clusteredHeatmapInfo <- shinydashboard::box(
-    title="Heatmap Info", status="info", solidHeader=TRUE, width=5, 
-    InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")
+    title="Sub Heatmap", status="info", solidHeader = TRUE, width= 12, collapsible = TRUE,
+    column(8,
+    InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width="800px")),
+    column(4,
+    InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature"))
   )
 
   signature_upsetPlot <- shinydashboard::box(
@@ -266,7 +264,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(signature_genesPerMethod, signature_kappaPerMethod),
           fluidRow(signature_clusteredHeatmap),
-          fluidRow(signature_clusteredHeatmapSubPlot, signature_clusteredHeatmapInfo),
+          fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
         )),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
