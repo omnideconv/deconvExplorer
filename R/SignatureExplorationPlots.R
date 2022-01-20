@@ -142,7 +142,7 @@ plot_signatureUpset <- function(signatures, mode = "distinct") {
   # optional subset if intersect then remove the single ones (full set)
   # mat <- mat[comb_degree(mat)>=2]
 
-  ComplexHeatmap::UpSet(mat,
+  plot <- ComplexHeatmap::UpSet(mat,
     comb_order = order(
       ComplexHeatmap::comb_size(mat),
       decreasing = TRUE
@@ -150,7 +150,8 @@ plot_signatureUpset <- function(signatures, mode = "distinct") {
     top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE, numbers_gp=grid::gpar(fontsize="14", fontface="bold")),
     pt_size=grid::unit(5, "mm"), lwd=5
   )
-
+  
+  return (list(plot, mat))
   # here is something missing, should evaluate the data here....
 }
 

@@ -184,6 +184,9 @@ deconvExplorer <- function(usr_bulk = NULL,
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
       choices = NULL, inline=TRUE
     ),
+    
+    selectInput("upSetDegree", label="Intersection Sizes to display", choices=NULL),
+    
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
 
@@ -543,21 +546,13 @@ deconvExplorer <- function(usr_bulk = NULL,
       req(all_deconvolutions)
       plot_conditionNumberPerMethod(allSignatures())
     })
-
-    # output$clusteredHeatmapOneSignature <- renderPlot({
-    #   req(all_deconvolutions, input$signatureToHeatmap)
-    # 
-    #   # nur eine signature
-    #   plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]])
-    #   
-    #   # make interactive
-    # })
     
     # plot interactive heatmap 
     observe({
       req(all_deconvolutions, input$signatureToHeatmap)
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature")
     })
+    
     # UpSet Plot
     output$signatureUpset <- renderPlot({
       req(all_deconvolutions)
@@ -565,8 +560,15 @@ deconvExplorer <- function(usr_bulk = NULL,
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
       updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline=TRUE)
-
-      plot_signatureUpset(allSignatures(), mode = input$upsetMode)
+      
+      # calculate the plot
+      result <- plot_signatureUpset(allSignatures(), mode = input$upsetMode)
+      
+      # update settings
+      updateSelectInput(session, inputId = "upSetDegree", choices=unique(ComplexHeatmap::comb_degree(result[[2]])))
+      
+      # show the plot
+      result[[1]]
     })
 
     # Tables ------------------------------------------------------------------
