@@ -114,7 +114,9 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
   # put plot together
   plot <- ggplot(data, getAes(facets, plotMethod))
   plot <- plot + facet_wrap(~ data[[facets]])
-  plot <- plot + bbplot::bbc_style()
+  plot <- plot + bbplot::bbc_style() +
+    theme(legend.title = element_text(size=16),
+          legend.text = element_text(size=12))
 
   if (plotMethod == "bar") {
     plot <- plot + geom_col(tooltip) +
