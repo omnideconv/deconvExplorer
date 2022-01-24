@@ -180,12 +180,13 @@ deconvExplorer <- function(usr_bulk = NULL,
     # link to help
     tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")), style="margin-top:2em"),
     
+    # plot settings
+    sliderInput("upSetDegree", label="Intersection Sizes to display", min=1, max=5, value=c(1,5), round=TRUE, step=1, ticks = FALSE),
+    
     # download of results
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
       choices = NULL, inline=TRUE
     ),
-    
-    selectInput("upSetDegree", label="Intersection Sizes to display", choices=NULL),
     
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
@@ -555,19 +556,25 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(all_deconvolutions)
+      req(all_deconvolutions, input$upSetDegree)
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
       updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline=TRUE)
       
+      # get upset Degree Choices
+      minDegree <- input$upSetDegree[[1]]
+      maxDegree <- input$upSetDegree[[2]]
+      
       # calculate the plot
-      result <- plot_signatureUpset(allSignatures(), mode = input$upsetMode)
+      result <- plot_signatureUpset(allSignatures(), mode = input$upsetMode, minDegree=minDegree, maxDegree=maxDegree)
       
       # update settings
-      updateSelectInput(session, inputId = "upSetDegree", choices=unique(ComplexHeatmap::comb_degree(result[[2]])))
+      # probably going with a preselected range of values
+      # might also be possible to update to min=1, max=numberofsamples, and if maxDegree now higher than selected: value=c(min, newmax)
+      #updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
       
-      # show the plot
+      # show the plot 
       result[[1]]
     })
 

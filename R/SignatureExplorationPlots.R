@@ -128,7 +128,7 @@ plot_signatureClustered <- function(signature) {
 #' 
 #' @returns UpSet Plot
 
-plot_signatureUpset <- function(signatures, mode = "distinct") {
+plot_signatureUpset <- function(signatures, mode = "distinct", minDegree=1, maxDegree=NULL) {
   # takes list of signatures
   sets <- list()
 
@@ -139,6 +139,15 @@ plot_signatureUpset <- function(signatures, mode = "distinct") {
   # modes available: distinct, intersect and union
   mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
 
+  # subset plot according to minDegree and maxDegree
+  # if maxDegree is NULL, get maxDegree from data
+  if (is.null(maxDegree)){
+    maxDegree <- max(ComplexHeatmap::comb_degree(mat))
+  }
+  
+  mat <- mat[ComplexHeatmap::comb_degree(mat)>=minDegree] # lower 
+  mat <- mat[ComplexHeatmap::comb_degree(mat)<=maxDegree] # upper 
+  
   # optional subset if intersect then remove the single ones (full set)
   # mat <- mat[comb_degree(mat)>=2]
 
