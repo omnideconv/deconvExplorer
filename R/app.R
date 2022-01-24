@@ -182,6 +182,12 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     # plot settings
     sliderInput("upSetDegree", label="Intersection Sizes to display", min=1, max=5, value=c(1,5), round=TRUE, step=1, ticks = FALSE),
+    column(5, 
+    selectInput("upSetOrder", label="Order Sets by", choices=c("Intersection Size"="size", "Intersection Degree"="degree"))),
+    column(3,
+    div(checkboxInput("upSetInvert", label="Invert Order", value=FALSE), style="margin-top:2em")),
+    column(4, 
+    div(checkboxInput("upSetColorDegrees", label="Color Degrees", value=TRUE), style="margin-top:2em")),
     
     # download of results
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
@@ -556,7 +562,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(all_deconvolutions, input$upSetDegree)
+      req(all_deconvolutions, input$upSetDegree, input$upSetOrder) 
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
@@ -567,7 +573,13 @@ deconvExplorer <- function(usr_bulk = NULL,
       maxDegree <- input$upSetDegree[[2]]
       
       # calculate the plot
-      result <- plot_signatureUpset(allSignatures(), mode = input$upsetMode, minDegree=minDegree, maxDegree=maxDegree)
+      result <- plot_signatureUpset(allSignatures(), 
+                                    mode = input$upsetMode, 
+                                    minDegree=minDegree, 
+                                    maxDegree=maxDegree, 
+                                    order=input$upSetOrder, 
+                                    invert=input$upSetInvert,
+                                    colorDegrees=input$upSetColorDegrees)
       
       # update settings
       # probably going with a preselected range of values

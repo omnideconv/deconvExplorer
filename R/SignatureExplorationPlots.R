@@ -128,7 +128,7 @@ plot_signatureClustered <- function(signature) {
 #' 
 #' @returns UpSet Plot
 
-plot_signatureUpset <- function(signatures, mode = "distinct", minDegree=1, maxDegree=NULL) {
+plot_signatureUpset <- function(signatures, mode = "distinct", minDegree=1, maxDegree=NULL, order="size", invert=FALSE, colorDegrees=TRUE) {
   # takes list of signatures
   sets <- list()
 
@@ -148,16 +148,25 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree=1, maxD
   mat <- mat[ComplexHeatmap::comb_degree(mat)>=minDegree] # lower 
   mat <- mat[ComplexHeatmap::comb_degree(mat)<=maxDegree] # upper 
   
-  # optional subset if intersect then remove the single ones (full set)
-  # mat <- mat[comb_degree(mat)>=2]
+  # calculate order: size, degree
+  if (order=="size"){
+    combOrder = order(ComplexHeatmap::comb_size(mat), decreasing=!invert) # invert = FALSE -> will sort decreasing
+  } else { # order=="degree"
+    combOrder = order(ComplexHeatmap::comb_degree(mat), decreasing=!invert)
+  }
+  
+  # calculate colors
+  if (colorDegrees==TRUE){
+    upSetColors <- c("black", "blue", "red", "yellow", "green")[ComplexHeatmap::comb_degree(mat)] # max five different right now
+  } else { # =FALSE
+    upSetColors <- c("black")
+  }
 
   plot <- ComplexHeatmap::UpSet(mat,
-    comb_order = order(
-      ComplexHeatmap::comb_size(mat),
-      decreasing = TRUE
-    ),
+    comb_order = combOrder,
     top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE, numbers_gp=grid::gpar(fontsize="14", fontface="bold")),
-    pt_size=grid::unit(5, "mm"), lwd=5
+    pt_size=grid::unit(5, "mm"), lwd=5,
+    comb_col = upSetColors
   )
   
   return (list(plot, mat))
