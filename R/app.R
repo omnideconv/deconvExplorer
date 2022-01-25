@@ -121,7 +121,8 @@ deconvExplorer <- function(usr_bulk = NULL,
       actionButton("loadDeconvolution", "Load Deconvolution Result"),
       actionButton("addToPlot", "Compare: Add to Plot"),
       actionButton("removeFromPlot", "Compare: Remove from Plot"),
-      data.step = 3, data.intro = "Deconvolution results are stored and can be reloaded for visualization and comparison"
+      data.step = 3, data.intro = "Deconvolution results are stored and can be
+      reloaded for visualization and comparison"
     )
   )
 
@@ -155,45 +156,68 @@ deconvExplorer <- function(usr_bulk = NULL,
   signature_clusteredHeatmap <- shinydashboard::box(
     title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
-    #InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput("clusteredHeatmapOneSignature", layout = "1|(2-3)")
-    InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature", width = "1220px", containment = TRUE)
-    #shinycssloaders::withSpinner(plotOutput("clusteredHeatmapOneSignature"))
+    InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
+      width = "1220px", containment = TRUE
+    )
   )
-  
+
   signature_clusteredHeatmapSubPlot <- shinydashboard::box(
-    title="Sub Heatmap", status="info", solidHeader = TRUE, width= 12, collapsible = TRUE,
-    column(8,
-    InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width="800px")),
-    column(4,
-    InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature"))
+    title = "Sub Heatmap", status = "info", solidHeader = TRUE, width = 12, collapsible = TRUE,
+    column(
+      8,
+      InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "800px")
+    ),
+    column(
+      4,
+      InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")
+    )
   )
 
   signature_upsetPlot <- shinydashboard::box(
-    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height="33em", 
+    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height = "33em",
     shinycssloaders::withSpinner(plotOutput("signatureUpset"))
   )
   signature_upsetPlotSettings <- shinydashboard::box(
-    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height="33em",
-    column(11, 
-    selectInput("upsetMode", "Upset Plot Mode", choices = c("Distinct" = "distinct", "Intersect" = "intersect", "Union" = "union"))),
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height = "33em",
+    column(
+      11,
+      selectInput("upsetMode", "Upset Plot Mode", choices = c(
+        "Distinct" = "distinct",
+        "Intersect" = "intersect",
+        "Union" = "union"
+      ))
+    ),
     column(1,
-    # link to help
-    tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")), style="margin-top:2em"),
-    
+      # link to help
+      tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")),
+      style = "margin-top:2em"
+    ),
+
     # plot settings
-    sliderInput("upSetDegree", label="Intersection Sizes to display", min=1, max=5, value=c(1,5), round=TRUE, step=1, ticks = FALSE),
-    column(5, 
-    selectInput("upSetOrder", label="Order Sets by", choices=c("Intersection Size"="size", "Intersection Degree"="degree"))),
-    column(3,
-    div(checkboxInput("upSetInvert", label="Invert Order", value=FALSE), style="margin-top:2em")),
-    column(4, 
-    div(checkboxInput("upSetColorDegrees", label="Color Degrees", value=TRUE), style="margin-top:2em")),
-    
+    sliderInput("upSetDegree",
+      label = "Intersection Sizes to display", min = 1, max = 5,
+      value = c(1, 5), round = TRUE, step = 1, ticks = FALSE
+    ),
+    column(
+      5,
+      selectInput("upSetOrder", label = "Order Sets by", choices = c(
+        "Set Size" = "size",
+        "Set Degree" = "degree"
+      ))
+    ),
+    column(
+      3,
+      div(checkboxInput("upSetInvert", label = "Invert Order", value = FALSE), style = "margin-top:2em")
+    ),
+    column(
+      4,
+      div(checkboxInput("upSetColorDegrees", label = "Color Degrees", value = TRUE), style = "margin-top:2em")
+    ),
+
     # download of results
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
-      choices = NULL, inline=TRUE
+      choices = NULL, inline = TRUE
     ),
-    
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
 
@@ -262,7 +286,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     )),
     dashboardBody(
       tags$head(tags$style(
-        HTML(".wrapper {height: auto !important; 
+        HTML(".wrapper {height: auto !important;
              position:relative; overflow-x:hidden; overflow-y:hidden}")
       )),
       tabItems(
@@ -459,7 +483,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       # deconvolution to load
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
-      updateSelectInput(session, inputId = "computedDeconvMethod", choices = deconv_choices)
+      updateSelectInput(session,
+        inputId = "computedDeconvMethod",
+        choices = deconv_choices
+      )
     })
 
     # update signature Method choices when selecting deconvolution to load
@@ -475,7 +502,10 @@ deconvExplorer <- function(usr_bulk = NULL,
         signature_choices <- signature_choices[2] # nur das zweite
       }
 
-      updateSelectInput(session, inputId = "computedSignatureMethod", choices = signature_choices)
+      updateSelectInput(session,
+        inputId = "computedSignatureMethod",
+        choices = signature_choices
+      )
     })
 
     # update Signature Tab Choices when new Deconvolution Added
@@ -553,40 +583,41 @@ deconvExplorer <- function(usr_bulk = NULL,
       req(all_deconvolutions)
       plot_conditionNumberPerMethod(allSignatures())
     })
-    
-    # plot interactive heatmap 
+
+    # plot interactive heatmap
     observe({
       req(all_deconvolutions, input$signatureToHeatmap)
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature")
     })
-    
+
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(all_deconvolutions, input$upSetDegree, input$upSetOrder) 
+      req(all_deconvolutions, input$upSetDegree, input$upSetOrder)
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
-      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline=TRUE)
-      
+      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline = TRUE)
+
       # get upset Degree Choices
       minDegree <- input$upSetDegree[[1]]
       maxDegree <- input$upSetDegree[[2]]
-      
+
       # calculate the plot
-      result <- plot_signatureUpset(allSignatures(), 
-                                    mode = input$upsetMode, 
-                                    minDegree=minDegree, 
-                                    maxDegree=maxDegree, 
-                                    order=input$upSetOrder, 
-                                    invert=input$upSetInvert,
-                                    colorDegrees=input$upSetColorDegrees)
-      
+      result <- plot_signatureUpset(allSignatures(),
+        mode = input$upsetMode,
+        minDegree = minDegree,
+        maxDegree = maxDegree,
+        order = input$upSetOrder,
+        invert = input$upSetInvert,
+        colorDegrees = input$upSetColorDegrees
+      )
+
       # update settings
       # probably going with a preselected range of values
       # might also be possible to update to min=1, max=numberofsamples, and if maxDegree now higher than selected: value=c(min, newmax)
-      #updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
-      
-      # show the plot 
+      # updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
+
+      # show the plot
       result[[1]]
     })
 
@@ -660,7 +691,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       content = function(file) {
         # get subset selection from checkbox
         # Variable which contains the info: input$upSetDownloadSelection
-        data <- download_signatureUpset(allSignatures(), combination = input$upSetDownloadSelection, mode = input$upsetMode)
+        data <- download_signatureUpset(allSignatures(),
+          combination = input$upSetDownloadSelection,
+          mode = input$upsetMode
+        )
 
         # get genes from function
         write.table(data, file)
@@ -708,13 +742,12 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
       content # case NULL = File not loaded, error already displayed to user
     }
-    
 
-  # functions ---------------------------------------------------------------
-  brush_action=function(df, input, output, session){
-    
-  }
-    
+
+    # functions ---------------------------------------------------------------
+    brush_action <- function(df, input, output, session) {
+
+    }
   })
 
   shiny::shinyApp(ui = de_ui, server = de_server)
