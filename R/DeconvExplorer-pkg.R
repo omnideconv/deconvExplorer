@@ -13,7 +13,6 @@
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme element_blank
 #' geom_hline
 #' @importFrom shinycssloaders withSpinner 
-#' @importFrom ggforce geom_sina
 #' @importFrom waiter Waitress
 #' @importFrom rintrojs introBox introjs introjsUI
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage

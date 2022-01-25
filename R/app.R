@@ -25,8 +25,8 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
-    title = "Upload your Data", status = "primary", 
-    solidHeader = TRUE, height = "30em", #collapsible = TRUE,
+    title = "Upload your Data", status = "primary",
+    solidHeader = TRUE, height = "30em", # collapsible = TRUE,
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -42,32 +42,40 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "30em", #collapsible = TRUE, 
+    solidHeader = TRUE, height = "30em", # collapsible = TRUE,
     introBox(
-      imageOutput("logo", height = "auto"), br(), 
-      column(6,
-      selectInput("deconvMethod", "Deconvolution Method",
-        choices = omnideconv::deconvolution_methods
-      )),
-      column(6,
-      conditionalPanel(
-        condition = "input.deconvMethod == 'bisque'||
+      imageOutput("logo", height = "auto"), br(),
+      column(
+        6,
+        selectInput("deconvMethod", "Deconvolution Method",
+          choices = omnideconv::deconvolution_methods
+        )
+      ),
+      column(
+        6,
+        conditionalPanel(
+          condition = "input.deconvMethod == 'bisque'||
                     input.deconvMethod == 'cibersortx' ||
                     input.deconvMethod == 'dwls' ||
                       input.deconvMethod == 'momf'",
-        selectInput("signatureMethod", "Signature Calculation Method",
-          choices = methods_reduced
+          selectInput("signatureMethod", "Signature Calculation Method",
+            choices = methods_reduced
+          )
         )
-      )),
-      column(6,
-      conditionalPanel(
-        condition = "input.deconvMethod == 'bseqsc'",
-        fileInput("userMarker", "Marker Genes")
-      )),
-      column(12,
-      actionButton("deconvolute", "Deconvolute"),
-      waiter::useWaitress(),
-      actionButton("deconvoluteAll", "Deconvolute All")),
+      ),
+      column(
+        6,
+        conditionalPanel(
+          condition = "input.deconvMethod == 'bseqsc'",
+          fileInput("userMarker", "Marker Genes")
+        )
+      ),
+      column(
+        12,
+        actionButton("deconvolute", "Deconvolute"),
+        waiter::useWaitress(),
+        actionButton("deconvoluteAll", "Deconvolute All")
+      ),
       data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
     )
   )
@@ -76,26 +84,31 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
     introBox(
-      column(3,
-      selectInput("plotMethod", "Plot as: ",
-        choices = c(
-          "Bar Plot" = "bar", "Scatter" = "scatter",
-          "Jitter Plot" = "jitter", "Box Plot" = "box",
-          "Sina Plot" = "sina", "Heatmap" = "heatmap"
+      column(
+        3,
+        selectInput("plotMethod", "Plot as: ",
+          choices = c(
+            "Bar Plot" = "bar", "Scatter" = "scatter",
+            "Jitter Plot" = "jitter", "Box Plot" = "box",
+            "Heatmap" = "heatmap"
+          )
         )
-      )
       ),
-      column(3,
-      selectInput("facets", "Group Plots By",
-        choices = c(
-          "Deconvolution Method" = "method",
-          "Cell Type" = "cell_type", "Sample" = "sample"
+      column(
+        3,
+        selectInput("facets", "Group Plots By",
+          choices = c(
+            "Deconvolution Method" = "method",
+            "Cell Type" = "cell_type", "Sample" = "sample"
+          )
         )
-      )),
-      column(12,
-      shinycssloaders::withSpinner(
-        plotly::plotlyOutput("plotBox")
-      )),
+      ),
+      column(
+        12,
+        shinycssloaders::withSpinner(
+          plotly::plotlyOutput("plotBox", height = "500px") # standard is 400
+        )
+      ),
       data.step = 4, data.intro = "View the deconvolution results and compare "
     )
   )
@@ -123,10 +136,12 @@ deconvExplorer <- function(usr_bulk = NULL,
     introBox(
       column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
       column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
-      column(4, 
-      actionButton("loadDeconvolution", "Load Deconvolution Result", style="margin-top: 1.7em"),
-      actionButton("addToPlot", "Compare: Add to Plot", style="margin-top: 1.7em"),
-      actionButton("removeFromPlot", "Compare: Remove from Plot", style="margin-top: 1.7em")),
+      column(
+        4,
+        actionButton("loadDeconvolution", "Load Deconvolution Result", style = "margin-top: 1.7em"),
+        actionButton("addToPlot", "Compare: Add to Plot", style = "margin-top: 1.7em"),
+        actionButton("removeFromPlot", "Compare: Remove from Plot", style = "margin-top: 1.7em")
+      ),
       data.step = 3, data.intro = "Deconvolution results are stored and can be reloaded for visualization and comparison"
     )
   )
@@ -210,8 +225,9 @@ deconvExplorer <- function(usr_bulk = NULL,
     )),
     dashboardBody(
       tags$head(tags$style(
-        HTML(".wrapper {height: auto !important; 
-             position:relative; overflow-x:hidden; overflow-y:hidden}"))),
+        HTML(".wrapper {height: auto !important;
+             position:relative; overflow-x:hidden; overflow-y:hidden}")
+      )),
       tabItems(
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(data_upload_box, settings_box),
@@ -512,14 +528,18 @@ deconvExplorer <- function(usr_bulk = NULL,
         saveRDS(reactiveValuesToList(all_deconvolutions), file)
       }
     )
-    
+
 
     # Images ------------------------------------------------------------------
-    output$logo <- renderImage({
-      list(src=system.file("www", "logo.jpg", package = "DeconvExplorer"),
-           contentType="image/jpeg", 
-           width="100%")
-    }, deleteFile = TRUE
+    output$logo <- renderImage(
+      {
+        list(
+          src = system.file("www", "logo.jpg", package = "DeconvExplorer"),
+          contentType = "image/jpeg",
+          width = "100%"
+        )
+      },
+      deleteFile = TRUE
     )
 
     # functions ---------------------------------------------------------------
