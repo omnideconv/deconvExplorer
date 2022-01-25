@@ -104,7 +104,7 @@ plot_signatureClustered <- function(signature) {
   rownames(mat) <- df$X # set gene names
 
   # Plot with complex heatmap
-  ComplexHeatmap::Heatmap(t(mat),
+  heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     # column_title = "10. Clustered Heatmap of Signature \nLog10 and z-scored, k-means partitioned",
     # column_title_gp = gpar(fontsize=20, fontface="bold"),
@@ -112,6 +112,10 @@ plot_signatureClustered <- function(signature) {
     cluster_columns = TRUE, column_km = ncol(mat),
     border = TRUE
   )
+  
+  #heatmap <- ComplexHeatmap::draw(heatmap)
+  
+  return (heatmap)
 
   # TODO Make Column Order deterministic!
 }
@@ -124,7 +128,7 @@ plot_signatureClustered <- function(signature) {
 #' 
 #' @returns UpSet Plot
 
-plot_signatureUpset <- function(signatures, mode = "distinct") {
+plot_signatureUpset <- function(signatures, mode = "distinct", minDegree=1, maxDegree=NULL, order="size", invert=FALSE, colorDegrees=TRUE) {
   # takes list of signatures
   sets <- list()
 
@@ -135,18 +139,37 @@ plot_signatureUpset <- function(signatures, mode = "distinct") {
   # modes available: distinct, intersect and union
   mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
 
-  # optional subset if intersect then remove the single ones (full set)
-  # mat <- mat[comb_degree(mat)>=2]
+  # subset plot according to minDegree and maxDegree
+  # if maxDegree is NULL, get maxDegree from data
+  if (is.null(maxDegree)){
+    maxDegree <- max(ComplexHeatmap::comb_degree(mat))
+  }
+  
+  mat <- mat[ComplexHeatmap::comb_degree(mat)>=minDegree] # lower 
+  mat <- mat[ComplexHeatmap::comb_degree(mat)<=maxDegree] # upper 
+  
+  # calculate order: size, degree
+  if (order=="size"){
+    combOrder = order(ComplexHeatmap::comb_size(mat), decreasing=!invert) # invert = FALSE -> will sort decreasing
+  } else { # order=="degree"
+    combOrder = order(ComplexHeatmap::comb_degree(mat), decreasing=!invert)
+  }
+  
+  # calculate colors
+  if (colorDegrees==TRUE){
+    upSetColors <- c("black", "blue", "red", "yellow", "green")[ComplexHeatmap::comb_degree(mat)] # max five different right now
+  } else { # =FALSE
+    upSetColors <- c("black")
+  }
 
-  ComplexHeatmap::UpSet(mat,
-    comb_order = order(
-      ComplexHeatmap::comb_size(mat),
-      decreasing = TRUE
-    ),
+  plot <- ComplexHeatmap::UpSet(mat,
+    comb_order = combOrder,
     top_annotation = ComplexHeatmap::upset_top_annotation(mat, add_numbers = TRUE, numbers_gp=grid::gpar(fontsize="14", fontface="bold")),
-    pt_size=grid::unit(5, "mm"), lwd=5
+    pt_size=grid::unit(5, "mm"), lwd=5,
+    comb_col = upSetColors
   )
-
+  
+  return (list(plot, mat))
   # here is something missing, should evaluate the data here....
 }
 
