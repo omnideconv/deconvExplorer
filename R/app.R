@@ -154,10 +154,21 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
-    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
-    selectInput("signatureToHeatmap", "Select a Signature", choices = NULL),
+    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 8,
+    column(6,
+    selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)),
+    column(6,
+    div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"),style="margin-top:1em")),
+    column(12,
     InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-      width = "1220px", containment = TRUE
+      width="1030px", containment = TRUE
+    ))
+  )
+  
+  signatureHeatmap_SelectedGenesTable <- shinydashboard::box(
+    title = "Selected Genes", status = "info", solidHeader = TRUE, width=4,
+    shinycssloaders::withSpinner(
+      DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
     )
   )
 
@@ -297,7 +308,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(signature_genesPerMethod, signature_kappaPerMethod),
-          fluidRow(signature_clusteredHeatmap),
+          fluidRow(signature_clusteredHeatmap, signatureHeatmap_SelectedGenesTable),
           fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
         )),
@@ -325,7 +336,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     all_deconvolutions <- reactiveValues()
 
     userData <- reactiveValues()
-
 
     # options
     options(shiny.maxRequestSize = 10 * 1024^2 * 100) # 1GB
@@ -380,6 +390,9 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
       signatures
     })
+    
+    # 
+    signatureSelectedGenesDownloadContent <- reactiveVal("") # set empty reactiveVal
 
     # Observers and Eventhandling ---------------------------------------------
 
@@ -587,7 +600,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     # plot interactive heatmap
     observe({
       req(all_deconvolutions, input$signatureToHeatmap)
-      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature")
+      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature", brush_action = brush_action)
     })
 
     # UpSet Plot
@@ -700,6 +713,19 @@ deconvExplorer <- function(usr_bulk = NULL,
         write.table(data, file)
       }
     )
+    
+    # download selected Genes from the Interactive Signature Heatmap
+    output$signatureSelectedGenesDownloadButton <- downloadHandler(
+      filename = function(){
+        paste0("Selection_", input$signatureToHeatmap, ".txt")
+      }, 
+      content = function (file){
+        data <- signatureSelectedGenesDownloadContent()
+
+        # write file
+        write.table(data, file)
+      }
+    )
 
     # load user file, file information from fileInput()
     loadFile <- function(file, type = "") {
@@ -746,7 +772,24 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
-
+      req(all_deconvolutions, input$signatureToHeatmap)
+      
+      #ClusteredHeatmapSelectedGenes(Table)
+      
+      # get index of selected columns 
+      column_index <- unique(unlist(df$column_index))
+      
+      # get full dataset
+      signature <- allSignatures()[[input$signatureToHeatmap]]
+      
+      # get selected subset
+      selected <- signature[column_index,]   
+      
+      # Output Table of selected Genes
+      output$signatureHeatmap_SelectedGenesTable <- DT::renderDataTable(DT::formatRound(DT::datatable(selected), columns=1:ncol(selected), digits=2))
+      
+      # Output List of Gene Names for Download
+      signatureSelectedGenesDownloadContent(paste(rownames(selected), sep = "\n"))
     }
   })
 
