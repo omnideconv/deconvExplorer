@@ -154,34 +154,30 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
-    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 8,
+    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
     column(6,
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)),
     column(6,
-    div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"),style="margin-top:1em")),
+    div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"),style="margin-top:1.9em")),
     column(12,
     InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-      width="1030px", containment = TRUE
+      width="1500px", height="450px", containment = TRUE
     ))
   )
   
-  signatureHeatmap_SelectedGenesTable <- shinydashboard::box(
-    title = "Selected Genes", status = "info", solidHeader = TRUE, width=4,
-    shinycssloaders::withSpinner(
-      DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
-    )
-  )
-
   signature_clusteredHeatmapSubPlot <- shinydashboard::box(
     title = "Sub Heatmap", status = "info", solidHeader = TRUE, width = 12, collapsible = TRUE,
     column(
       8,
-      InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "800px")
+      InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "1000px")
     ),
     column(
-      4,
-      InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")
-    )
+      4, shinycssloaders::withSpinner(
+        DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
+      )
+    ), 
+    conditionalPanel(condition = "false",
+                     InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")) # necessary, will not display if function not used
   )
 
   signature_upsetPlot <- shinydashboard::box(
@@ -308,7 +304,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(signature_genesPerMethod, signature_kappaPerMethod),
-          fluidRow(signature_clusteredHeatmap, signatureHeatmap_SelectedGenesTable),
+          fluidRow(signature_clusteredHeatmap),
           fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
         )),
