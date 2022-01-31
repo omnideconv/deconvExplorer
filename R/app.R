@@ -116,20 +116,26 @@ deconvExplorer <- function(usr_bulk = NULL,
   deconv_table_box <- shinydashboard::box(
     title = span("Deconvolution Table ", icon("th", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
-    selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL),
+    column(3,
+    selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL)),
+    column(3, div(downloadButton("deconvolutionDownload", "Download Deconvolution"), style="margin-top:1.9em")), 
+    column(12,
     shinycssloaders::withSpinner(
       DT::dataTableOutput("tableBox")
-    )
+    ))
   )
 
   deconv_signature_box <- shinydashboard::box(
     title = span("Deconvolution Signature ", icon("fingerprint")),
     status = "info", solidHeader = TRUE, width = 12,
-    downloadButton("signatureDownload", "Download Signature"),
-    selectInput("signatureToTable", "Signature", choices = NULL),
+    column(3, 
+    selectInput("signatureToTable", "Signature", choices = NULL)),
+    column(3, 
+    div(downloadButton("signatureDownload", "Download Signature"), style="margin-top:1.9em")),
+    column(12, 
     shinycssloaders::withSpinner(
       DT::dataTableOutput("signatureBox")
-    )
+    ))
   )
   deconv_all_results <- shinydashboard::box(
     title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
@@ -166,7 +172,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   de_ui <- dashboardPage(
     dashboardHeader(
-      title = "Omnideconv",
+      title = "DeconvExplorer",
       dropdownMenu(
         type = "task",
         icon = icon("question-circle"),
@@ -237,7 +243,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
-            system.file("extdata", "omnideconv_vignette.md", package = "DeconvExplorer")
+            system.file("www", "vignette.md", package = "DeconvExplorer")
           )
         ))
       )
@@ -337,7 +343,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     # restore session with file upload
     observeEvent(input$uploadSession, {
       sessionFile <- readRDS(input$uploadSession$datapath)
-      message(input$uploadSession$datapath)
+      # message(input$uploadSession$datapath)
       for (deconvolution in names(sessionFile)) {
         all_deconvolutions[[deconvolution]] <- sessionFile[[deconvolution]]
         showNotification(paste0("Loaded Deconvolution: ", deconvolution))
@@ -478,13 +484,15 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # load deconvolution
       deconvolution <- all_deconvolutions[[input$deconvolutionToTable]][[1]]
+      
+      # turn rownames to column to enable DT search
+      deconvolution <- data.frame("Gene" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
+      rownames(deconvolution) <- NULL
 
       # render table
-      DT::datatable(deconvolution,
-        extensions = "Buttons",
+      DT::datatable(deconvolution, filter="top",
         options = list(
-          dom = "Bfrtip",
-          buttons = c("copy", "csv", "excel", "pdf")
+          dom = "tip"
         )
       ) %>%
         DT::formatPercentage(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
@@ -502,10 +510,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # load signature
       signature <- all_deconvolutions[[input$signatureToTable]][[2]]
-
+      
+      # turn rownames to column to enable DT Search
+      signature <- data.frame("Gene" = rownames(signature), signature, check.names = FALSE) # check.names prevents Cell Type names to be changed
+      rownames(signature) <- NULL
+      
       # render table
-      DT::datatable(signature) # %>%
-      # DT::formatRound(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
+      DT::datatable(signature, filter="top", options=list(dom="tip")) %>%
+        DT::formatRound(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
     })
 
 
@@ -515,6 +527,16 @@ deconvExplorer <- function(usr_bulk = NULL,
       },
       content = function(file) {
         data <- all_deconvolutions[[input$signatureToTable]][[2]]
+        write.csv(data, file)
+      }
+    )
+    
+    output$deconvolutionDownload <- downloadHandler(
+      filename=function(){
+        paste("deconvolution_", input$deconvolutionToTable, ".csv", sep="")
+      },
+      content = function(file){
+        data <- all_deconvolutions[[input$deconvolutionToTable]][[1]]
         write.csv(data, file)
       }
     )

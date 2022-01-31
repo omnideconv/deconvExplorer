@@ -1,4 +1,4 @@
-<img src="images/logo.JPG" width="80%" />
+<img src="logo.jpg" width="80%" />
 
 # 1. Background
 
@@ -6,12 +6,6 @@ In the first section, we will give some background information about why
 cell-type deconvolution is necessary and how it works.
 
 ## Biological Background
-
-```{r}
-
-
-
-```
 
 The prognosis of cancer and its progression is a challenging task. One
 of the reasons is that the type and abundance of immune cells in the
@@ -26,12 +20,12 @@ needed.
 
 ## Computational Background
 
-<img src="images/introduction.png" alt="Figure 1: (a) Schematic of the tumor environment. [@Fridman2012] (b) Visualisation of the mathematics behind cell deconvolution. [@Finotello2018]" width="80%" />
+<img src="introduction.jpg" alt="Figure 1: (a) Recruitment and maintenance of Treg cells in the tumor microenvironment. [@Plitas2020] (b) Visualisation of the mathematics behind cell deconvolution. [@Finotello2018]" width="100%" />
 <p class="caption">
-Figure 1: (a) Schematic of the tumor environment. ([Fridman and Pagès
-2012](#ref-Fridman2012)) (b) Visualisation of the mathematics behind
-cell deconvolution. ([Finotello and Trajanoski
-2018](#ref-Finotello2018))
+Figure 1: (a) Recruitment and maintenance of Treg cells in the tumor
+microenvironment. ([Plitas and Rudensky 2020](#ref-Plitas2020)) (b)
+Visualisation of the mathematics behind cell deconvolution. ([Finotello
+and Trajanoski 2018](#ref-Finotello2018))
 </p>
 
 Cell-type deconvolution is a computational method to calculate cell type
@@ -45,8 +39,8 @@ number of samples from 1 to m, an equation can be given as follows:
 *M* = *S* × *F*
 (*𝒏*×*𝒎*) = (*𝒏*×*𝒌*) × (*𝒌*×*𝒎*)
 
-*𝑀*: Expression matrix of *n* genes in *m* samples.  
-*𝑆*: Specific gene expression values of *𝑘* cell types  
+*𝑀*: Expression matrix of *n* genes in *m* samples.
+*𝑆*: Specific gene expression values of *𝑘* cell types
 *𝐹*: Relative cell type proportions in each sample
 
 Therefore, the principle of cell-type deconvolution is that given *𝑀*
@@ -115,7 +109,7 @@ First of all, you need some data to run the deconvolution with.
 TODO
 
 
-   
+
 -->
 
 ## Sample Data
@@ -157,18 +151,12 @@ listed below. More information of the methods is provided in section 3.
 
     omnideconv::build_model(single_cell_data, cell_type_annotations, method)
 
-
-    # Bisque, MuSiC and SCDC require the batch_ids as well
-    omnideconv::build_model(single_cell_data, cell_type_annotations,
-      method,
-      batch_ids = batch_ids
-    )
     # Bseq-sc requires the batch ids and marker genes for each cell type
     omnideconv::build_model(single_cell_data, cell_type_annotations,
       method,
       batch_ids = batch_ids, markers = markers
     )
-    # CPM, MOMF and Scaden require the bulk RNA-seq data as well
+    # MOMF and Scaden require the bulk RNA-seq data as well
     omnideconv::build_model(single_cell_data, cell_type_annotations,
       method,
       bulk_gene_expression = bulk
@@ -211,13 +199,19 @@ build\_model step.
     omnideconv::deconvolute(bulk, signature_matrix, method)
 
 
-    # CPM and MOMF require the single cell data for deconvolution as well
-    omnideconv::deconvolute(bulk, signature_matrix, method,
+    # MOMF requires the single cell data for deconvolution
+    omnideconv::deconvolute(bulk, signature_matrix, "momf",
       single_cell_object = single_cell_data,
       cell_type_annotations = cell_type_annotations
     )
-    # Bisque, CDSeq, MuSiC and SCDC require the single cell data and the batch ids
-    omnideconv::deconvolute(bulk, signature_matrix, method,
+    # CPM requires the single cell data for deconvolution, while not requiring a signature matrix
+    omnideconv::deconvolute(bulk, "cpm",
+      single_cell_object = single_cell_data,
+      cell_type_annotations = cell_type_annotations
+    )
+    # Bisque, CDSeq, MuSiC and SCDC require the single cell data and the batch ids, while not
+    # requiring a signature matrix
+    omnideconv::deconvolute(bulk, method,
       batch_ids = batch_ids,
       single_cell_object = single_cell_data,
       cell_type_annotations = cell_type_annotations
@@ -309,87 +303,91 @@ your single cell data, this is normal:
 
 Table 1: Example of the raw single cell counts.
 
-Now we build the signature matrix with Bisque and look at the values for
+Now we build the signature matrix with MOMF and look at the values for
 the first few genes.
 
     signatureMatrix <- omnideconv::build_model(
       single_cell_data, cell_type_annotations,
-      "bisque", batch_ids
+      "momf",
+      bulk_gene_expression = bulk
     )
 
 <table>
-<caption>Table 2: Part of the signature matrix created with Bisque.</caption>
+<caption>Table 2: Part of the signature matrix created with MOMF.</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
-<th style="text-align: right;">B</th>
+<th style="text-align: right;">Mono</th>
 <th style="text-align: right;">CD4 T</th>
 <th style="text-align: right;">CD8 T</th>
-<th style="text-align: right;">DC</th>
-<th style="text-align: right;">Mono</th>
 <th style="text-align: right;">NK</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">DC</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">AL627309.3</td>
-<td style="text-align: right;">0.000000</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.9236124</td>
-<td style="text-align: right;">0.1405679</td>
-<td style="text-align: right;">0.330251</td>
-<td style="text-align: right;">0.0000000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">FAM87B</td>
-<td style="text-align: right;">6.202169</td>
-<td style="text-align: right;">4.4163495</td>
-<td style="text-align: right;">3.2251031</td>
-<td style="text-align: right;">11.6189433</td>
-<td style="text-align: right;">8.683057</td>
-<td style="text-align: right;">3.6546811</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">FAM41C</td>
-<td style="text-align: right;">3.797226</td>
-<td style="text-align: right;">2.5900075</td>
-<td style="text-align: right;">1.7678388</td>
-<td style="text-align: right;">4.4112639</td>
-<td style="text-align: right;">3.344553</td>
-<td style="text-align: right;">4.2674138</td>
+<td style="text-align: right;">1.1269726</td>
+<td style="text-align: right;">0.5122603</td>
+<td style="text-align: right;">0.4098082</td>
+<td style="text-align: right;">0.6147123</td>
+<td style="text-align: right;">1.2294247</td>
+<td style="text-align: right;">2.5613014</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">AL645608.7</td>
-<td style="text-align: right;">1.678537</td>
-<td style="text-align: right;">0.5353319</td>
-<td style="text-align: right;">2.7443090</td>
-<td style="text-align: right;">0.1525413</td>
-<td style="text-align: right;">1.263986</td>
-<td style="text-align: right;">0.7638252</td>
+<td style="text-align: left;">NOC2L</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.1024521</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.0000000</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">NOC2L</td>
-<td style="text-align: right;">0.000000</td>
+<td style="text-align: left;">KLHL17</td>
+<td style="text-align: right;">11.2697262</td>
+<td style="text-align: right;">6.3520275</td>
+<td style="text-align: right;">5.5324111</td>
+<td style="text-align: right;">7.0691919</td>
+<td style="text-align: right;">7.1716440</td>
+<td style="text-align: right;">20.7977675</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PLEKHN1</td>
+<td style="text-align: right;">0.8196165</td>
+<td style="text-align: right;">0.1024521</td>
+<td style="text-align: right;">0.5122603</td>
+<td style="text-align: right;">0.8196165</td>
+<td style="text-align: right;">0.5122603</td>
+<td style="text-align: right;">1.1269726</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PERM1</td>
+<td style="text-align: right;">0.2049041</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.5122603</td>
 <td style="text-align: right;">0.0000000</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.000000</td>
-<td style="text-align: right;">0.6841817</td>
+<td style="text-align: right;">0.3073562</td>
 </tr>
 </tbody>
 </table>
 
-Table 2: Part of the signature matrix created with Bisque.
+Table 2: Part of the signature matrix created with MOMF.
 
-We can use this signature matrix to run the deconvolution with Bisque.
+We can use this signature matrix to run the deconvolution with DWLS,
+MOMF, BSeq-sc or CibersortX. We can also use one of the methods which
+combines both steps in one like Bisque and thus takes in the signature
+NULL.
 
     deconvolution <- omnideconv::deconvolute(
-      bulk, signatureMatrix, "bisque", single_cell_data,
+      bulk, NULL, "bisque", single_cell_data,
       cell_type_annotations, batch_ids
     )
 
 <table>
-<caption>Table 3: Deconvoluted cell type proportions calculated with Bisque and the signature matrix from the last step.</caption>
+<caption>Table 3: Deconvoluted cell type proportions calculated with Bisque.</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -405,80 +403,79 @@ We can use this signature matrix to run the deconvolution with Bisque.
 <tr class="odd">
 <td style="text-align: left;">HD30_PBMC_0</td>
 <td style="text-align: right;">0.160</td>
-<td style="text-align: right;">0.317</td>
+<td style="text-align: right;">0.320</td>
 <td style="text-align: right;">0.000</td>
-<td style="text-align: right;">0.176</td>
-<td style="text-align: right;">0.160</td>
+<td style="text-align: right;">0.174</td>
+<td style="text-align: right;">0.159</td>
 <td style="text-align: right;">0.187</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HD30_PBMC_1</td>
-<td style="text-align: right;">0.195</td>
-<td style="text-align: right;">0.117</td>
-<td style="text-align: right;">0.181</td>
-<td style="text-align: right;">0.162</td>
-<td style="text-align: right;">0.170</td>
-<td style="text-align: right;">0.175</td>
+<td style="text-align: right;">0.202</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.202</td>
+<td style="text-align: right;">0.159</td>
+<td style="text-align: right;">0.171</td>
+<td style="text-align: right;">0.174</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HD30_PBMC_3</td>
-<td style="text-align: right;">0.171</td>
-<td style="text-align: right;">0.223</td>
-<td style="text-align: right;">0.108</td>
-<td style="text-align: right;">0.187</td>
-<td style="text-align: right;">0.163</td>
-<td style="text-align: right;">0.148</td>
+<td style="text-align: right;">0.164</td>
+<td style="text-align: right;">0.250</td>
+<td style="text-align: right;">0.084</td>
+<td style="text-align: right;">0.191</td>
+<td style="text-align: right;">0.162</td>
+<td style="text-align: right;">0.149</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HD30_PBMC_7</td>
 <td style="text-align: right;">0.172</td>
-<td style="text-align: right;">0.141</td>
-<td style="text-align: right;">0.190</td>
+<td style="text-align: right;">0.135</td>
+<td style="text-align: right;">0.196</td>
 <td style="text-align: right;">0.192</td>
 <td style="text-align: right;">0.151</td>
-<td style="text-align: right;">0.155</td>
+<td style="text-align: right;">0.154</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HD31_PBMC_0</td>
-<td style="text-align: right;">0.158</td>
-<td style="text-align: right;">0.124</td>
-<td style="text-align: right;">0.202</td>
-<td style="text-align: right;">0.167</td>
+<td style="text-align: right;">0.155</td>
+<td style="text-align: right;">0.146</td>
+<td style="text-align: right;">0.178</td>
+<td style="text-align: right;">0.169</td>
 <td style="text-align: right;">0.173</td>
-<td style="text-align: right;">0.177</td>
+<td style="text-align: right;">0.180</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HD31_PBMC_1</td>
-<td style="text-align: right;">0.162</td>
-<td style="text-align: right;">0.177</td>
-<td style="text-align: right;">0.162</td>
-<td style="text-align: right;">0.169</td>
+<td style="text-align: right;">0.154</td>
+<td style="text-align: right;">0.210</td>
+<td style="text-align: right;">0.131</td>
+<td style="text-align: right;">0.173</td>
 <td style="text-align: right;">0.171</td>
-<td style="text-align: right;">0.158</td>
+<td style="text-align: right;">0.161</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HD31_PBMC_3</td>
-<td style="text-align: right;">0.140</td>
-<td style="text-align: right;">0.163</td>
-<td style="text-align: right;">0.207</td>
-<td style="text-align: right;">0.150</td>
+<td style="text-align: right;">0.145</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: right;">0.240</td>
+<td style="text-align: right;">0.147</td>
 <td style="text-align: right;">0.190</td>
-<td style="text-align: right;">0.150</td>
+<td style="text-align: right;">0.146</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HD31_PBMC_7</td>
-<td style="text-align: right;">0.176</td>
-<td style="text-align: right;">0.032</td>
-<td style="text-align: right;">0.325</td>
-<td style="text-align: right;">0.144</td>
-<td style="text-align: right;">0.168</td>
-<td style="text-align: right;">0.154</td>
+<td style="text-align: right;">0.182</td>
+<td style="text-align: right;">0.015</td>
+<td style="text-align: right;">0.337</td>
+<td style="text-align: right;">0.142</td>
+<td style="text-align: right;">0.169</td>
+<td style="text-align: right;">0.155</td>
 </tr>
 </tbody>
 </table>
 
-Table 3: Deconvoluted cell type proportions calculated with Bisque and
-the signature matrix from the last step.
+Table 3: Deconvoluted cell type proportions calculated with Bisque.
 
 ## Plot Results
 
@@ -500,18 +497,15 @@ section is to give an example how the results can be visualized and to
 draw attention to the big differences between the results of the eleven
 methods implemented.
 
-    res_bisque <- omnideconv::deconvolute(
-      bulk, signatureMatrix, "bisque",
-      single_cell_data, cell_type_annotations, batch_ids
-    )
-    res_bisque_list <- list(res_bisque)
+    # Should we already combine CD4 and CD8?
+    # deconvolution <- cbind(deconvolution, T = (deconvolution[, "CD4 T"] + deconvolution[, "CD8 T"]))[, -c(2, 3)]
+    res_bisque <- deconvolution # Taking the computed values of the last step
+    res_bisque_list <- list(deconvolution)
     names(res_bisque_list) <- "Bisque"
     omnideconv::make_barplot(res_bisque_list, title = "Deconvolution result")
+<img src="plot-1.png" />
 
-![Figure 2: Cell type proportions of the last step visualized. Very
-heterogenous results, HD30 show a lot of T cell dividing and NK cell,
-while HD31 show a lot of
-monocytes.](omnideconv_vignette_files/figure-markdown_strict/plot-1.png)
+Figure 2: Cell type proportions of the last step visualized with very heterogenous results.
 
 The scatterplot shown below depicts the same results and message as the
 barplot above, it is just another idea of how to visualize the results.
@@ -525,10 +519,10 @@ can be recreated with this code.
       facet_wrap(~cell_type) +
       labs(title = "Bisque", y = "sample", x = "predicted fraction", color = "cell type") +
       scale_fill_brewer(palette = "Paired")
+      
+<img src="plot2-1.png" />
 
-![Figure 3: Same cell type proportions as in Figure 2, just visualized
-on a cell type
-level.](omnideconv_vignette_files/figure-markdown_strict/plot2-1.png)
+Figure 3: Same cell type proportions as in Figure 2, just visualized on a cell type level.
 
 # 3. Comparing Methods
 
@@ -549,17 +543,42 @@ In the two figures shown below, the single cell RNA-seq data contains
 counts while the bulk RNA-seq data is TPM normalized. Our test data sets
 contain TPM normalized values as well.
 
+    pickle_path_autogenes <- build_model(single_cell_data, cell_type_annotations, "autogenes")
+    res_autogenes <- deconvolute(bulk, pickle_path_autogenes, "autogenes")
+
+    # SCDC does not require the build_model step
+    res_scdc <- deconvolute(bulk, NULL, "scdc", single_cell_data, cell_type_annotations, batch_ids)
+
+    # res_bisque was already calculated before
+    result_list <- list(AutoGeneS = res_autogenes, Bisque = res_bisque, SCDC = res_scdc)
+
+    # This joins CD4 and CD8 T cells into on class so it can be compared with the reference data
+    result_list <- lapply(result_list, function(x) {
+      if ("CD4 T" %in% colnames(x)) {
+        cbind(x, T = (x[, "CD4 T"] + x[, "CD8 T"]))[, -c(2, 3)]
+      } else {
+        x
+      }
+    })
+    omnideconv::make_benchmarking_scatterplot(result_list, RefData)
+
+<img src="benchmarking-1.png" style="display: block; margin: auto;" />
+
+    omnideconv::make_barplot(result_list, "Comparison of different deconvolution methods")
+
+<img src="benchmarking-2.png" style="display: block; margin: auto;" />
+
 <!--
 
 ## Comparison with First-Generation Deconvolution Methods
 
-Another very important question is, how good the second-generation tools are in comparison to the first-generation deconvolution methods. For that purpose, we compared EPIC, quanTIseq, two first-generation methods with their default parameters, with Scaden. We chose these methods, since they showed a good performace in the benchmarking by Sturm et al. [@Sturm2019]. The deconvolution was based on unnormalized data. 
+Another very important question is, how good the second-generation tools are in comparison to the first-generation deconvolution methods. For that purpose, we compared EPIC, quanTIseq, two first-generation methods with their default parameters, with Scaden. We chose these methods, since they showed a good performace in the benchmarking by Sturm et al. [@Sturm2019]. The deconvolution was based on unnormalized data.
 
 TODO: Multiple examples, one of immunecell tissue, one of others
 
 
 <div class="figure">
-<img src="images/predictionVsGroundtruth_unnormalized_firstGeneration.png" alt="Figure 7: Comparison of using the unnormalized count data for the deconvolution with two first generation tools (EPIC and quanTIseq) and one second generation tool (Scaden)." width="80%" />
+<img src="predictionVsGroundtruth_unnormalized_firstGeneration.png" alt="Figure 7: Comparison of using the unnormalized count data for the deconvolution with two first generation tools (EPIC and quanTIseq) and one second generation tool (Scaden)." width="80%" />
 <p class="caption">Figure 7: Comparison of using the unnormalized count data for the deconvolution with two first generation tools (EPIC and quanTIseq) and one second generation tool (Scaden).</p>
 </div>
 
@@ -646,13 +665,13 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="even">
 <td style="text-align: left;">Bisque</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">yes</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">yes</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">yes</td>
-<td style="text-align: left;">yes</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
@@ -660,7 +679,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="odd">
 <td style="text-align: left;">BSeq-sc</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">(yes)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -674,7 +693,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="even">
 <td style="text-align: left;">CDSeq</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">(yes)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -688,7 +707,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="odd">
 <td style="text-align: left;">CIBERSORTx</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">(yes)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -702,7 +721,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="even">
 <td style="text-align: left;">CPM</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">(yes)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -716,7 +735,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="odd">
 <td style="text-align: left;">DWLS</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">(yes)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -730,7 +749,7 @@ should be evaluated when the whole packages is benchmarked in detail.
 <tr class="even">
 <td style="text-align: left;">MOMF</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">yes</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">yes</td>
@@ -792,7 +811,7 @@ matrix. ‘(yes)’ indicates that intersecting the genes of bulk data,
 single cell data and signature matrix is necessary.
 
 <!--
-<img src="images/ciber_matrices.png" width="45%" /><img src="images/dwls_matrices.png" width="45%" /><img src="images/bisque_matrices.png" width="45%" /><img src="images/momf_matrices.png" width="45%" />
+<img src="ciber_matrices.png" width="45%" /><img src="dwls_matrices.png" width="45%" /><img src="bisque_matrices.png" width="45%" /><img src="momf_matrices.png" width="45%" />
 Figure 8: Using the deconvolution method with signature matrices created by other methods. The data is unnormalized.
 
 As can be concluded from this figure, interchanging matrices between the methods does not considerably improve the predictions. One might derive small improvements especially when building the signature matrix with Bisque or CIBERSORTx, but the reason behind this needs further examination in the future.
@@ -809,7 +828,7 @@ usage of CIBERSORTx requires a token. For more information and to
 request such a token, please see the official website
 [CIBERSORTX](https://cibersortx.stanford.edu/).
 
-<img src="images/methods_table.png" alt="Table 4: Comparison of the methodes used in the package." width="80%" />
+<img src="methods_table.png" alt="Table 4: Comparison of the methodes used in the package." width="80%" />
 <p class="caption">
 Table 4: Comparison of the methodes used in the package.
 </p>
@@ -957,11 +976,6 @@ class="nocase">Quantifying tumor-infiltrating immune cells from
 transcriptomics data</span>.” *Cancer Immunology, Immunotherapy* 0.
 <https://doi.org/10.1007/s00262-018-2150-z>.
 
-Fridman, Wolf H., and Franck et al. Pagès. 2012. “<span
-class="nocase">The immune contexture in human tumours: impact on
-clinical outcome</span>.” *Nature Reviews Cancer* 12.
-<https://doi.org/10.1038/nrc3245>.
-
 Frishberg, Amit, Naama Peshes-Yaloz, Ofir Cohn, Diana Rosentul, Yael
 Steuerman, Liran Valadarsky, Gal Yankovitz, et al. 2019. “Cell
 Composition Analysis of Bulk Genomics Using Single-Cell Data.” *Nature
@@ -1005,6 +1019,10 @@ Aadel A. Chaudhuri, Florian Scherer, Michael S. Khodadoust, et al. 2019.
 “Determining Cell Type Abundance and Expression from Bulk Tissues with
 Digital Cytometry.” *Nature Biotechnology* 37 (7): 773–82.
 <https://doi.org/10.1038/s41587-019-0114-2>.
+
+Plitas, George, and Alexander Y. Rudensky. 2020. “Regulatory t Cells in
+Cancer.” *Annual Review of Cancer Biology* 4 (1): 459–77.
+<https://doi.org/10.1146/annurev-cancerbio-030419-033428>.
 
 Sturm, Gregor, Francesca Finotello, Florent Petitprez, Jitao David
 Zhang, Jan Baumbach, Wolf H Fridman, Markus List, and Tatsiana Aneichyk.
