@@ -1,20 +1,20 @@
 version: '3.5'
 
 services:
-  deconvExplorer:
+  deconvexplorer:
     build: 
       context: ./app          
       args:
         GITHUB_PAT: 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 
     image: deconv_explorer:latest
     expose:
-      - 3939
+      - 3838
     networks:
       - sp-net
   shinyproxy:
     build: ./shinyproxy
     depends_on: 
-      - deconvExplorer
+      - deconvexplorer
     expose:
       - 8080
     networks:
