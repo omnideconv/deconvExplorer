@@ -28,7 +28,7 @@ RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE
 
 RUN R -e "omnideconv::install_all_python()"
 
-RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
+#RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
 
 # in case set python environment for reticulate
 # Sys.setenv...
