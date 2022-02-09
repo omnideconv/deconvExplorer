@@ -21,6 +21,7 @@
 #' @importFrom utils write.csv
 #' @importFrom stringr str_subset
 #' @importFrom tidyr pivot_longer
+#' @importFrom bbplot bbc_style
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package

@@ -1,4 +1,16 @@
 
+# library(shiny)
+# library(shinydashboard)
+# library(shinycssloaders)
+# library(dplyr)
+# library(ggplot2)
+# library(omnideconv)
+# library(RColorBrewer)
+# library(waiter)
+# library(rintrojs)
+# 
+# source("Global.R")
+
 #' Run DeconvExplorer
 #'
 #' @param usr_bulk Bulk Sequencing data which will be deconvoluted
@@ -182,12 +194,12 @@ deconvExplorer <- function(usr_bulk = NULL,
           text = actionButton("startTour", "Start Tour",
             icon = icon("directions")
           ),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon("info", verify_fa = FALSE)
         ),
         notificationItem(text = actionButton("githubLink", "View the Code",
           onclick = "window.open('https://github.com/omnideconv', '_blank')",
           icon = icon("github")
-        ), icon = icon("", verify_fa = FALSE))
+        ), icon = icon("info", verify_fa = FALSE))
       ),
       dropdownMenu(
         type = "task",
@@ -214,11 +226,11 @@ deconvExplorer <- function(usr_bulk = NULL,
         badgeStatus = NULL,
         notificationItem(
           text = downloadButton("downloadSession", "Download Session"),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon("info", verify_fa = FALSE)
         ),
         notificationItem(
           text = fileInput("uploadSession", "Upload Session File"),
-          icon = icon("", verfiy_fa = FALSE), status = "primary"
+          icon = icon("info", verfiy_fa = FALSE), status = "primary"
         )
       )
     ),
@@ -620,3 +632,5 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   shiny::shinyApp(ui = de_ui, server = de_server)
 }
+
+#deconvExplorer()
