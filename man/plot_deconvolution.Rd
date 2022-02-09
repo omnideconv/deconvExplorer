@@ -9,7 +9,7 @@ plot_deconvolution(to_plot_list, plotMethod, facets, all_deconvolutions)
 \arguments{
 \item{to_plot_list}{List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")}
 
-\item{plotMethod}{Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "sina", "heatmap")}
+\item{plotMethod}{Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")}
 
 \item{facets}{Variable for grouping the plots ("method", "cell_type", "sample")}
 

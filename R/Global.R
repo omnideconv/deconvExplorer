@@ -7,7 +7,6 @@ axis <- list(
     "jitter" = list("fraction", "cell_type", "cell_type"),
     "scatter" = list("fraction", "cell_type", "cell_type"),
     "box" = list("cell_type", "fraction", "cell_type"),
-    "sina" = list("cell_type", "fraction", "cell_type"),
     "heatmap" = list("cell_type", "sample", "fraction")
   ),
   "cell_type" = list(
@@ -15,15 +14,13 @@ axis <- list(
     "jitter" = list("fraction", "method", "sample"),
     "scatter" = list("fraction", "method", "sample"),
     "box" = list("method", "fraction", "method"),
-    "sina" = list("method", "fraction", "cell_type"),
     "heatmap" = list("sample", "method", "fraction")
   ),
   "sample" = list(
-    "bar" = list("cell_type", "fraction", "method"),
-    "jitter" = list("cell_type", "fraction", "method"),
-    "scatter" = list("cell_type", "fraction", "method"),
+    "bar" = list("fraction", "cell_type", "method"),
+    "jitter" = list("fraction", "cell_type", "method"),
+    "scatter" = list("fraction", "cell_type", "method"),
     "box" = list("method", "fraction", "method"),
-    "sina" = list("method", "fraction", "method"),
     "heatmap" = list("cell_type", "method", "fraction")
   )
 )
@@ -43,8 +40,6 @@ getAes <- function(facets, plotMethod) {
 
   if (plotMethod %in% c("jitter", "scatter")) {
     return(ggplot2::aes_string(x = x, y = y, col = col))
-  } else if (plotMethod == "sina") { # does not work with aes_string, using aes_
-    return(ggplot2::aes_(x = as.name(x), y = as.name(y), col = as.name(col)))
   } else {
     return(ggplot2::aes_string(x = x, y = y, fill = col))
   }
@@ -73,7 +68,7 @@ getLabs <- function(facets, plotMethod) {
 #' Plot Deconvolution results
 #'
 #' @param to_plot_list List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")
-#' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "sina", "heatmap")
+#' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")
 #' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
 #' @param all_deconvolutions ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"
 #'
@@ -115,9 +110,27 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
   plot <- ggplot(data, getAes(facets, plotMethod))
   plot <- plot + facet_wrap(~ data[[facets]])
 
+  # general theme
+  plot <- plot + bbplot::bbc_style() +
+    theme(
+      legend.title = element_text(size = 16), # legent title font size
+      legend.text = element_text(size = 14), # legend element font size
+      axis.text.x = element_text(size = 14), # x axis font size
+      axis.text.y = element_text(size = 14), # y axis font size
+      axis.ticks.x = ggplot2::element_line(colour = "#333333"), # vertical ticks for fractions
+      axis.ticks.length = grid::unit(0.26, "cm"), # tick length in cm
+      strip.text = element_text(size = 16)
+    )
+
   if (plotMethod == "bar") {
-    plot <- plot + geom_col(tooltip) +
-      getLabs(facets, plotMethod)
+    if (facets != "method") {
+      plot <- plot + geom_col(tooltip, position = "dodge") # not stacked
+    } else {
+      plot <- plot + geom_col(tooltip) +
+        theme(panel.grid.major.y = ggplot2::element_blank()) # remove vertical lines
+    }
+
+    plot <- plot + getLabs(facets, plotMethod)
   } else if (plotMethod == "jitter") {
     plot <- plot + geom_jitter(tooltip) +
       getLabs(facets, plotMethod)
@@ -128,10 +141,6 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
     plot <- plot + geom_boxplot(tooltip) +
       coord_flip() +
       getLabs(facets, plotMethod)
-  } else if (plotMethod == "sina") {
-    plot <- plot + ggforce::geom_sina() +
-      coord_flip() +
-      getLabs(facets, plotMethod)
   } else if (plotMethod == "heatmap") {
     plot <- plot + geom_tile(tooltip) +
       # geom_text(aes(label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
@@ -140,6 +149,8 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
       scale_fill_gradient(low = "white", high = "blue") +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
   }
+
+  # set label sizes for all plots
 
   # render
   plotly::ggplotly(plot, tooltip = c("text")) %>%
