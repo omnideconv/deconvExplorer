@@ -43,7 +43,7 @@ RUN groupadd  shiny \
 # copy server configs
 COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
 COPY shiny-server.sh /usr/bin/shiny-server.sh
-COPY /R /srv/shiny-server
+COPY /*.R /srv/shiny-server/
 #RUN chmod -R +r /srv/shiny-server
 RUN chown -R shiny:shiny /srv/shiny-server
 
