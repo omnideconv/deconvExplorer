@@ -16,13 +16,14 @@ RUN apt-get update && apt-get install -y \
     libssh2-1-dev \
     libgdal-dev \
     libgeos-dev \
-    libproj-dev
+    libproj-dev \
+    cmake 
 
 # last three are for scBio/CPM
 
 # omnideconv and DeconvExplorer
 
-RUN install2.r --error remotes
+RUN install2.r --error remotes car matlib
 RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
 RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
