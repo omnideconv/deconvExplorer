@@ -34,5 +34,5 @@ Encoding: UTF-8
 Remotes: 
     github::omnideconv/omnideconv,
     github::bbc/bbplot, 
-    install_github("jokergoo/InteractiveComplexHeatmap")
+    github::jokergoo/InteractiveComplexHeatmap
     
