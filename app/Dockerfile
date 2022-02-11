@@ -16,19 +16,20 @@ RUN apt-get update && apt-get install -y \
     libssh2-1-dev \
     libgdal-dev \
     libgeos-dev \
-    libproj-dev
+    libproj-dev \
+    cmake 
 
 # last three are for scBio/CPM
 
 # omnideconv and DeconvExplorer
 
-RUN install2.r --error remotes
+RUN install2.r --error remotes car matlib
 RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
 RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
 RUN R -e "omnideconv::install_all_python()"
 
-RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
+#RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
 
 # in case set python environment for reticulate
 # Sys.setenv...
@@ -37,7 +38,20 @@ RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/
 COPY CIBERSORT.R .
 RUN R -e "omnideconv::bseqsc_config(file = 'CIBERSORT.R')"
 
+RUN groupadd  shiny \
+&& useradd --gid shiny --shell /bin/bash --create-home shiny
+
+# copy server configs
+COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
+COPY shiny-server.sh /usr/bin/shiny-server.sh
+COPY /*.R /srv/shiny-server/
+#RUN chmod -R +r /srv/shiny-server
+RUN chown -R shiny:shiny /srv/shiny-server
+
+
 EXPOSE 3838
 
-CMD ["R", "-e", "DeconvExplorer::deconvExplorer()"]
+
+CMD ["R", "-e", "shiny::runApp('/srv/shiny-server/', host = '0.0.0.0', port = 3838)"]
+#CMD ["/usr/bin/shiny-server.sh"]
 

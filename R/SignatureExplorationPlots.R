@@ -123,6 +123,11 @@ plot_signatureClustered <- function(signature) {
 #'
 #' @param signatures named list of deconvolution signatures
 #' @param mode upSet Mode (distinct, intersect, union)
+#' @param minDegree minimal set degree to display in the plot 
+#' @param maxDegree maxmiaml set degree to display in the plot, NULL to display all sets
+#' @param order order Sets by Size or Degree (size, degree)
+#' @param invert invert the order of the Sets, standard = FALSE
+#' @param colorDegrees color sets according to their degree, standard = TRUE
 #'
 #' @returns UpSet Plot
 

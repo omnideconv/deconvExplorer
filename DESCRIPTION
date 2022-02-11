@@ -19,7 +19,6 @@ Imports:
     DT, 
     shinyjs, 
     magrittr,
-    ggforce, 
     stringr, 
     tidyr, 
     utils,
@@ -33,5 +32,6 @@ Imports:
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
-    github::omnideconv/omnideconv
+    github::omnideconv/omnideconv,
+    github::bbc/bbplot
     
