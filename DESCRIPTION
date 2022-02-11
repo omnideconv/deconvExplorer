@@ -24,11 +24,15 @@ Imports:
     utils,
     tools, 
     vroom,
-    markdown, 
-    bbplot
+    markdown,
+    bbplot,
+    ComplexHeatmap,
+    grid,
+    InteractiveComplexHeatmap
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
     github::omnideconv/omnideconv,
-    github::bbc/bbplot
+    github::bbc/bbplot, 
+    github::jokergoo/InteractiveComplexHeatmap
     

@@ -19,6 +19,9 @@
 #' @param usr_batch Batch IDs, only for some deconvolution methods
 #'
 #' @export
+
+
+
 deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
@@ -179,6 +182,93 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
   )
 
+
+  # Signature Exploration Boxes ---------------------------------------------
+  signature_genesPerMethod <- shinydashboard::box(
+    title = "Genes per Method", status = "info", solidHeader = TRUE, width = 6,
+    shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
+  )
+
+  signature_kappaPerMethod <- shinydashboard::box(
+    title = "Condition Number per Method", status = "info", solidHeader = TRUE, width = 6,
+    shinycssloaders::withSpinner(plotOutput("kappaPerMethod"))
+  )
+
+  signature_clusteredHeatmap <- shinydashboard::box(
+    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
+    column(6,
+    selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)),
+    column(6,
+    div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"),style="margin-top:1.9em")),
+    column(12,
+    InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
+      width="1500px", height="450px", containment = TRUE
+    ))
+  )
+  
+  signature_clusteredHeatmapSubPlot <- shinydashboard::box(
+    title = "Sub Heatmap", status = "info", solidHeader = TRUE, width = 12, collapsible = TRUE,
+    column(
+      8,
+      InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "1000px")
+    ),
+    column(
+      4, shinycssloaders::withSpinner(
+        DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
+      )
+    ), 
+    conditionalPanel(condition = "false",
+                     InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")) # necessary, will not display if function not used
+  )
+
+  signature_upsetPlot <- shinydashboard::box(
+    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height = "33em",
+    shinycssloaders::withSpinner(plotOutput("signatureUpset"))
+  )
+  signature_upsetPlotSettings <- shinydashboard::box(
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height = "33em",
+    column(
+      11,
+      selectInput("upsetMode", "Upset Plot Mode", choices = c(
+        "Distinct" = "distinct",
+        "Intersect" = "intersect",
+        "Union" = "union"
+      ))
+    ),
+    column(1,
+      # link to help
+      tags$a(href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png", target = "_blank", icon("question-circle")),
+      style = "margin-top:2em"
+    ),
+
+    # plot settings
+    sliderInput("upSetDegree",
+      label = "Intersection Sizes to display", min = 1, max = 5,
+      value = c(1, 5), round = TRUE, step = 1, ticks = FALSE
+    ),
+    column(
+      5,
+      selectInput("upSetOrder", label = "Order Sets by", choices = c(
+        "Set Size" = "size",
+        "Set Degree" = "degree"
+      ))
+    ),
+    column(
+      3,
+      div(checkboxInput("upSetInvert", label = "Invert Order", value = FALSE), style = "margin-top:2em")
+    ),
+    column(
+      4,
+      div(checkboxInput("upSetColorDegrees", label = "Color Degrees", value = TRUE), style = "margin-top:2em")
+    ),
+
+    # download of results
+    checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
+      choices = NULL, inline = TRUE
+    ),
+    downloadButton("upSetDownloadButton", label = "Download Subset Genes")
+  )
+
   # ui definition  ----------------------------------------------------------
 
 
@@ -238,6 +328,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       shinyjs::useShinyjs(),
       introjsUI(),
       menuItem("Deconvolution", tabName = "deconv"),
+      menuItem("Signature Exploration", tabName = "signatureExploration"),
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo")
     )),
@@ -251,6 +342,12 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(data_upload_box, settings_box),
           fluidRow(deconv_all_results),
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
+        )),
+        tabItem(tabName = "signatureExploration", fluidPage(
+          fluidRow(signature_genesPerMethod, signature_kappaPerMethod),
+          fluidRow(signature_clusteredHeatmap),
+          fluidRow(signature_clusteredHeatmapSubPlot),
+          fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
         )),
         tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
         tabItem(tabName = "fInfo", fluidPage(
@@ -267,12 +364,15 @@ deconvExplorer <- function(usr_bulk = NULL,
   de_server <- shinyServer(function(input, output, session) {
     ### background datastructure to store several deconvolution results
 
+    # functions
+    getSelectionToPlot <- function() {
+      return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
+    }
 
     # storing all calculated deconvolution
     all_deconvolutions <- reactiveValues()
 
     userData <- reactiveValues()
-
 
     # options
     options(shiny.maxRequestSize = 10 * 1024^2 * 100) # 1GB
@@ -311,6 +411,25 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
 
     # updateTableSelection()
+
+
+    # Reactives ---------------------------------------------------------------
+
+    # named list of available signatures
+    allSignatures <- reactive({
+      signatures <- list()
+
+      all_results <- reactiveValuesToList(all_deconvolutions)
+      for (i in 1:length(all_results)) {
+        result <- all_results[[i]]
+        name <- names(all_results[i])
+        signatures[[name]] <- result[[2]]
+      }
+      signatures
+    })
+    
+    # 
+    signatureSelectedGenesDownloadContent <- reactiveVal("") # set empty reactiveVal
 
     # Observers and Eventhandling ---------------------------------------------
 
@@ -413,7 +532,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     observe({
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
-      updateSelectInput(session, inputId = "computedDeconvMethod", choices = deconv_choices)
+      updateSelectInput(session,
+        inputId = "computedDeconvMethod",
+        choices = deconv_choices
+      )
     })
 
     # update signature Method choices when selecting deconvolution to load
@@ -429,7 +551,16 @@ deconvExplorer <- function(usr_bulk = NULL,
         signature_choices <- signature_choices[2] # nur das zweite
       }
 
-      updateSelectInput(session, inputId = "computedSignatureMethod", choices = signature_choices)
+      updateSelectInput(session,
+        inputId = "computedSignatureMethod",
+        choices = signature_choices
+      )
+    })
+
+    # update Signature Tab Choices when new Deconvolution Added
+
+    observe({
+      updateSelectInput(session, inputId = "signatureToHeatmap", choices = names(allSignatures()))
     })
 
     # add Deconvolution to To Plot list
@@ -485,6 +616,52 @@ deconvExplorer <- function(usr_bulk = NULL,
       )
     )
 
+    output$signatureGenesPerMethod <- renderPlot({
+      req(all_deconvolutions) # result need to be calculated
+      plot_signatureGenesPerMethod(allSignatures())
+    })
+
+    output$kappaPerMethod <- renderPlot({
+      req(all_deconvolutions)
+      plot_conditionNumberPerMethod(allSignatures())
+    })
+
+    # plot interactive heatmap
+    observe({
+      req(all_deconvolutions, input$signatureToHeatmap)
+      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature", brush_action = brush_action)
+    })
+
+    # UpSet Plot
+    output$signatureUpset <- renderPlot({
+      req(all_deconvolutions, input$upSetDegree, input$upSetOrder)
+
+      # update checkbox of setting box before rendering the plot
+      # needs to be done with every plot rerendering, data could have been changed!
+      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(allSignatures()), inline = TRUE)
+
+      # get upset Degree Choices
+      minDegree <- input$upSetDegree[[1]]
+      maxDegree <- input$upSetDegree[[2]]
+
+      # calculate the plot
+      result <- plot_signatureUpset(allSignatures(),
+        mode = input$upsetMode,
+        minDegree = minDegree,
+        maxDegree = maxDegree,
+        order = input$upSetOrder,
+        invert = input$upSetInvert,
+        colorDegrees = input$upSetColorDegrees
+      )
+
+      # update settings
+      # probably going with a preselected range of values
+      # might also be possible to update to min=1, max=numberofsamples, and if maxDegree now higher than selected: value=c(min, newmax)
+      # updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
+
+      # show the plot
+      result[[1]]
+    })
 
     # Tables ------------------------------------------------------------------
 
@@ -533,6 +710,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
 
+    # Downloads ---------------------------------------------------------------
+
     output$signatureDownload <- downloadHandler(
       filename = function() {
         paste("signature", ".csv", sep = "")
@@ -563,29 +742,35 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
     )
 
-
-    # Images ------------------------------------------------------------------
-    output$logo <- renderImage(
-      {
-        list(
-          src = system.file("www", "logo.jpg", package = "DeconvExplorer"),
-          contentType = "image/jpeg",
-          width = "100%"
-        )
+    output$upSetDownloadButton <- downloadHandler(
+      filename = function() {
+        paste0("subset_", paste0(input$upSetDownloadSelection, collapse = "_"), ".txt")
       },
-      deleteFile = TRUE
+      content = function(file) {
+        # get subset selection from checkbox
+        # Variable which contains the info: input$upSetDownloadSelection
+        data <- download_signatureUpset(allSignatures(),
+          combination = input$upSetDownloadSelection,
+          mode = input$upsetMode
+        )
+
+        # get genes from function
+        write.table(data, file)
+      }
     )
+    
+    # download selected Genes from the Interactive Signature Heatmap
+    output$signatureSelectedGenesDownloadButton <- downloadHandler(
+      filename = function(){
+        paste0("Selection_", input$signatureToHeatmap, ".txt")
+      }, 
+      content = function (file){
+        data <- signatureSelectedGenesDownloadContent()
 
-    # functions ---------------------------------------------------------------
-
-    getSelectionToPlot <- function() {
-      return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
-    }
-
-    # updateTableSelection <- function() {
-    #   updateSelectInput(session, inputId = "deconvolutionToTable", choices = userData$deconvolution_result)
-    #   updateSelectInput(session, inputId = "signatureToTable", choices = userData$deconvolution_result)
-    # }
+        # write file
+        write.table(data, file)
+      }
+    )
 
     # load user file, file information from fileInput()
     loadFile <- function(file, type = "") {
@@ -627,6 +812,40 @@ deconvExplorer <- function(usr_bulk = NULL,
         showNotification(paste("Successfully Loaded File: ", file$name), type = "default")
       }
       content # case NULL = File not loaded, error already displayed to user
+    }
+    
+    # Images ------------------------------------------------------------------
+    output$logo <- renderImage(
+      {
+        list(
+          src = system.file("www", "logo.jpg", package = "DeconvExplorer"),
+          contentType = "image/jpeg",
+          width = "100%"
+        )
+      },
+      deleteFile = TRUE
+    )
+    
+    # functions ---------------------------------------------------------------
+    brush_action <- function(df, input, output, session) {
+      req(all_deconvolutions, input$signatureToHeatmap)
+      
+      #ClusteredHeatmapSelectedGenes(Table)
+      
+      # get index of selected columns 
+      column_index <- unique(unlist(df$column_index))
+      
+      # get full dataset
+      signature <- allSignatures()[[input$signatureToHeatmap]]
+      
+      # get selected subset
+      selected <- signature[column_index,]   
+      
+      # Output Table of selected Genes
+      output$signatureHeatmap_SelectedGenesTable <- DT::renderDataTable(DT::formatRound(DT::datatable(selected), columns=1:ncol(selected), digits=2))
+      
+      # Output List of Gene Names for Download
+      signatureSelectedGenesDownloadContent(paste(rownames(selected), sep = "\n"))
     }
   })
 
