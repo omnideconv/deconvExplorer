@@ -33,5 +33,6 @@ RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
     github::omnideconv/omnideconv,
-    github::bbc/bbplot
+    github::bbc/bbplot, 
+    install_github("jokergoo/InteractiveComplexHeatmap")
     
