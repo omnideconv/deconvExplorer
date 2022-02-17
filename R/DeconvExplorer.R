@@ -330,7 +330,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Signature Exploration", tabName = "signatureExploration"),
       menuItem("Benchmark", tabName = "benchmark"),
-      menuItem("Further Information", tabName = "fInfo")
+      menuItem("Further Information", tabName = "fInfo"), 
+      selectInput("globalColor", "Select Global Color Palette for Plots", 
+                  choices = c("Set1", "Set2", "Set3", "Paired", "Dark2", "Spectral", "Accent"), 
+                  selected="Spectral")
     )),
     dashboardBody(
       tags$head(tags$style(
@@ -605,7 +608,8 @@ deconvExplorer <- function(usr_bulk = NULL,
         userData$deconvolution_result,
         input$plotMethod,
         input$facets,
-        all_deconvolutions
+        all_deconvolutions, 
+        input$globalColor
       )
     )
 
@@ -618,12 +622,12 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$signatureGenesPerMethod <- renderPlot({
       req(all_deconvolutions) # result need to be calculated
-      plot_signatureGenesPerMethod(allSignatures())
+      plot_signatureGenesPerMethod(allSignatures(), input$globalColor)
     })
 
     output$kappaPerMethod <- renderPlot({
       req(all_deconvolutions)
-      plot_conditionNumberPerMethod(allSignatures())
+      plot_conditionNumberPerMethod(allSignatures(), input$globalColor)
     })
 
     # plot interactive heatmap

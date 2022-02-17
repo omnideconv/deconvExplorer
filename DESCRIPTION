@@ -28,7 +28,8 @@ Imports:
     bbplot,
     ComplexHeatmap,
     grid,
-    InteractiveComplexHeatmap
+    InteractiveComplexHeatmap, 
+    RColorBrewer
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 

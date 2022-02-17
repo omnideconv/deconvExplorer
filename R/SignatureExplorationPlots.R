@@ -5,7 +5,7 @@
 #' @returns A Barplot
 #'
 
-plot_signatureGenesPerMethod <- function(signatures) {
+plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
@@ -33,7 +33,8 @@ plot_signatureGenesPerMethod <- function(signatures) {
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
-    theme(legend.position = "none")
+    theme(legend.position = "none") + 
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
 
   plot
 }
@@ -44,7 +45,7 @@ plot_signatureGenesPerMethod <- function(signatures) {
 #'
 #' @returns A Barplot
 
-plot_conditionNumberPerMethod <- function(signatures) {
+plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
@@ -67,7 +68,8 @@ plot_conditionNumberPerMethod <- function(signatures) {
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
-    theme(legend.position = "none")
+    theme(legend.position = "none") +
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
 
   plot
 }
