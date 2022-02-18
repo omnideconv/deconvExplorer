@@ -71,6 +71,7 @@ getLabs <- function(facets, plotMethod) {
 #' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")
 #' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
 #' @param all_deconvolutions ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"
+#' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns ggplot rendered by plotly
 

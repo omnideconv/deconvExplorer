@@ -1,6 +1,7 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
 #' @param signatures Named List of sigantures, names are the calculation methods
+#' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
@@ -42,6 +43,7 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' Calculate Barplot of Signature Genes per Method
 #'
 #' @param signatures Named List of sigantures, names are the calculation methods
+#' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
 
@@ -77,6 +79,7 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #' Calculate Clustered Heatmap of Signature Genes
 #'
 #' @param signature One Signature to plot
+#' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Heatmap
 plot_signatureClustered <- function(signature, palette="Set1") {

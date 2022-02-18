@@ -8,6 +8,8 @@ plot_signatureClustered(signature, palette = "Set1")
 }
 \arguments{
 \item{signature}{One Signature to plot}
+
+\item{palette}{RColorBrewer Palette name, standard = Set1}
 }
 \value{
 A Heatmap

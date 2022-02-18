@@ -8,6 +8,8 @@ plot_signatureGenesPerMethod(signatures, palette = "Set1")
 }
 \arguments{
 \item{signatures}{Named List of sigantures, names are the calculation methods}
+
+\item{palette}{RColorBrewer palette name, standard = Set1}
 }
 \value{
 A Barplot

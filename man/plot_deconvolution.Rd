@@ -20,6 +20,8 @@ plot_deconvolution(
 \item{facets}{Variable for grouping the plots ("method", "cell_type", "sample")}
 
 \item{all_deconvolutions}{ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"}
+
+\item{palette}{RColorBrewer palette name, standard = Set1}
 }
 \value{
 ggplot rendered by plotly
