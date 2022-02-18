@@ -27,6 +27,7 @@
 #' @importFrom grid gpar unit
 #' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput makeInteractiveComplexHeatmap
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom circlize colorRamp2
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package

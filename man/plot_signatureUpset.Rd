@@ -11,7 +11,8 @@ plot_signatureUpset(
   maxDegree = NULL,
   order = "size",
   invert = FALSE,
-  colorDegrees = TRUE
+  colorDegrees = TRUE,
+  palette = "Set1"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ plot_signatureUpset(
 \item{invert}{invert the order of the Sets, standard = FALSE}
 
 \item{colorDegrees}{color sets according to their degree, standard = TRUE}
+
+\item{palette}{Name of a RColorBrewer palette, standard = Set1}
 }
 \value{
 UpSet Plot

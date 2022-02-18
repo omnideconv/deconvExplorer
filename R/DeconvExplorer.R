@@ -331,7 +331,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       menuItem("Signature Exploration", tabName = "signatureExploration"),
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo"), 
-      selectInput("globalColor", "Select Global Color Palette for Plots", 
+      selectInput("globalColor", "Select Plot Color Palette", 
                   choices = c("Set1", "Set2", "Set3", "Paired", "Dark2", "Spectral", "Accent"), 
                   selected="Spectral")
     )),
@@ -633,7 +633,13 @@ deconvExplorer <- function(usr_bulk = NULL,
     # plot interactive heatmap
     observe({
       req(all_deconvolutions, input$signatureToHeatmap)
-      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]]), "clusteredHeatmapOneSignature", brush_action = brush_action)
+      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, 
+                                                               output, 
+                                                               session, 
+                                                               plot_signatureClustered(allSignatures()[[input$signatureToHeatmap]], 
+                                                                                       input$globalColor), 
+                                                               "clusteredHeatmapOneSignature", 
+                                                               brush_action = brush_action)
     })
 
     # UpSet Plot
@@ -655,7 +661,8 @@ deconvExplorer <- function(usr_bulk = NULL,
         maxDegree = maxDegree,
         order = input$upSetOrder,
         invert = input$upSetInvert,
-        colorDegrees = input$upSetColorDegrees
+        colorDegrees = input$upSetColorDegrees, 
+        palette = input$globalColor
       )
 
       # update settings
