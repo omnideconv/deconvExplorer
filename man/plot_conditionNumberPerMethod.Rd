@@ -4,10 +4,12 @@
 \alias{plot_conditionNumberPerMethod}
 \title{Calculate Barplot of Signature Genes per Method}
 \usage{
-plot_conditionNumberPerMethod(signatures)
+plot_conditionNumberPerMethod(signatures, palette = "Set1")
 }
 \arguments{
 \item{signatures}{Named List of sigantures, names are the calculation methods}
+
+\item{palette}{RColorBrewer Palette name, standard = Set1}
 }
 \value{
 A Barplot

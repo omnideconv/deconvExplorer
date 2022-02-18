@@ -71,10 +71,11 @@ getLabs <- function(facets, plotMethod) {
 #' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")
 #' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
 #' @param all_deconvolutions ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"
+#' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns ggplot rendered by plotly
 
-plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions) {
+plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions, palette = "Set1") {
   # load deconvolutions from all_deconvolutions into a list
   deconvolution_list <- list()
   for (deconvolution in to_plot_list) {
@@ -130,25 +131,31 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
         theme(panel.grid.major.y = ggplot2::element_blank()) # remove vertical lines
     }
 
-    plot <- plot + getLabs(facets, plotMethod)
+    plot <- plot + getLabs(facets, plotMethod) + 
+    ggplot2::scale_fill_brewer(palette=palette)
   } else if (plotMethod == "jitter") {
     plot <- plot + geom_jitter(tooltip) +
-      getLabs(facets, plotMethod)
+      getLabs(facets, plotMethod) + 
+      ggplot2::scale_colour_brewer(palette=palette)
   } else if (plotMethod == "scatter") {
     plot <- plot + geom_point(tooltip) +
-      getLabs(facets, plotMethod)
+      getLabs(facets, plotMethod) + 
+      ggplot2::scale_colour_brewer(palette=palette)
   } else if (plotMethod == "box") {
     plot <- plot + geom_boxplot(tooltip) +
       coord_flip() +
-      getLabs(facets, plotMethod)
+      getLabs(facets, plotMethod) + 
+      ggplot2::scale_fill_brewer(palette=palette)
   } else if (plotMethod == "heatmap") {
     plot <- plot + geom_tile(tooltip) +
       # geom_text(aes(label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
       getLabs(facets, plotMethod) +
       theme(axis.text.x = element_text(angle = 90)) +
-      scale_fill_gradient(low = "white", high = "blue") +
-      guides(fill = guide_colorbar(barwith = 0.5, barheight = 20))
+      scale_fill_gradient(low = "white", high = RColorBrewer::brewer.pal(3, palette)[1:1]) +
+      guides(fill = guide_colorbar(barwith = 0.5, barheight = 20)) 
   }
+  
+  #plot = plot + ggplot2::scale_colour_brewer(palette="Set3")
 
   # set label sizes for all plots
 

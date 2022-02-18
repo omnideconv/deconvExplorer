@@ -4,7 +4,13 @@
 \alias{plot_deconvolution}
 \title{Plot Deconvolution results}
 \usage{
-plot_deconvolution(to_plot_list, plotMethod, facets, all_deconvolutions)
+plot_deconvolution(
+  to_plot_list,
+  plotMethod,
+  facets,
+  all_deconvolutions,
+  palette = "Set1"
+)
 }
 \arguments{
 \item{to_plot_list}{List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")}
@@ -14,6 +20,8 @@ plot_deconvolution(to_plot_list, plotMethod, facets, all_deconvolutions)
 \item{facets}{Variable for grouping the plots ("method", "cell_type", "sample")}
 
 \item{all_deconvolutions}{ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"}
+
+\item{palette}{RColorBrewer palette name, standard = Set1}
 }
 \value{
 ggplot rendered by plotly

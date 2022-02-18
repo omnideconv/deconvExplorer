@@ -1,11 +1,12 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
 #' @param signatures Named List of sigantures, names are the calculation methods
+#' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
 
-plot_signatureGenesPerMethod <- function(signatures) {
+plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
@@ -33,7 +34,8 @@ plot_signatureGenesPerMethod <- function(signatures) {
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
-    theme(legend.position = "none")
+    theme(legend.position = "none") + 
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
 
   plot
 }
@@ -41,10 +43,11 @@ plot_signatureGenesPerMethod <- function(signatures) {
 #' Calculate Barplot of Signature Genes per Method
 #'
 #' @param signatures Named List of sigantures, names are the calculation methods
+#' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
 
-plot_conditionNumberPerMethod <- function(signatures) {
+plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
@@ -67,7 +70,8 @@ plot_conditionNumberPerMethod <- function(signatures) {
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
-    theme(legend.position = "none")
+    theme(legend.position = "none") +
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
 
   plot
 }
@@ -75,9 +79,10 @@ plot_conditionNumberPerMethod <- function(signatures) {
 #' Calculate Clustered Heatmap of Signature Genes
 #'
 #' @param signature One Signature to plot
+#' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Heatmap
-plot_signatureClustered <- function(signature) {
+plot_signatureClustered <- function(signature, palette="Set1") {
   df <- data.frame(signature)
 
   df <- cbind("X" = rownames(df), df) # add gene names as column
@@ -102,16 +107,23 @@ plot_signatureClustered <- function(signature) {
   df <- tidyr::pivot_wider(df, names_from = "cell_type", values_from = "z")
   mat <- as.matrix(df[, -1]) # without gene names
   rownames(mat) <- df$X # set gene names
+  
+  # calculate color palette
+  col_fun = circlize::colorRamp2(c(-2, 0, 2), c(RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
+                                                "white", # middle color
+                                                RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
+                                                )
+                                 )
 
   # Plot with complex heatmap
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_split = ncol(mat), row_names_side = "left",
     cluster_columns = TRUE, column_km = ncol(mat),
-    border = TRUE
+    border = TRUE, col=col_fun
   )
 
-  # heatmap <- ComplexHeatmap::draw(heatmap)
+  heatmap <- ComplexHeatmap::draw(heatmap)
 
   return(heatmap)
 
@@ -128,12 +140,13 @@ plot_signatureClustered <- function(signature) {
 #' @param order order Sets by Size or Degree (size, degree)
 #' @param invert invert the order of the Sets, standard = FALSE
 #' @param colorDegrees color sets according to their degree, standard = TRUE
+#' @param palette Name of a RColorBrewer palette, standard = Set1
 #'
 #' @returns UpSet Plot
 
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
                                 maxDegree = NULL, order = "size", invert = FALSE,
-                                colorDegrees = TRUE) {
+                                colorDegrees = TRUE, palette = "Set1") {
   # takes list of signatures
   sets <- list()
 
@@ -162,7 +175,7 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 
   # calculate colors
   if (colorDegrees == TRUE) {
-    upSetColors <- c("black", "blue", "red", "yellow", "green")[ComplexHeatmap::comb_degree(mat)] # max five different right now
+    upSetColors <- RColorBrewer::brewer.pal(8, palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
   } else { # =FALSE
     upSetColors <- c("black")
   }
