@@ -77,9 +77,11 @@ getLabs <- function(facets, plotMethod) {
 
 plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions, palette = "Set1") {
   # load deconvolutions from all_deconvolutions into a list
+  
+  # TODO move this to DeconvExplorer.R ####
   deconvolution_list <- list()
   for (deconvolution in to_plot_list) {
-    deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
+    deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[deconvolution] 
   }
 
   # preformat data into a dataframe
@@ -229,7 +231,7 @@ plot_benchmark <- function(to_plot_list, all_deconvolutions) {
     plotly::config(
       displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = paste0("plotMethod", "_plot")),
       modeBarButtonsToRemove = list(
-        "hoverCLosestCartesian",
+        "hoverClosestCartesian",
         "hoverCompareCartesian",
         "zoomIn2d", "zoomOut2d",
         "lasso2d", "zoom2d",
