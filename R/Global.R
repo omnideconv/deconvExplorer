@@ -1,29 +1,29 @@
 
 # axis definition ---------------------------------------------------------
 
-axis <- list(
-  "method" = list( # x, y, fill/color
-    "bar" = list("fraction", "sample", "cell_type"),
-    "jitter" = list("fraction", "cell_type", "cell_type"),
-    "scatter" = list("fraction", "cell_type", "cell_type"),
-    "box" = list("cell_type", "fraction", "cell_type"),
-    "heatmap" = list("cell_type", "sample", "fraction")
-  ),
-  "cell_type" = list(
-    "bar" = list("fraction", "sample", "method"),
-    "jitter" = list("fraction", "method", "sample"),
-    "scatter" = list("fraction", "method", "sample"),
-    "box" = list("method", "fraction", "method"),
-    "heatmap" = list("sample", "method", "fraction")
-  ),
-  "sample" = list(
-    "bar" = list("fraction", "cell_type", "method"),
-    "jitter" = list("fraction", "cell_type", "method"),
-    "scatter" = list("fraction", "cell_type", "method"),
-    "box" = list("method", "fraction", "method"),
-    "heatmap" = list("cell_type", "method", "fraction")
-  )
-)
+# axis <- list(
+#   "method" = list( # x, y, fill/color
+#     "bar" = list("fraction", "sample", "cell_type"),
+#     "jitter" = list("fraction", "cell_type", "cell_type"),
+#     "scatter" = list("fraction", "cell_type", "cell_type"),
+#     "box" = list("cell_type", "fraction", "cell_type"),
+#     "heatmap" = list("cell_type", "sample", "fraction")
+#   ),
+#   "cell_type" = list(
+#     "bar" = list("fraction", "sample", "method"),
+#     "jitter" = list("fraction", "method", "sample"),
+#     "scatter" = list("fraction", "method", "sample"),
+#     "box" = list("method", "fraction", "method"),
+#     "heatmap" = list("sample", "method", "fraction")
+#   ),
+#   "sample" = list(
+#     "bar" = list("fraction", "cell_type", "method"),
+#     "jitter" = list("fraction", "cell_type", "method"),
+#     "scatter" = list("fraction", "cell_type", "method"),
+#     "box" = list("method", "fraction", "method"),
+#     "heatmap" = list("cell_type", "method", "fraction")
+#   )
+# )
 
 # aes definition  ---------------------------------------------------------
 #' Construct Aesthetics for plot_deconvolution
@@ -33,17 +33,17 @@ axis <- list(
 #'
 #' @returns aesthetic mapping for ggplot based on the given parameters
 
-getAes <- function(facets, plotMethod) {
-  x <- axis[[facets]][[plotMethod]][[1]]
-  y <- axis[[facets]][[plotMethod]][[2]]
-  col <- axis[[facets]][[plotMethod]][[3]]
-
-  if (plotMethod %in% c("jitter", "scatter")) {
-    return(ggplot2::aes_string(x = x, y = y, col = col))
-  } else {
-    return(ggplot2::aes_string(x = x, y = y, fill = col))
-  }
-}
+# getAes <- function(facets, plotMethod) {
+#   x <- axis[[facets]][[plotMethod]][[1]]
+#   y <- axis[[facets]][[plotMethod]][[2]]
+#   col <- axis[[facets]][[plotMethod]][[3]]
+# 
+#   if (plotMethod %in% c("jitter", "scatter")) {
+#     return(ggplot2::aes_string(x = x, y = y, col = col))
+#   } else {
+#     return(ggplot2::aes_string(x = x, y = y, fill = col))
+#   }
+# }
 
 #' Construct Label Naming Object for ggplot
 #'
@@ -52,49 +52,61 @@ getAes <- function(facets, plotMethod) {
 #'
 #' @returns label object for the ggplot construction
 
-getLabs <- function(facets, plotMethod) {
-  x <- axis[[facets]][[plotMethod]][[1]]
-  y <- axis[[facets]][[plotMethod]][[2]]
-  col <- axis[[facets]][[plotMethod]][[3]]
-  if (plotMethod %in% c("jitter", "scatter")) {
-    return(ggplot2::labs(x = x, y = y, col = col))
-  } else {
-    return(ggplot2::labs(x = x, y = y, fill = col))
-  }
-}
+# getLabs <- function(facets, plotMethod) {
+#   x <- axis[[facets]][[plotMethod]][[1]]
+#   y <- axis[[facets]][[plotMethod]][[2]]
+#   col <- axis[[facets]][[plotMethod]][[3]]
+#   if (plotMethod %in% c("jitter", "scatter")) {
+#     return(ggplot2::labs(x = x, y = y, col = col))
+#   } else {
+#     return(ggplot2::labs(x = x, y = y, fill = col))
+#   }
+# }
 
 # functions ---------------------------------------------------------------
 
+# named deconvolution list
+returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
+  print (paste("running new function", to_plot_list))
+  #View(all_deconvolutions, title="RV to List")
+  
+  
+  deconvolutions <- list()
+  
+  for (deconvolution in to_plot_list) {
+    deconvolutions[deconvolution] <- all_deconvolutions[deconvolution]
+  }
+  
+  #View(deconvolutions, title="Plot Selection")
+  return (deconvolutions)
+}
+
+
+
+
+
 #' Plot Deconvolution results
 #'
-#' @param to_plot_list List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")
+#' @param deconvolutions named list of deconvolution results
 #' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")
 #' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
-#' @param all_deconvolutions ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
-#' @returns ggplot rendered by plotly
+#' @returns ggplot rendered by plotly for interactivity
 
-plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvolutions, palette = "Set1") {
-  # load deconvolutions from all_deconvolutions into a list
-  
-  # TODO move this to DeconvExplorer.R ####
-  deconvolution_list <- list()
-  for (deconvolution in to_plot_list) {
-    deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[deconvolution] 
-  }
+plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Set1") {
 
   # preformat data into a dataframe
-  deconvolution_list <- lapply(deconvolution_list, function(deconvolution) {
+  deconvolutions <- lapply(deconvolutions, function(deconvolution) {
     cbind(deconvolution, sample = rownames(deconvolution)) %>%
       as.data.frame() %>%
       tidyr::pivot_longer(!sample, names_to = "cell_type", values_to = "fraction")
   })
-
-  # add all different plots together and add facet information
-  data <- do.call("rbind", deconvolution_list)
+  
+  # combine list to one dataframe and add calculation method
+  data <- do.call("rbind", deconvolutions)
   data$fraction <- as.numeric(data$fraction) # change datatype of column
-  data$method <- rep(to_plot_list, each = nrow(data) / length(to_plot_list)) # add computation method as column
+  data$method <- rep(names(deconvolutions), each = nrow(data) / length(names(deconvolutions))) # add computation method as column
 
   # calculate tooltip based on chosen "group by"
   tooltip <- switch(facets,
@@ -108,9 +120,49 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
       text = paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nMethod: ", method)
     )
   )
+  
+  # calculate aes
+  
+  # axis information
+  axis <- list(
+    "method" = list( # x, y, fill/color
+      "bar" = list("fraction", "sample", "cell_type"),
+      "jitter" = list("fraction", "cell_type", "cell_type"),
+      "scatter" = list("fraction", "cell_type", "cell_type"),
+      "box" = list("cell_type", "fraction", "cell_type"),
+      "heatmap" = list("cell_type", "sample", "fraction")
+    ),
+    "cell_type" = list(
+      "bar" = list("fraction", "sample", "method"),
+      "jitter" = list("fraction", "method", "sample"),
+      "scatter" = list("fraction", "method", "sample"),
+      "box" = list("method", "fraction", "method"),
+      "heatmap" = list("sample", "method", "fraction")
+    ),
+    "sample" = list(
+      "bar" = list("fraction", "cell_type", "method"),
+      "jitter" = list("fraction", "cell_type", "method"),
+      "scatter" = list("fraction", "cell_type", "method"),
+      "box" = list("method", "fraction", "method"),
+      "heatmap" = list("cell_type", "method", "fraction")
+    )
+  )
+  
+  # extract ggplot aesthetic info
+  x <- axis[[facets]][[plotMethod]][[1]] # x axis
+  y <- axis[[facets]][[plotMethod]][[2]] # y axis
+  col <- axis[[facets]][[plotMethod]][[3]] # color / fill, depending on plot type
+  
+  aes <- NULL
+  
+  if (plotMethod %in% c("jitter", "scatter")) {
+    aes <- aes_string(x = x, y = y, col = col)
+  } else {
+    aes <- aes_string(x = x, y = y, fill = col)
+  }
 
   # put plot together
-  plot <- ggplot(data, getAes(facets, plotMethod))
+  plot <- ggplot(data, aes)
   plot <- plot + facet_wrap(~ data[[facets]])
 
   # general theme
@@ -124,7 +176,8 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
       axis.ticks.length = grid::unit(0.26, "cm"), # tick length in cm
       strip.text = element_text(size = 16)
     )
-
+  
+  # add plot content
   if (plotMethod == "bar") {
     if (facets != "method") {
       plot <- plot + geom_col(tooltip, position = "dodge") # not stacked
@@ -133,34 +186,38 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
         theme(panel.grid.major.y = ggplot2::element_blank()) # remove vertical lines
     }
 
-    plot <- plot + getLabs(facets, plotMethod) + 
-    ggplot2::scale_fill_brewer(palette=palette)
+    #plot <- plot + getLabs(facets, plotMethod) #+ 
   } else if (plotMethod == "jitter") {
-    plot <- plot + geom_jitter(tooltip) +
-      getLabs(facets, plotMethod) + 
-      ggplot2::scale_colour_brewer(palette=palette)
+    plot <- plot + geom_jitter(tooltip) #+
+      #getLabs(facets, plotMethod) + 
+      #ggplot2::scale_colour_brewer(palette=palette)
   } else if (plotMethod == "scatter") {
-    plot <- plot + geom_point(tooltip) +
-      getLabs(facets, plotMethod) + 
-      ggplot2::scale_colour_brewer(palette=palette)
+    plot <- plot + geom_point(tooltip) #+
+      #getLabs(facets, plotMethod) + 
+      #ggplot2::scale_colour_brewer(palette=palette)
   } else if (plotMethod == "box") {
     plot <- plot + geom_boxplot(tooltip) +
-      coord_flip() +
-      getLabs(facets, plotMethod) + 
-      ggplot2::scale_fill_brewer(palette=palette)
+      coord_flip() #+
+      #getLabs(facets, plotMethod) + 
+      #ggplot2::scale_fill_brewer(palette=palette)
   } else if (plotMethod == "heatmap") {
     plot <- plot + geom_tile(tooltip) +
       # geom_text(aes(label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
-      getLabs(facets, plotMethod) +
+      # getLabs(facets, plotMethod) +
       theme(axis.text.x = element_text(angle = 90)) +
-      scale_fill_gradient(low = "white", high = RColorBrewer::brewer.pal(3, palette)[1:1]) +
+      #scale_fill_gradient(low = "white", high = RColorBrewer::brewer.pal(3, palette)[1:1]) +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20)) 
   }
   
-  #plot = plot + ggplot2::scale_colour_brewer(palette="Set3")
-
-  # set label sizes for all plots
-
+  # add color theme based on plot method
+  if (plotMethod %in% c("jitter", "scatter")) {
+    plot <- plot + ggplot2::scale_colour_brewer(palette=palette)
+  } else if (plotMethod =="heatmap"){
+    scale_fill_gradient(low = "white", high = RColorBrewer::brewer.pal(3, palette)[1:1])
+  } else {
+    plot <- plot + ggplot2::scale_fill_brewer(palette=palette)
+  }
+  
   # render
   plotly::ggplotly(plot, tooltip = c("text")) %>%
     plotly::config(
@@ -176,29 +233,33 @@ plot_deconvolution <- function(to_plot_list, plotMethod, facets, all_deconvoluti
     plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
 }
 
-plot_benchmark <- function(to_plot_list, all_deconvolutions) {
+plot_benchmark <- function(deconvolutions) {
   # import and preformat data
+  
+  View(deconvolutions)
+  
+  print ("BENCHMARK")
 
-  deconvolution_list <- list()
-  for (deconvolution in to_plot_list) {
-    # deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
-    deconvolution_list[deconvolution] <- all_deconvolutions[[deconvolution]][1]
-  }
+  # deconvolution_list <- list()
+  # for (deconvolution in to_plot_list) {
+  #   # deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
+  #   deconvolution_list[deconvolution] <- all_deconvolutions[[deconvolution]][1]
+  # }
 
   # add samples and deconvolution method
-  deconvolution_list <- lapply(deconvolution_list, function(x) cbind(x, sample = rownames(x)))
-  deconvolution_list <- lapply(names(deconvolution_list), function(x) {
-    cbind(deconvolution_list[[x]], method = rep(x, nrow(deconvolution_list[[x]])))
+  deconvolutions <- lapply(deconvolutions, function(x) cbind(x, sample = rownames(x)))
+  deconvolutions <- lapply(names(deconvolutions), function(x) {
+    cbind(deconvolutions[[x]], method = rep(x, nrow(deconvolutions[[x]])))
   })
 
-  deconvolution_list <- lapply(deconvolution_list, function(x) {
+  deconvolutions <- lapply(deconvolutions, function(x) {
     tidyr::pivot_longer(data.frame(x), !c("sample", "method"),
       names_to = "cell_type", values_to = "predicted_fraction"
     )
   })
 
   # combine to one dataframe
-  data <- do.call("rbind", deconvolution_list)
+  data <- do.call("rbind", deconvolutions)
 
   # preformat reference data
   ref <- omnideconv::RefData

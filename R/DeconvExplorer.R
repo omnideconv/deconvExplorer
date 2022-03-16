@@ -370,6 +370,9 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions
     getSelectionToPlot <- function() {
+      print ("Called get selection to plot")
+      print (input$computedDeconvMethod)
+      print(input$computedSignatureMethod)
       return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
     }
 
@@ -470,7 +473,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$userMarker, {
       userData$marker <- loadFile(input$userMarker)
     })
-    #TODO: ADD SIGNATURE UPLOAD
+    
+    # TODO: UPLOAD SIGNATURE #####
     
     
 
@@ -484,33 +488,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     # restore session with file upload
     observeEvent(input$uploadSession, {
       sessionFile <- readRDS(input$uploadSession$datapath)
-      # message(input$uploadSession$datapath)
-      nDeconvolutions = 0
-      nSignatures = 0
       
-      for (data in names(sessionFile)) {
-        
-        # split name and check if deconvolution 
-        
-        token <- strsplit(data, ":")[[1]] # weiter:  [1] = deconvolution/signature, [2] name
-        # example: deconvolution:bisque_bisque, [1] = deconvolution, [2]  = bisque_bisque
-        
-        # check if deconvolution or signature and add to reactiveValues
-        if (token[1] == "deconvolution"){
-          all_deconvolutions[[token[2]]] <- sessionFile[[token[2]]]
-          nDeconvolutions = nDeconvolutions + 1
-        } else if(token[1] == "signature"){
-          all_signatures[[token[2]]] <- sessionFile[[token[2]]]
-          nSignatures = nSignatures + 1
-        }
-        
-        #all_deconvolutions[[deconvolution]] <- sessionFile[[deconvolution]]
-        #showNotification(paste0("Loaded Deconvolution: ", deconvolution))
-        # message("Loaded Deconvolution: ", deconvolution)
+      # separate signatures and deconvolutions from session file
+      session_deconvolutions <- sessionFile[["deconvolutions"]] 
+      session_signatures <- sessionFile[["signatures"]] 
+      
+      nDeconvolutions = length(session_deconvolutions)
+      nSignatures = length(session_signatures)
+
+      # works, i checked that
+      for (name in names(session_deconvolutions)){
+        all_deconvolutions[[name]] <- session_deconvolutions[[name]]
+        #print ("Session: new deconvolution")
+      }
+      
+      for (name in names(session_signatures)){
+        all_signatures[[name]] <- session_signatures[[name]]
+        #print ("Session: new signature")
       }
       
       showNotification(paste0("Loaded ", nDeconvolutions, " deconvolutions and ", nSignatures, " signatures"))
-      # updateTableSelection()
     })
 
     # deconvolute when button is clicked
@@ -564,26 +561,35 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
+      print ("Called Update Deconvolution Selection for Plot")
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
+      print (deconv_choices)
       updateSelectInput(session,
         inputId = "computedDeconvMethod",
         choices = deconv_choices
       )
     })
 
+    
+    # TODO Update this!!! ####
     # update signature Method choices when selecting deconvolution to load
     observe({
+      print ("Called Update Signature Selection For Plot")
       signature_choices <- names(all_deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
         unlist()
+      
+      print (signature_choices)
 
       if (length(signature_choices) > 1) {
         signature_choices <- signature_choices[seq(2, length(signature_choices), 2)] # jede zweite ab dem zweiten
       } else {
         signature_choices <- signature_choices[2] # nur das zweite
       }
+      
+      print (paste("reduced: ", unlist(signature_choices)))
 
       updateSelectInput(session,
         inputId = "computedSignatureMethod",
@@ -636,29 +642,31 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$plotBox <- plotly::renderPlotly(
       plot_deconvolution(
-        userData$deconvolution_result,
+        returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)),
+        #userData$deconvolution_result,
         input$plotMethod,
         input$facets,
-        shiny::reactiveValuesToList(all_deconvolutions), 
+        #shiny::reactiveValuesToList(all_deconvolutions), 
         input$globalColor
       )
     )
 
     output$benchmarkPlot <- plotly::renderPlotly(
-      plot_benchmark(
-        userData$deconvolution_result,
-        all_deconvolutions
-      )
+      plot_benchmark(returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)))
+      # plot_benchmark(
+      #   userData$deconvolution_result,
+      #   all_deconvolutions
+      # )
     )
 
     # Number Of Genes Barplot
     output$signatureGenesPerMethod <- renderPlot({
-      req(all_signatures) 
+      req(all_signatures)
       signatures <- shiny::reactiveValuesToList(all_signatures)
       plot_signatureGenesPerMethod(signatures, input$globalColor)
     })
 
-    # Condition Number Plot
+    #Condition Number Plot
     output$kappaPerMethod <- renderPlot({
       req(all_signatures)
       signatures <- shiny::reactiveValuesToList(all_signatures)
@@ -667,13 +675,13 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # plot interactive heatmap
     observe({
-      req(all_signatures, input$signatureToHeatmap)
+      req(input$signatureToHeatmap)
       signature <- all_signatures[[input$signatureToHeatmap]]
-      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, 
-                                                               output, 
-                                                               session, 
-                                                               plot_signatureClustered(signature, input$globalColor), 
-                                                               "clusteredHeatmapOneSignature", 
+      InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
+                                                               output,
+                                                               session,
+                                                               plot_signatureClustered(signature, input$globalColor),
+                                                               "clusteredHeatmapOneSignature",
                                                                brush_action = brush_action)
     })
 
@@ -690,13 +698,13 @@ deconvExplorer <- function(usr_bulk = NULL,
       maxDegree <- input$upSetDegree[[2]]
 
       # calculate the plot
-      result <- plot_signatureUpset(all_signatures,
+      result <- plot_signatureUpset(shiny::reactiveValuesToList(all_signatures),
         mode = input$upsetMode,
         minDegree = minDegree,
         maxDegree = maxDegree,
         order = input$upSetOrder,
         invert = input$upSetInvert,
-        colorDegrees = input$upSetColorDegrees, 
+        colorDegrees = input$upSetColorDegrees,
         palette = input$globalColor
       )
 
@@ -713,16 +721,21 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
     output$tableBox <- DT::renderDataTable({
-
+      print ("Called Table Deconvolution")
       # needs a deconvolution to be selected
-      req(input$deconvolutionToTable)
+      #req(input$deconvolutionToTable, all_deconvolutions)
+      req(all_deconvolutions[[input$deconvolutionToTable]])
 
       # load deconvolution
       deconvolution <- all_deconvolutions[[input$deconvolutionToTable]]
       
+      #View(deconvolution)
+      
       # turn rownames to column to enable DT search
       deconvolution <- data.frame("Gene" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
       rownames(deconvolution) <- NULL
+      
+      columns <- colnames(deconvolution)[-1]
 
       # render table
       DT::datatable(deconvolution, filter="top",
@@ -730,30 +743,39 @@ deconvExplorer <- function(usr_bulk = NULL,
           dom = "tip"
         )
       ) %>%
-        DT::formatPercentage(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
+        DT::formatPercentage(columns, 2)
     })
 
     output$signatureBox <- DT::renderDataTable({
-      # TODO: update: work with a list of  sigantures from userData$signature
-
+      print ("Called Signature Table")
       # run only if variable contains correct signature
       req(
-        !is.null(input$signatureToTable),
-        input$signatureToTable != "autogenes", # will store a link to tmp file # USED TO BE autogenes_autogenes
-        input$signatureToTable != "scaden" # will store a link to tmp file
+        all_signatures[[input$signatureToTable]],
+        input$signatureToTable != "autogenes", 
+        input$signatureToTable != "scaden"
       )
+      
+      # req(
+      #   all_signatures,
+      #   !is.null(input$signatureToTable),
+      #   input$signatureToTable != "autogenes", # will store a link to tmp file # USED TO BE autogenes_autogenes
+      #   input$signatureToTable != "scaden" # will store a link to tmp file
+      # )
 
       # load signature
       #signature <- all_deconvolutions[[input$signatureToTable]][[2]]
       signature <- all_signatures[[input$signatureToTable]]
+      #View(signature)
       
       # turn rownames to column to enable DT Search
       signature <- data.frame("Gene" = rownames(signature), signature, check.names = FALSE) # check.names prevents Cell Type names to be changed
       rownames(signature) <- NULL
       
+      columns <- colnames(signature)[-1]
+      
       # render table
       DT::datatable(signature, filter="top", options=list(dom="tip")) %>%
-        DT::formatRound(c("B", "CD4 T", "CD8 T", "DC", "Mono", "NK"), 2)
+        DT::formatRound(columns, 2)
     })
 
 
@@ -780,8 +802,6 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
     )
 
-    
-    # TODO: CHANGE SESSION DOWNLOAD TO NEW DATATYPE ####
     # save all deconvolutions and signatures to .RDS 
     output$downloadSession <- downloadHandler(
       filename = function() {
@@ -789,17 +809,11 @@ deconvExplorer <- function(usr_bulk = NULL,
         paste0("omnideconv_", Sys.Date(), ".rds")
       },
       content = function(file) {
-        
-        # collect data
         data <- list()
         
-        for (deconvolution in names(all_deconvolutions)){
-          data[paste0("deconvolution:", deconvolution)] <- all_deconvolutions[[deconvolution]]
-        }
-        
-        for (signature in names(all_signatures)){
-          data[paste0("signature:", signature)] <- all_signatures[[signature]]
-        }
+        # save separate for later distinction
+        data[["deconvolutions"]] <- shiny::reactiveValuesToList(all_deconvolutions)
+        data[["signatures"]] <- shiny::reactiveValuesToList(all_signatures)
         
         # save data
         saveRDS(data, file)
