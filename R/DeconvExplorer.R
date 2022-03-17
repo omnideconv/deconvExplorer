@@ -53,7 +53,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       div(style = "margin-top: -20px"),
       fileInput("userBatchIDs", "Upload Batch IDs"),
       div(style = "margin-top: -20px"), 
-      fileInput("userSignature", "Upload your own Signature"),
+      fileInput("userSignature", "Upload your own Signature", multiple = TRUE),
       data.step = 1, data.intro = "Upload your Data. Allowed formats: txt, csv, tsv"
     )
   )
