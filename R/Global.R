@@ -1,67 +1,4 @@
 
-# axis definition ---------------------------------------------------------
-
-# axis <- list(
-#   "method" = list( # x, y, fill/color
-#     "bar" = list("fraction", "sample", "cell_type"),
-#     "jitter" = list("fraction", "cell_type", "cell_type"),
-#     "scatter" = list("fraction", "cell_type", "cell_type"),
-#     "box" = list("cell_type", "fraction", "cell_type"),
-#     "heatmap" = list("cell_type", "sample", "fraction")
-#   ),
-#   "cell_type" = list(
-#     "bar" = list("fraction", "sample", "method"),
-#     "jitter" = list("fraction", "method", "sample"),
-#     "scatter" = list("fraction", "method", "sample"),
-#     "box" = list("method", "fraction", "method"),
-#     "heatmap" = list("sample", "method", "fraction")
-#   ),
-#   "sample" = list(
-#     "bar" = list("fraction", "cell_type", "method"),
-#     "jitter" = list("fraction", "cell_type", "method"),
-#     "scatter" = list("fraction", "cell_type", "method"),
-#     "box" = list("method", "fraction", "method"),
-#     "heatmap" = list("cell_type", "method", "fraction")
-#   )
-# )
-
-# aes definition  ---------------------------------------------------------
-#' Construct Aesthetics for plot_deconvolution
-#'
-#' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
-#' @param plotMethod Type of Plot to be rendered ("bar", "jitter", "scatter", "box", "sina", "heatmap")
-#'
-#' @returns aesthetic mapping for ggplot based on the given parameters
-
-# getAes <- function(facets, plotMethod) {
-#   x <- axis[[facets]][[plotMethod]][[1]]
-#   y <- axis[[facets]][[plotMethod]][[2]]
-#   col <- axis[[facets]][[plotMethod]][[3]]
-# 
-#   if (plotMethod %in% c("jitter", "scatter")) {
-#     return(ggplot2::aes_string(x = x, y = y, col = col))
-#   } else {
-#     return(ggplot2::aes_string(x = x, y = y, fill = col))
-#   }
-# }
-
-#' Construct Label Naming Object for ggplot
-#'
-#' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
-#' @param plotMethod Type of Plot to be rendered ("bar", "jitter", "scatter", "box", "sina", "heatmap")
-#'
-#' @returns label object for the ggplot construction
-
-# getLabs <- function(facets, plotMethod) {
-#   x <- axis[[facets]][[plotMethod]][[1]]
-#   y <- axis[[facets]][[plotMethod]][[2]]
-#   col <- axis[[facets]][[plotMethod]][[3]]
-#   if (plotMethod %in% c("jitter", "scatter")) {
-#     return(ggplot2::labs(x = x, y = y, col = col))
-#   } else {
-#     return(ggplot2::labs(x = x, y = y, fill = col))
-#   }
-# }
 
 # functions ---------------------------------------------------------------
 
@@ -108,7 +45,7 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
   data$fraction <- as.numeric(data$fraction) # change datatype of column
   data$method <- rep(names(deconvolutions), each = nrow(data) / length(names(deconvolutions))) # add computation method as column
 
-  # calculate tooltip based on chosen "group by"
+  # calculate tooltip based on chosen facet
   tooltip <- switch(facets,
     "method" = aes(
       text = paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nSample: ", sample)
@@ -120,8 +57,6 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
       text = paste0("Cell Type: ", cell_type, "\nFraction: ", sprintf("%1.2f%%", 100 * fraction), "\nMethod: ", method)
     )
   )
-  
-  # calculate aes
   
   # axis information
   axis <- list(
@@ -148,7 +83,7 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
     )
   )
   
-  # extract ggplot aesthetic info
+  # extract ggplot aes
   x <- axis[[facets]][[plotMethod]][[1]] # x axis
   y <- axis[[facets]][[plotMethod]][[2]] # y axis
   col <- axis[[facets]][[plotMethod]][[3]] # color / fill, depending on plot type
@@ -168,7 +103,7 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
   # general theme
   plot <- plot + bbplot::bbc_style() +
     theme(
-      legend.title = element_text(size = 16), # legent title font size
+      legend.title = element_text(size = 16), # legend title font size
       legend.text = element_text(size = 14), # legend element font size
       axis.text.x = element_text(size = 14), # x axis font size
       axis.text.y = element_text(size = 14), # y axis font size
@@ -181,31 +116,20 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
   if (plotMethod == "bar") {
     if (facets != "method") {
       plot <- plot + geom_col(tooltip, position = "dodge") # not stacked
-    } else {
+    } else { 
       plot <- plot + geom_col(tooltip) +
         theme(panel.grid.major.y = ggplot2::element_blank()) # remove vertical lines
     }
-
-    #plot <- plot + getLabs(facets, plotMethod) #+ 
   } else if (plotMethod == "jitter") {
-    plot <- plot + geom_jitter(tooltip) #+
-      #getLabs(facets, plotMethod) + 
-      #ggplot2::scale_colour_brewer(palette=palette)
+    plot <- plot + geom_jitter(tooltip) 
   } else if (plotMethod == "scatter") {
-    plot <- plot + geom_point(tooltip) #+
-      #getLabs(facets, plotMethod) + 
-      #ggplot2::scale_colour_brewer(palette=palette)
+    plot <- plot + geom_point(tooltip) 
   } else if (plotMethod == "box") {
     plot <- plot + geom_boxplot(tooltip) +
-      coord_flip() #+
-      #getLabs(facets, plotMethod) + 
-      #ggplot2::scale_fill_brewer(palette=palette)
+      coord_flip() # this is mandatory here
   } else if (plotMethod == "heatmap") {
     plot <- plot + geom_tile(tooltip) +
-      # geom_text(aes(label =  sprintf("%1.2f%%", 100*as.numeric(fraction))))+
-      # getLabs(facets, plotMethod) +
       theme(axis.text.x = element_text(angle = 90)) +
-      #scale_fill_gradient(low = "white", high = RColorBrewer::brewer.pal(3, palette)[1:1]) +
       guides(fill = guide_colorbar(barwith = 0.5, barheight = 20)) 
   }
   
@@ -236,9 +160,9 @@ plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Se
 plot_benchmark <- function(deconvolutions) {
   # import and preformat data
   
-  View(deconvolutions)
+  #View(deconvolutions)
   
-  print ("BENCHMARK")
+  #print ("BENCHMARK")
 
   # deconvolution_list <- list()
   # for (deconvolution in to_plot_list) {

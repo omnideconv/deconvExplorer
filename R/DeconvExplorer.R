@@ -42,7 +42,7 @@ deconvExplorer <- function(usr_bulk = NULL,
   # box definitions ---------------------------------------------------------
   data_upload_box <- shinydashboard::box(
     title = "Upload your Data", status = "primary",
-    solidHeader = TRUE, height = "30em", # collapsible = TRUE,
+    solidHeader = TRUE, height = "34em", # collapsible = TRUE, # used to be 30em
     introBox(
       helpText("If no file is provided the analysis will be run with a sample dataset"),
       fileInput("userBulk", "Upload Bulk RNAseq Data"),
@@ -52,13 +52,15 @@ deconvExplorer <- function(usr_bulk = NULL,
       fileInput("userCellTypeAnnotations", "Upload Cell Type Annotations"),
       div(style = "margin-top: -20px"),
       fileInput("userBatchIDs", "Upload Batch IDs"),
+      div(style = "margin-top: -20px"), 
+      fileInput("userSignature", "Upload your own Signature"),
       data.step = 1, data.intro = "Upload your Data. Allowed formats: txt, csv, tsv"
     )
   )
 
   settings_box <- shinydashboard::box(
     title = "Deconvolution Settings", status = "primary",
-    solidHeader = TRUE, height = "30em", # collapsible = TRUE,
+    solidHeader = TRUE, height = "34em", # collapsible = TRUE, # used to be 30em 
     introBox(
       imageOutput("logo", height = "auto"), br(),
       column(
@@ -370,9 +372,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions
     getSelectionToPlot <- function() {
-      print ("Called get selection to plot")
-      print (input$computedDeconvMethod)
-      print(input$computedSignatureMethod)
+      #print ("Called get selection to plot")
+      req(input$computedDeconvMethod != "", 
+          input$computedSignatureMethod != "")
+      # print (input$computedDeconvMethod)
+      # print(input$computedSignatureMethod)
       return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
     }
 
@@ -474,7 +478,15 @@ deconvExplorer <- function(usr_bulk = NULL,
       userData$marker <- loadFile(input$userMarker)
     })
     
-    # TODO: UPLOAD SIGNATURE #####
+    observeEvent(input$userSignature, {
+      # checks and filename
+      filename <- input$userSignature$name
+      
+      print ("UPLOAD")
+      
+      # add to all_signatures
+      all_signatures[[filename]] <- loadFile(input$userSignature)
+    })
     
     
 
@@ -571,17 +583,15 @@ deconvExplorer <- function(usr_bulk = NULL,
       )
     })
 
-    
-    # TODO Update this!!! ####
     # update signature Method choices when selecting deconvolution to load
     observe({
-      print ("Called Update Signature Selection For Plot")
+      #print ("Called Update Signature Selection For Plot")
       signature_choices <- names(all_deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
         unlist()
       
-      print (signature_choices)
+      #print (signature_choices)
 
       if (length(signature_choices) > 1) {
         signature_choices <- signature_choices[seq(2, length(signature_choices), 2)] # jede zweite ab dem zweiten
@@ -589,7 +599,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         signature_choices <- signature_choices[2] # nur das zweite
       }
       
-      print (paste("reduced: ", unlist(signature_choices)))
+      #print (paste("reduced: ", unlist(signature_choices)))
 
       updateSelectInput(session,
         inputId = "computedSignatureMethod",
@@ -652,11 +662,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
 
     output$benchmarkPlot <- plotly::renderPlotly(
-      plot_benchmark(returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)))
-      # plot_benchmark(
-      #   userData$deconvolution_result,
-      #   all_deconvolutions
-      # )
+      plot_benchmark(returnSelectedDeconvolutions(userData$deconvolution_result, 
+                                                  shiny::reactiveValuesToList(all_deconvolutions)))
     )
 
     # Number Of Genes Barplot
@@ -721,10 +728,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
     output$tableBox <- DT::renderDataTable({
-      print ("Called Table Deconvolution")
+      #print ("Called Table Deconvolution")
       # needs a deconvolution to be selected
       #req(input$deconvolutionToTable, all_deconvolutions)
-      req(all_deconvolutions[[input$deconvolutionToTable]])
+      req(input$deconvolutionToTable != "",
+          all_deconvolutions[[input$deconvolutionToTable]])
 
       # load deconvolution
       deconvolution <- all_deconvolutions[[input$deconvolutionToTable]]
@@ -747,20 +755,13 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
     output$signatureBox <- DT::renderDataTable({
-      print ("Called Signature Table")
       # run only if variable contains correct signature
       req(
-        all_signatures[[input$signatureToTable]],
+        input$signatureToTable != "",
         input$signatureToTable != "autogenes", 
-        input$signatureToTable != "scaden"
+        input$signatureToTable != "scaden",
+        all_signatures[[input$signatureToTable]]
       )
-      
-      # req(
-      #   all_signatures,
-      #   !is.null(input$signatureToTable),
-      #   input$signatureToTable != "autogenes", # will store a link to tmp file # USED TO BE autogenes_autogenes
-      #   input$signatureToTable != "scaden" # will store a link to tmp file
-      # )
 
       # load signature
       #signature <- all_deconvolutions[[input$signatureToTable]][[2]]
