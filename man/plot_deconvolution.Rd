@@ -4,28 +4,23 @@
 \alias{plot_deconvolution}
 \title{Plot Deconvolution results}
 \usage{
-plot_deconvolution(
-  to_plot_list,
-  plotMethod,
-  facets,
-  all_deconvolutions,
-  palette = "Set1"
-)
+plot_deconvolution(deconvolutions, plotMethod, facets, palette = "Set1")
 }
 \arguments{
-\item{to_plot_list}{List of Deconvolution identifiers to be plotted ("bisque_bisque", "bisque_momf")}
+\item{deconvolutions}{A named list of deconvolution results}
 
 \item{plotMethod}{Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")}
 
 \item{facets}{Variable for grouping the plots ("method", "cell_type", "sample")}
 
-\item{all_deconvolutions}{ReactiveValues containing the deconvolution results, named with "deconvoltionMethod_SignatureMethod"}
-
-\item{palette}{RColorBrewer palette name, standard = Set1}
+\item{palette}{RColorBrewer palette name (optional), standard = "Set1"}
 }
 \value{
-ggplot rendered by plotly
+ggplot rendered by plotly for interactivity
 }
 \description{
 Plot Deconvolution results
+}
+\examples{
+
 }

@@ -26,16 +26,19 @@ deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
                            usr_batch = NULL) {
-  
-  # TODO: THIS IS NOT SELF EXPLANATORY! ####
-  # possible Methods for signature interchangability
-  methods_reduced <- c(
-    "Bisque" = "bisque", "BSeq-sc" = "bseqsc",
-    "CDSeq" = "cdseq", "CIBERSORTx" = "cibersortx",
-    "CPM" = "cpm", "DWLS" = "dwls", "MOMF" = "momf"
+  library(Biobase) # as long as music isn't fixed
+
+  # methods that produce a signature
+  produces_signature <- c(
+    # "BSeq-sc" = "bseqsc", # markers!!!
+    "CIBERSORTx" = "cibersortx",
+   "DWLS" = "dwls", "MOMF" = "momf",
+   "MuSiC" = "music" # basicly a one step method but allow calculating a signature
   )
-  methods_interchangeable <- c(
-    "Bisque" = "bisque", "CIBERSORTx" = "cibersortx",
+  
+  # methods that allow the input of a custom signature
+  two_step_methods <- c(
+    "CIBERSORTx" = "cibersortx",
     "DWLS" = "dwls", "MOMF" = "momf"
   )
 
@@ -72,12 +75,13 @@ deconvExplorer <- function(usr_bulk = NULL,
       column(
         6,
         conditionalPanel(
-          condition = "input.deconvMethod == 'bisque'||
-                    input.deconvMethod == 'cibersortx' ||
+          
+          # all methods that take another signature as input
+          condition = "input.deconvMethod == 'cibersortx' ||
                     input.deconvMethod == 'dwls' ||
                       input.deconvMethod == 'momf'",
           selectInput("signatureMethod", "Signature Calculation Method",
-            choices = methods_reduced
+            choices = produces_signature
           )
         )
       ),
@@ -372,11 +376,8 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions
     getSelectionToPlot <- function() {
-      #print ("Called get selection to plot")
       req(input$computedDeconvMethod != "", 
           input$computedSignatureMethod != "")
-      # print (input$computedDeconvMethod)
-      # print(input$computedSignatureMethod)
       return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
     }
 
@@ -397,8 +398,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     # deconvolution / signature combinations
 
     # for (i in methods){
-    #   if (i %in% methods_interchangeable){
-    #     for (j in methods_reduced){
+    #   if (i %in% two_step_methods){
+    #     for (j in produces_signature){
     #       df[j, i] = "X" # insert as df[signature, deconvMethod]
     #     }
     #   }
@@ -417,32 +418,37 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     
     # SAMPLE DATA
-    userData$deconvolution_result <- c("bisque_bisque")
-    # caution already removed old code 
-    all_deconvolutions[["bisque_bisque"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
-    all_signatures[["bisque"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+    
+    userData$deconvolution_result <- c("momf_momf")
+    
+    all_deconvolutions[["momf_momf"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+    all_signatures[["momf"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
-    # updateTableSelection()
+
 
 
     # Reactives ---------------------------------------------------------------
 
+    # collect all available signature option (Calculate new one and already available)
+    allSignatureOptions = reactive({
+      # collect all available precalculated signatures
+      precalcSignatures = NULL
+      
+      # add token to make clear that these represent precalculated signatures
+      for (name in names(all_signatures)){
+        token = stringr::str_to_title(name)
+        if (grepl("precalculated_", name)){
+          token  = stringr::str_split(token, "_")[[1]][2] # remove precalc and 
+          precalcSignatures[token] = paste0("precalculated_", name)
+        }
+        precalcSignatures[token] <- paste0("precalculated_", name)
+      }
+      
+      list("Calculate New Signature" = produces_signature,
+           "Available Signatures" = precalcSignatures)
+    })
     
-    
-    # named list of available signatures
-    # allSignatures <- reactive({
-    #   signatures <- list()
-    # 
-    #   all_results <- reactiveValuesToList(all_deconvolutions)
-    #   for (i in 1:length(all_results)) {
-    #     result <- all_results[[i]]
-    #     name <- names(all_results[i])
-    #     signatures[[name]] <- result[[2]]
-    #   }
-    #   signatures
-    # })
-    
-    # 
+    # init for later
     signatureSelectedGenesDownloadContent <- reactiveVal("") # set empty reactiveVal
 
     # Observers and Eventhandling ---------------------------------------------
@@ -482,12 +488,14 @@ deconvExplorer <- function(usr_bulk = NULL,
       # checks and filename
       filename <- input$userSignature$name
       
-      print ("UPLOAD")
-      
       # add to all_signatures
       all_signatures[[filename]] <- loadFile(input$userSignature)
     })
     
+    # update Signature Select Options
+    observeEvent(allSignatureOptions(), {
+      updateSelectInput(session, "signatureMethod", choices = allSignatureOptions())
+    })
     
 
     # set CIBERSORTx Credentials from User Input
@@ -511,12 +519,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       # works, i checked that
       for (name in names(session_deconvolutions)){
         all_deconvolutions[[name]] <- session_deconvolutions[[name]]
-        #print ("Session: new deconvolution")
       }
       
       for (name in names(session_signatures)){
         all_signatures[[name]] <- session_signatures[[name]]
-        #print ("Session: new signature")
       }
       
       showNotification(paste0("Loaded ", nDeconvolutions, " deconvolutions and ", nSignatures, " signatures"))
@@ -524,33 +530,39 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
-      ### todo: add deconvolution to the "to plot" list
 
       waitress$start()
 
       # check signature method interchangeability
       # when not interchangeable set signatureMethod = DeconvMethod
       signature_Method <- input$signatureMethod
-      if (!(input$deconvMethod %in% methods_interchangeable)) {
+      if (!(input$deconvMethod %in% two_step_methods)) {
         signature_Method <- input$deconvMethod
       }
-
-      showNotification(paste0("Building Signature: ", signature_Method), type = "warning")
-
-      # get signature or calculate new one
-      # signature <- signature()
       
-      #  ToDo: Check if Signature already exists or has to be calculated
-      # existing signatures shouldn't be recalced
-      signature <- omnideconv::build_model(
-        single_cell_object = userData$singleCell,
-        bulk_gene_expression = userData$bulk,
-        method = signature_Method,
-        batch_ids = userData$batchIDs,
-        cell_type_annotations = userData$cellTypeAnnotations,
-        markers = userData$marker
-      )
-
+      # check if signature needs to be calculated or loaded
+      if (grepl("precalculated", signature_Method)){
+        # load signature
+        token = stringr::str_split(signature_Method, "_")[[1]][2] # get the signature name
+        signature_Method = token
+        signature <- all_signatures[[token]]
+        showNotification(paste0("Using Available Signature ", signature_Method, " for deconvolution"))
+        
+      } else {
+        # calculate signature from signature method
+        showNotification(paste0("Building Signature: ", signature_Method), type = "warning")
+        
+        signature <- omnideconv::build_model(
+          single_cell_object = userData$singleCell,
+          bulk_gene_expression = userData$bulk,
+          method = signature_Method,
+          batch_ids = userData$batchIDs,
+          cell_type_annotations = userData$cellTypeAnnotations,
+          markers = userData$marker,
+          verbose = TRUE
+        )
+      }
+      
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
@@ -560,23 +572,27 @@ deconvExplorer <- function(usr_bulk = NULL,
           method = input$deconvMethod,
           single_cell_object = userData$singleCell,
           cell_type_annotations = userData$cellTypeAnnotations,
-          batch_ids = userData$batchIDs
+          batch_ids = userData$batchIDs,
+          verbose = TRUE
         )
-
+    
       # insert result into the all_deconvolutions reactive Value
       all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- deconvolution_result
-      all_signatures[[signature_Method]] <- signature
-
+      
+      # only add signature if not null
+      if (!is.null(signature)&& signature_Method != "autogenes" && signature_Method != "scaden"){
+        all_signatures[[signature_Method]] <- signature
+      } 
+      
       waitress$close()
       showNotification("Deconvolution finished", type = "message")
-    }) # end deconvolution´
+      print ("Finished Deconvolution") # debug reasons
+    }) 
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
-      print ("Called Update Deconvolution Selection for Plot")
       deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
-      print (deconv_choices)
       updateSelectInput(session,
         inputId = "computedDeconvMethod",
         choices = deconv_choices
@@ -585,22 +601,17 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # update signature Method choices when selecting deconvolution to load
     observe({
-      #print ("Called Update Signature Selection For Plot")
       signature_choices <- names(all_deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
         unlist()
       
-      #print (signature_choices)
-
       if (length(signature_choices) > 1) {
         signature_choices <- signature_choices[seq(2, length(signature_choices), 2)] # jede zweite ab dem zweiten
       } else {
         signature_choices <- signature_choices[2] # nur das zweite
       }
       
-      #print (paste("reduced: ", unlist(signature_choices)))
-
       updateSelectInput(session,
         inputId = "computedSignatureMethod",
         choices = signature_choices
@@ -650,21 +661,20 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # Plots -------------------------------------------------------------------
 
-    output$plotBox <- plotly::renderPlotly(
+    output$plotBox <- plotly::renderPlotly({
+      req(userData$deconvolution_result)
       plot_deconvolution(
         returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)),
-        #userData$deconvolution_result,
         input$plotMethod,
         input$facets,
-        #shiny::reactiveValuesToList(all_deconvolutions), 
         input$globalColor
       )
-    )
+    })
 
-    output$benchmarkPlot <- plotly::renderPlotly(
+    output$benchmarkPlot <- plotly::renderPlotly({
       plot_benchmark(returnSelectedDeconvolutions(userData$deconvolution_result, 
                                                   shiny::reactiveValuesToList(all_deconvolutions)))
-    )
+    })
 
     # Number Of Genes Barplot
     output$signatureGenesPerMethod <- renderPlot({
@@ -728,16 +738,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
     output$tableBox <- DT::renderDataTable({
-      #print ("Called Table Deconvolution")
-      # needs a deconvolution to be selected
-      #req(input$deconvolutionToTable, all_deconvolutions)
       req(input$deconvolutionToTable != "",
           all_deconvolutions[[input$deconvolutionToTable]])
 
       # load deconvolution
       deconvolution <- all_deconvolutions[[input$deconvolutionToTable]]
-      
-      #View(deconvolution)
       
       # turn rownames to column to enable DT search
       deconvolution <- data.frame("Gene" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
@@ -764,9 +769,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       )
 
       # load signature
-      #signature <- all_deconvolutions[[input$signatureToTable]][[2]]
       signature <- all_signatures[[input$signatureToTable]]
-      #View(signature)
       
       # turn rownames to column to enable DT Search
       signature <- data.frame("Gene" = rownames(signature), signature, check.names = FALSE) # check.names prevents Cell Type names to be changed
@@ -879,6 +882,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
         # convert to dataframe and set colnames
         content <- as.data.frame(content)
+        #content <- as.matrix(content)
         rownames(content) <- content[, 1] # first column
         content[, 1] <- NULL # remove first column
 
@@ -889,6 +893,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           }
           # turn into vector
           content <- as.vector(t(content))
+        } else { # all other cases: matrix?
+          content <- as.matrix(content)
         }
 
         showNotification(paste("Successfully Loaded File: ", file$name), type = "default")

@@ -4,9 +4,6 @@
 
 # named deconvolution list
 returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
-  print (paste("running new function", to_plot_list))
-  #View(all_deconvolutions, title="RV to List")
-  
   
   deconvolutions <- list()
   
@@ -14,7 +11,6 @@ returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
     deconvolutions[deconvolution] <- all_deconvolutions[deconvolution]
   }
   
-  #View(deconvolutions, title="Plot Selection")
   return (deconvolutions)
 }
 
@@ -24,14 +20,33 @@ returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
 
 #' Plot Deconvolution results
 #'
-#' @param deconvolutions named list of deconvolution results
+#' @param deconvolutions A named list of deconvolution results
 #' @param plotMethod Type of plot to be rendered  ("bar", "jitter", "scatter", "box", "heatmap")
 #' @param facets Variable for grouping the plots ("method", "cell_type", "sample")
-#' @param palette RColorBrewer palette name, standard = Set1
+#' @param palette RColorBrewer palette name (optional), standard = "Set1"
 #'
 #' @returns ggplot rendered by plotly for interactivity
-
+#' 
+#' @examples 
+#' 
+#' @export
 plot_deconvolution <- function(deconvolutions, plotMethod, facets, palette = "Set1") {
+  # data needs to be a named deconvolution list
+  if (is.null(names(deconvolutions))){
+    stop("Please supply a NAMED list, names(deconvolution) returns NULL")
+  }
+  
+  # check plot Method
+  if (!(plotMethod %in% c("bar", "jitter", "scatter", "box", "heatmap"))){
+    stop("plot_method not supported")
+  }
+  
+  # check facet parameter
+  if (!(facets %in% c("method", "cell_type", "sample"))){
+    stop("facet not supported. Please provide one of the following: 'method', 'cell_type', 'sample'")
+  }
+  
+  
 
   # preformat data into a dataframe
   deconvolutions <- lapply(deconvolutions, function(deconvolution) {

@@ -30,7 +30,8 @@ Imports:
     grid,
     InteractiveComplexHeatmap, 
     RColorBrewer,
-    circlize
+    circlize,
+    Biobase
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
