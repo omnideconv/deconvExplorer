@@ -4,7 +4,7 @@
 \alias{plot_deconvolution}
 \title{Plot Deconvolution results}
 \usage{
-plot_deconvolution(deconvolutions, plotMethod, facets, palette = "Set1")
+plot_deconvolution(deconvolutions, plotMethod, facets, palette = "Spectral")
 }
 \arguments{
 \item{deconvolutions}{A named list of deconvolution results}

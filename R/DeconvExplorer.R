@@ -666,7 +666,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     output$plotBox <- plotly::renderPlotly({
       req(userData$deconvolution_result)
-      plot_deconvolution(
+      omnideconv::plot_deconvolution(
         returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)),
         input$plotMethod,
         input$facets,
@@ -909,8 +909,8 @@ deconvExplorer <- function(usr_bulk = NULL,
     output$logo <- renderImage(
       {
         list(
-          src = system.file("www", "logo.jpg", package = "DeconvExplorer"),
-          contentType = "image/jpeg",
+          src = system.file("www", "omnideconv_logo.svg", package = "DeconvExplorer"),
+          contentType = "image/svg+xml",
           width = "100%"
         )
       },
