@@ -543,11 +543,8 @@ deconvExplorer <- function(usr_bulk = NULL,
       # check if signature needs to be calculated or loaded
       if (grepl("precalculated", signature_Method)){
         # load signature
-        print (signature_Method)
         token = stringr::str_split(signature_Method, "_")[[1]][2] # get the signature name
         signature_Method = token
-        print (paste0("token", token))
-        View (shiny::reactiveValuesToList(all_signatures))
         signature <- all_signatures[[token]]
         showNotification(paste0("Using Available Signature ", signature_Method, " for deconvolution"))
         
@@ -812,7 +809,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     # save all deconvolutions and signatures to .RDS 
     output$downloadSession <- downloadHandler(
       filename = function() {
-        # paste0("session.rds")
         paste0("omnideconv_", Sys.Date(), ".rds")
       },
       content = function(file) {
