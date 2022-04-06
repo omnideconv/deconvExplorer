@@ -83,6 +83,7 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #'
 #' @returns A Heatmap
 plot_signatureClustered <- function(signature, palette="Set1") {
+  
   df <- data.frame(signature)
 
   df <- cbind("X" = rownames(df), df) # add gene names as column
@@ -108,22 +109,31 @@ plot_signatureClustered <- function(signature, palette="Set1") {
   mat <- as.matrix(df[, -1]) # without gene names
   rownames(mat) <- df$X # set gene names
   
+  #mat <- stats::na.omit(mat) #####
+  
   # calculate color palette
   col_fun = circlize::colorRamp2(c(-2, 0, 2), c(RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
                                                 "white", # middle color
                                                 RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
                                                 )
                                  )
+  
+  annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy)))
 
+  
   # Plot with complex heatmap
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
-    row_title = NULL, row_split = ncol(mat), row_names_side = "left",
-    cluster_columns = TRUE, column_km = ncol(mat),
-    border = TRUE, col=col_fun
+    row_title = NULL, row_names_side = "left",
+    border = TRUE, col=col_fun, 
+    #cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
+    cluster_columns = TRUE, cluster_rows = TRUE,  # clustering_method_columns = "euclidean",
+    top_annotation = annotation
+    
   )
 
-  heatmap <- ComplexHeatmap::draw(heatmap)
+
+  #heatmap <- ComplexHeatmap::draw(heatmap)
 
   return(heatmap)
 
@@ -226,3 +236,26 @@ download_signatureUpset <- function(signatures, combination, mode = "distinct") 
     return(ComplexHeatmap::extract_comb(mat, token))
   }
 }
+
+
+#' Score Gene Expression of a single Gene based on information entropy
+#' 
+#' @param geneExpression row from Gene Expression Matrix = Expression Data for a single Gene
+#' @returns Score for the given gene based on information entropy
+#' Here: The lower the better
+scoreEntropy <- function (geneExpression){
+  # TODO add parameter checks ####
+  probs <- list()
+  
+  # turn expression data to a list of probabilities 
+  for (val in geneExpression){
+    if (val == 0){
+      next
+    }
+    probs <- append(probs, val/sum(geneExpression)) # turn in to propabilities
+  }
+  
+  entropy <- - sum (unlist(lapply(probs, function (x) log(x)*x)))
+  
+  return (entropy)
+} 
