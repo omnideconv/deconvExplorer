@@ -26,7 +26,7 @@ deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
                            usr_batch = NULL) {
-  library(Biobase) # as long as music isn't fixed
+  #library(Biobase) # as long as music isn't fixed
 
   # methods that produce a signature
   produces_signature <- c(
@@ -203,9 +203,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   signature_clusteredHeatmap <- shinydashboard::box(
     title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
-    column(6,
+    column(4,
     selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)),
-    column(6,
+    column(2, selectInput("signatureAnnotationScore", "Select an annotation score", choices = c("Entropy" = "entropy"))),
+    column(2, selectInput("signatureAnnotationPlotType", "Annotation Type", choices = c("Bars" = "bar", "Lines" = "line"))),
+    column(4,
     div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"),style="margin-top:1.9em")),
     column(12,
     InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
@@ -692,12 +694,19 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # plot interactive heatmap
     observe({
-      req(input$signatureToHeatmap)
+      req(input$signatureToHeatmap,
+          input$signatureAnnotationScore,
+          input$signatureAnnotationPlotType)
+      print (input$signatureAnnotationScore)
+      print (input$signatureAnnotationPlotType)
       signature <- all_signatures[[input$signatureToHeatmap]]
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
                                                                output,
                                                                session,
-                                                               plot_signatureClustered(signature, input$globalColor),
+                                                               plot_signatureClustered(signature, 
+                                                                                       score = input$signatureAnnotationScore, 
+                                                                                       annotation_type = input$signatureAnnotationPlotType, 
+                                                                                       palette = input$globalColor),
                                                                "clusteredHeatmapOneSignature",
                                                                brush_action = brush_action)
     })

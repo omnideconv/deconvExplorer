@@ -76,13 +76,63 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   plot
 }
 
+#' Plot Mean Entropy for a set of singatures
+#' 
+#' @param signatures named List of Signatures
+#' @param palette RColorBrewerPalette
+#' 
+#' @returns a plot
+plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
+  
+  entropies <- data.frame(method=character(), meanEntropy=numeric())
+  
+  # calculate Mean Entropy for each signature
+  for (name in names(signatures)) {
+    meanEntropy <- mean(apply(signatures[[name]], 1, scoreEntropy))
+    entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
+  }
+  
+  plot <- ggplot(data = entropies, aes(
+    x = method, y = meanEntropy, fill = method,
+    text = paste0("Method: ", method, "\nEntropy: ", meanEntropy)
+  )) +
+    geom_col() +
+    # ggtitle("5. Condition Number per Method") +
+    geom_text(aes(label = round(meanEntropy, 2)),
+              fontface = "bold", nudge_y = -7,
+              color = "white", size = 7, family = "Helvetica"
+    ) +
+    geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+    bbc_style() +
+    labs(x = "Method", y = "Entropy") +
+    theme(legend.position = "none") +
+    ylim(-1, 5)+ # could be changed
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
+  
+  plot
+}
+
+
 #' Calculate Clustered Heatmap of Signature Genes
 #'
 #' @param signature One Signature to plot
-#' @param palette RColorBrewer Palette name, standard = Set1
+#' @param palette RColorBrewer Palette name, standard = Spectral
+#' @param score The score used to annotate the genes
+#' @param annotation_type How the score is rendered
 #'
 #' @returns A Heatmap
-plot_signatureClustered <- function(signature, palette="Set1") {
+plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
+  if (is.null(signature)){
+    stop("Please provide a signature")
+  }
+  
+  if (!(score %in% c("entropy"))){
+    stop("Score Method not supported")
+  }
+  
+  if (!(annotation_type %in% c("line", "bar"))){
+    stop("annotation_type not supported")
+  }
   
   df <- data.frame(signature)
 
@@ -118,7 +168,24 @@ plot_signatureClustered <- function(signature, palette="Set1") {
                                                 )
                                  )
   
-  annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy)))
+  
+  # render the signature annotation, this might also render multiple annotations
+  # -> iterate over a list
+  
+  
+  annotation <- NULL
+  
+  if (score == "entropy"){
+    if (annotation_type == "line"){
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
+      
+    } else if (annotation_type == "bar"){
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
+    }
+    
+  }  else if (score == "gini"){
+    annotation = NULL
+  }
 
   
   # Plot with complex heatmap
@@ -133,11 +200,10 @@ plot_signatureClustered <- function(signature, palette="Set1") {
   )
 
 
-  #heatmap <- ComplexHeatmap::draw(heatmap)
+  heatmap <- ComplexHeatmap::draw(heatmap)
 
   return(heatmap)
 
-  # TODO Make Column Order deterministic!
 }
 
 
