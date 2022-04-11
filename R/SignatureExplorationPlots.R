@@ -94,19 +94,19 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
   
   plot <- ggplot(data = entropies, aes(
     x = method, y = meanEntropy, fill = method,
-    text = paste0("Method: ", method, "\nEntropy: ", meanEntropy)
+    text = paste0("Method: ", method, "\nEntropy: ", meanEntropy),
   )) +
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
     geom_text(aes(label = round(meanEntropy, 2)),
-              fontface = "bold", nudge_y = -7,
-              color = "white", size = 7, family = "Helvetica"
+              fontface = "bold", nudge_y = 0.1,
+              color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
-    ylim(-1, 5)+ # could be changed
+    # ggplot2::ylim(0, 5)+ # could be changed
     ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
   
   plot

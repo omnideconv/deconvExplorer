@@ -192,13 +192,18 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   # Signature Exploration Boxes ---------------------------------------------
   signature_genesPerMethod <- shinydashboard::box(
-    title = "Genes per Method", status = "info", solidHeader = TRUE, width = 6,
+    title = "Genes per Method", status = "info", solidHeader = TRUE, width = 4,
     shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
   )
 
   signature_kappaPerMethod <- shinydashboard::box(
-    title = "Condition Number per Method", status = "info", solidHeader = TRUE, width = 6,
+    title = "Condition Number per Method", status = "info", solidHeader = TRUE, width = 4,
     shinycssloaders::withSpinner(plotOutput("kappaPerMethod"))
+  )
+  
+  signature_entropyPerMethod <- shinydashboard::box(
+    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE, width = 4, 
+    shinycssloaders::withSpinner(plotOutput("signatureEntropyPerMethod"))
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
@@ -356,7 +361,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
-          fluidRow(signature_genesPerMethod, signature_kappaPerMethod),
+          fluidRow(signature_genesPerMethod, signature_kappaPerMethod, signature_entropyPerMethod),
           fluidRow(signature_clusteredHeatmap),
           fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
@@ -691,14 +696,19 @@ deconvExplorer <- function(usr_bulk = NULL,
       signatures <- shiny::reactiveValuesToList(all_signatures)
       plot_conditionNumberPerMethod(signatures, input$globalColor)
     })
+    
+    output$signatureEntropyPerMethod <- renderPlot({
+      req(all_signatures)
+      signatures <- shiny::reactiveValuesToList(all_signatures)
+      plot_meanEntropyPerMethod(signatures, input$globalColor)
+    }
+    )
 
     # plot interactive heatmap
     observe({
       req(input$signatureToHeatmap,
           input$signatureAnnotationScore,
           input$signatureAnnotationPlotType)
-      print (input$signatureAnnotationScore)
-      print (input$signatureAnnotationPlotType)
       signature <- all_signatures[[input$signatureToHeatmap]]
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
                                                                output,
