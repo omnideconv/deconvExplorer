@@ -117,7 +117,7 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 #'
 #' @param signature One Signature to plot
 #' @param palette RColorBrewer Palette name, standard = Spectral
-#' @param score The score used to annotate the genes
+#' @param score The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered
 #'
 #' @returns A Heatmap
@@ -126,7 +126,7 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
     stop("Please provide a signature")
   }
   
-  if (!(score %in% c("entropy"))){
+  if (!(score %in% c("entropy", "gini"))){
     stop("Score Method not supported")
   }
   
@@ -184,7 +184,11 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
     }
     
   }  else if (score == "gini"){
-    annotation = NULL
+    if (annotation_type == "line"){
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
+    } else if(annotation_type == "bar"){
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
+    }
   }
 
   
