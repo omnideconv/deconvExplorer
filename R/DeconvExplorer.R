@@ -282,6 +282,32 @@ deconvExplorer <- function(usr_bulk = NULL,
     ),
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
+  
+
+  # Signature Refinement Boxes ----------------------------------------------
+
+  refinementHeatmapBox <- shinydashboard::box(
+    title = "Signature", solidHeader = TRUE, width = 12, status = "info", 
+    column(2, selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
+    column(2, selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
+    column(8, NULL),
+    column(12, shinycssloaders::withSpinner(plotOutput("refinementHeatmapPlot")))
+  )
+  
+  refinementSettingsBox <- shinydashboard::box(
+    title = "Settings", solidHeader = TRUE, width = 4, status = "info",
+    column(8, selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)),
+    column(4, actionButton("loadRefinementSignature", "Load")), 
+    # column with text/instructions
+    column(8, textInput("refinementNewName", "New Signature Name")), 
+    column(4, actionButton("saveRefinedSignature", "Save"))
+  )
+  
+  refinementFunctionsBox <- shinydashboard::box(
+    title = "Refine your signature", solidHeader = TRUE, width = 8, status = "info",
+    column(8, NULL)
+  )
+  
 
   # ui definition  ----------------------------------------------------------
 
@@ -343,6 +369,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       introjsUI(),
       menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Signature Exploration", tabName = "signatureExploration"),
+      menuItem("Signature Refinement", tabName = "signatureRefinement"),
       menuItem("Benchmark", tabName = "benchmark"),
       menuItem("Further Information", tabName = "fInfo"), 
       selectInput("globalColor", "Select Plot Color Palette", 
@@ -366,7 +393,13 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
         )),
-        tabItem(tabName = "benchmark", fluidPage(fluidRow(benchmark_plot_box))),
+        tabItem(tabName = "signatureRefinement", fluidPage(
+          fluidRow(refinementHeatmapBox), 
+          fluidRow(refinementFunctionsBox, refinementSettingsBox)
+        )),
+        tabItem(tabName = "benchmark", fluidPage(
+          fluidRow(benchmark_plot_box)
+        )),
         tabItem(tabName = "fInfo", fluidPage(
           includeMarkdown(
             system.file("www", "vignette.md", package = "DeconvExplorer")
@@ -455,6 +488,10 @@ deconvExplorer <- function(usr_bulk = NULL,
            "Available Signatures" = precalcSignatures)
     })
     
+    
+    # reactiveVal of refinable signature, separated from the rest of signatures
+    signatureRefined <- reactiveVal("")
+    
     # init for later
     signatureSelectedGenesDownloadContent <- reactiveVal("") # set empty reactiveVal
 
@@ -502,6 +539,18 @@ deconvExplorer <- function(usr_bulk = NULL,
     # update Signature Select Options
     observeEvent(allSignatureOptions(), {
       updateSelectInput(session, "signatureMethod", choices = allSignatureOptions())
+    })
+    
+    # for selecting a siganture to refine, users should be able to select from all already available signatures
+    observe({
+      updateSelectInput(session, "signatureToRefine", choices = names(all_signatures))
+    })
+    
+    # when "load Refinement" is clickes, load siganture in reactive Value
+    observeEvent(input$loadRefinementSignature, {
+      req(input$signatureToRefine)
+      showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
+      signatureRefined(all_signatures[[input$signatureToRefine]])
     })
     
 
@@ -751,6 +800,17 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # show the plot
       result[[1]]
+    })
+    
+    output$refinementHeatmapPlot <- renderPlot({
+      req(input$refinementHeatmapScore, input$refinementHeatmapScorePlotType, signatureRefined()) # und die signature
+      
+      plot_signatureClustered(signatureRefined(), score=input$refinementHeatmapScore, 
+                              annotation_type = input$refinementHeatmapScorePlotType, 
+                              palette=input$globalColor)
+      
+      
+      
     })
 
     # Tables ------------------------------------------------------------------
