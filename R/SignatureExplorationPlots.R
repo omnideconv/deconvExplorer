@@ -27,15 +27,17 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
     geom_col() +
     # ggtitle("Number of Signature Genes per Method") +
     labs(x = "Method", y = "Number of Genes", fill = "Method") +
-    geom_text(aes(label = number_of_genes),
+    ggplot2::geom_text(aes(label = number_of_genes),
       fontface = "bold", size = 7,
-      nudge_y = -1000, family = "Helvetica",
-      color = "white"
+      vjust = -1, family = "Helvetica",
+      color = "black"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     theme(legend.position = "none") + 
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
+    ggplot2::ylim (0, max(df$number_of_genes)*1.1) # scale y axis to contain bar label
+  
 
   plot
 }
@@ -64,14 +66,15 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
     geom_text(aes(label = round(kappa, 2)),
-      fontface = "bold", nudge_y = -7,
-      color = "white", size = 7, family = "Helvetica"
+      fontface = "bold", vjust = -1,
+      color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) + 
+    ggplot2::ylim(0, max(df$kappa)*1.1) # scale y axis to contain bar label
 
   plot
 }
@@ -99,7 +102,7 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
     geom_text(aes(label = round(meanEntropy, 2)),
-              fontface = "bold", nudge_y = 0.1,
+              fontface = "bold", vjust = -1,
               color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
@@ -107,7 +110,8 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
+    ggplot2::ylim(0, max(entropies$meanEntropy)*1.1) # scale y axis to contain bar label
   
   plot
 }
