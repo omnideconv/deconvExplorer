@@ -14,12 +14,12 @@ removePercentZeros <- function (baseSignature, percentage = 0.5){
     stop("Please provide a valid percentage between 0 and 1")
   }
   
-  message(paste0("Removing genes with more than ", percentage*100, "% zeroes in a row"))
+  shiny::showNotification(paste0("Removing genes with more than ", percentage*100, "% zeroes in a row"))
   
   threshold = ncol(baseSignature)*percentage # max number of zeroes allowed
   signature = baseSignature[rowSums(baseSignature==0) <= threshold, ] 
   
-  message(paste0("Removed a total of ", nrow(baseSignature) - nrow(signature), " genes")) 
+  shiny::showNotification(paste0("Removed a total of ", nrow(baseSignature) - nrow(signature), " genes")) 
   
   return (signature)
 } 
@@ -50,7 +50,7 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
     stop("numberOfBins does not match label length")
   }
   
-  message("removing unspecific genes from signature")
+  shiny::showNotification("removing unspecific genes from signature")
   
   # initialize new refined signature with colnames, rows stay empty
   refinedSignature = matrix(nrow = 0, ncol = length(colnames(signature)), dimnames = list(NULL, colnames(signature)))
@@ -74,7 +74,7 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
     }
   }
   
-  message(paste("removed", nrow(signature) - nrow(refinedSignature), "unspecific genes from the signature."))
+  shiny::showNotification(paste("removed", nrow(signature) - nrow(refinedSignature), "unspecific genes from the signature."))
   
   # turn back to a matrix
   refinedSignature <- as.matrix(refinedSignature)
@@ -92,7 +92,7 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
 selectGenesByScore <- function (signature, method = "entropy", selectCellType = "max", genesPerCellType = 20){
   # TODO Checks #####
   
-  message(paste0("Refining Signature by score: ", method))
+  shiny::showNotification(paste0("Refining Signature by score: ", method))
   
   # SCORE THE MATRIX
   scoresByCellType = NULL
@@ -112,7 +112,10 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
     score = list()
     if (method == "entropy"){
       score[gene] = scoreEntropy(row) # calculate score and save named result
+    } else if (method == "gini"){
+      score[gene] <- 1- BioQC::gini(row) # need to flip the value since lower scores schould be better (entropy!)
     }
+    
     
     
     # append score to most expressed celltype
@@ -120,7 +123,6 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
   }
   
   
-  #USE SCORES AND SUB SELECT GENES, general: the higher the score the better!!!#
   
   # initialize new refined signature with colnames, rows stay empty
   refinedSignature = matrix(nrow = 0, ncol = length(colnames(signature)), dimnames = list(NULL, colnames(signature)))
@@ -144,7 +146,7 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
     }
   }
   
-  message(paste0("removed a total of ", nrow(signature) - nrow(refinedSignature), " genes"))
+  shiny::showNotification(paste0("removed a total of ", nrow(signature) - nrow(refinedSignature), " genes"))
   
   return (refinedSignature)
   

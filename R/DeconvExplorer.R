@@ -290,33 +290,47 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Signature", solidHeader = TRUE, width = 12, status = "info", 
     column(2, selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
     column(2, selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
-    column(8, NULL),
+    column(8, div(textOutput("refinementSignatureInfo"), style="font-size:1.5em; margin-top:1.5em")),
     column(12, shinycssloaders::withSpinner(plotOutput("refinementHeatmapPlot")))
   )
   
   refinementSettingsBox <- shinydashboard::box(
     title = "Settings", solidHeader = TRUE, width = 4, status = "info",
     column(8, selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)),
-    column(4, actionButton("loadRefinementSignature", "Load")), 
+    column(4, actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")), 
     # column with text/instructions
     column(8, textInput("refinementNewName", "New Signature Name")), 
-    column(4, actionButton("saveRefinedSignature", "Save"))
+    column(4, actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em"))
   )
   
   
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
-    column(4, h1("Unzero")), column(7, sliderInput("refinePercentZero", "Maximum percentage of zeroes", min = 0, max = 100, value = 90, step = 1, post = "%")), column(1, actionButton("refinePercentZeroGo", "Run"))
+    column(4, h1("Unzero")), 
+    column(7, sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene", min = 0, max = 100, value = 90, step = 1, post = "%")), 
+    column(1, actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em"))
   )
   
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader=FALSE, width = NULL, background = "yellow", 
-    column(4, h1("Remove Unspecific")), column(7, numericInput("refineUnspecific", "Remove unspecific genes", 1)), column(1, actionButton("refineUnspecificGo", "Run"))
+    column(4, h1("Remove Unspecific")), 
+    column(7, numericInput("refineUnspecific", "Remove unspecific genes", 1)), 
+    column(1, actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em"))
   )
   
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
-    column(4, h1("Best n genes")), column(7, numericInput("refineBestN", "Best n genes", 20, 1)), column(1, actionButton("refineBestNGo", "Run"))
+    column(4, h1("Best n genes")), 
+    column(5, numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)),
+    column(2, selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
+    column(1, actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em"))
+  )
+  
+  refinementManualBox <- shinydashboard::box(
+    solidHeader = FALSE, width = NULL, background = "purple", 
+    column(4, h1("Remove manually")),
+    column(7, textInput("refinementManualGene", "Type in a Gene Identifier to remove")),
+    column(1, actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em"))
   )
   
 
@@ -406,7 +420,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "signatureRefinement", fluidPage(
           fluidRow(refinementHeatmapBox), 
-          fluidRow(column(8, refinementUnzeroBox, refinementRemoveUnspecificBox, refinementBestNBox), refinementSettingsBox)
+          fluidRow(column(8, refinementUnzeroBox, refinementRemoveUnspecificBox, refinementBestNBox, refinementManualBox), refinementSettingsBox)
         )),
         tabItem(tabName = "benchmark", fluidPage(
           fluidRow(benchmark_plot_box)
@@ -568,19 +582,36 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$refinePercentZeroGo, {
       req(signatureRefined(), input$refinePercentZero)
       signatureRefined(removePercentZeros(signatureRefined(), input$refinePercentZero/100)) # update reactive Value with result
-      showNotification(paste0("Removing Genes with more than ", input$refinePercentZero, "% zeros"))
     })
     
     observeEvent(input$refineUnspecificGo, {
       req(signatureRefined(), input$refineUnspecific)
       signatureRefined(removeUnspecificGenes(signatureRefined(), numberOfBins=3, maxCount =input$refineUnspecific))
-      showNotification(paste0("Removing unspecific Genes"))
     })
     
     observeEvent(input$refineBestNGo, {
       req(signatureRefined(), input$refineBestN)
       signatureRefined(selectGenesByScore(signatureRefined(), genesPerCellType = input$refineBestN))
-      showNotification(paste0("Selecting the best ", input$refineBestN, " genes for each cell type"))
+    })
+    
+    observeEvent(input$refinementManualGo, {
+      if (input$refinementManualGene ==""){
+        showNotification("Please provide a Gene Identifier", type = "warning")
+      }
+      
+      req(input$refinementManualGene, signatureRefined())
+      
+      genes <- rownames(signatureRefined())
+      
+      if (!(input$refinementManualGene %in% genes)){
+        showNotification("Gene not in Signature!", type="error")
+      } else {
+        # remove unwanted gene from gene list
+        genes <- genes[!genes %in% gene]
+        
+        # subselect Signature and save to reactiveVal
+        signatureRefined(signatureRefined()[genes, ])
+      }
     })
     
     # save refinedSignature
@@ -853,6 +884,21 @@ deconvExplorer <- function(usr_bulk = NULL,
       
       
     })
+    
+
+    # Texts -------------------------------------------------------------------
+
+    output$refinementSignatureInfo <- renderText({
+      req(signatureRefined())
+      
+      nGenes <- nrow(signatureRefined()) 
+      nCellTypes <- ncol(signatureRefined()) 
+      kappa <- kappa(signatureRefined(), exact=TRUE) %>% round(2)
+      meanEntropy <- mean(apply(signatureRefined(), 1, scoreEntropy)) %>% round(2)
+      
+      paste("Number of Genes: ", nGenes, "   Number of Cell Types: ", nCellTypes, "   Condition Number: ", kappa, "   Mean Entropy: ", meanEntropy)
+    })    
+    
 
     # Tables ------------------------------------------------------------------
 

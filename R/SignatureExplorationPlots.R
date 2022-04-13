@@ -191,9 +191,9 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
     
   }  else if (score == "gini"){
     if (annotation_type == "line"){
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
     } else if(annotation_type == "bar"){
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
     }
   }
 
