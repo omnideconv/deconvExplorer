@@ -585,6 +585,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     
     # save refinedSignature
     observeEvent(input$saveRefinedSignature, {
+      if (is.null(input$refinementNewName) | input$refinementNewName == ""){
+        showNotification("Please provide a new signature name!", type = "error")
+      }
+      
       req(signatureRefined(), input$refinementNewName)
       
       all_signatures[[input$refinementNewName]] <- isolate(signatureRefined())
