@@ -303,9 +303,20 @@ deconvExplorer <- function(usr_bulk = NULL,
     column(4, actionButton("saveRefinedSignature", "Save"))
   )
   
-  refinementFunctionsBox <- shinydashboard::box(
-    title = "Refine your signature", solidHeader = TRUE, width = 8, status = "info",
-    column(8, NULL)
+  
+  refinementUnzeroBox <- shinydashboard::box(
+    solidHeader = FALSE, width = NULL, background = "aqua",
+    column(4, h1("Unzero")), column(7, sliderInput("refinePercentZero", "Maximum percentage of zeroes", min = 0, max = 100, value = 90, step = 1, post = "%")), column(1, actionButton("refinePercentZeroGo", "Run"))
+  )
+  
+  refinementRemoveUnspecificBox <- shinydashboard::box(
+    solidHeader=FALSE, width = NULL, background = "yellow", 
+    column(4, h1("Remove Unspecific")), column(7, numericInput("refineUnspecific", "Remove unspecific genes", 1)), column(1, actionButton("refineUnspecificGo", "Run"))
+  )
+  
+  refinementBestNBox <- shinydashboard::box(
+    solidHeader = FALSE, width = NULL, background = "red",
+    column(4, h1("Best n genes")), column(7, numericInput("refineBestN", "Best n genes", 20, 1)), column(1, actionButton("refineBestNGo", "Run"))
   )
   
 
@@ -395,7 +406,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "signatureRefinement", fluidPage(
           fluidRow(refinementHeatmapBox), 
-          fluidRow(refinementFunctionsBox, refinementSettingsBox)
+          fluidRow(column(8, refinementUnzeroBox, refinementRemoveUnspecificBox, refinementBestNBox), refinementSettingsBox)
         )),
         tabItem(tabName = "benchmark", fluidPage(
           fluidRow(benchmark_plot_box)
@@ -551,6 +562,32 @@ deconvExplorer <- function(usr_bulk = NULL,
       req(input$signatureToRefine)
       showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
       signatureRefined(all_signatures[[input$signatureToRefine]])
+    })
+    
+    
+    observeEvent(input$refinePercentZeroGo, {
+      req(signatureRefined(), input$refinePercentZero)
+      signatureRefined(removePercentZeros(signatureRefined(), input$refinePercentZero/100)) # update reactive Value with result
+      showNotification(paste0("Removing Genes with more than ", input$refinePercentZero, "% zeros"))
+    })
+    
+    observeEvent(input$refineUnspecificGo, {
+      req(signatureRefined(), input$refineUnspecific)
+      signatureRefined(removeUnspecificGenes(signatureRefined(), numberOfBins=3, maxCount =input$refineUnspecific))
+      showNotification(paste0("Removing unspecific Genes"))
+    })
+    
+    observeEvent(input$refineBestNGo, {
+      req(signatureRefined(), input$refineBestN)
+      signatureRefined(selectGenesByScore(signatureRefined(), genesPerCellType = input$refineBestN))
+      showNotification(paste0("Selecting the best ", input$refineBestN, " genes for each cell type"))
+    })
+    
+    # save refinedSignature
+    observeEvent(input$saveRefinedSignature, {
+      req(signatureRefined(), input$refinementNewName)
+      
+      all_signatures[[input$refinementNewName]] <- isolate(signatureRefined())
     })
     
 

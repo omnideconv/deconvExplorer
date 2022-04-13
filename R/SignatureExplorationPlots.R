@@ -5,6 +5,8 @@
 #'
 #' @returns A Barplot
 #'
+#'
+#'
 
 plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
@@ -310,26 +312,3 @@ download_signatureUpset <- function(signatures, combination, mode = "distinct") 
     return(ComplexHeatmap::extract_comb(mat, token))
   }
 }
-
-
-#' Score Gene Expression of a single Gene based on information entropy
-#' 
-#' @param geneExpression row from Gene Expression Matrix = Expression Data for a single Gene
-#' @returns Score for the given gene based on information entropy
-#' Here: The lower the better
-scoreEntropy <- function (geneExpression){
-  # TODO add parameter checks ####
-  probs <- list()
-  
-  # turn expression data to a list of probabilities 
-  for (val in geneExpression){
-    if (val == 0){
-      next
-    }
-    probs <- append(probs, val/sum(geneExpression)) # turn in to propabilities
-  }
-  
-  entropy <- - sum (unlist(lapply(probs, function (x) log(x)*x)))
-  
-  return (entropy)
-} 
