@@ -36,6 +36,7 @@ Imports:
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
+    github::accio/BioQC,
     github::omnideconv/omnideconv,
     github::bbc/bbplot, 
     github::jokergoo/ComplexHeatmap,
