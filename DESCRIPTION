@@ -6,7 +6,7 @@ Authors@R: person("Zackl", "Constantin", email="zacklcon@uni-mainz.de", role = c
 Description: Shiny Frontend for the OmniDeconv R Package. 
 License: MIT + file LICENSE
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports: 
     shiny,
     shinydashboard,
@@ -31,10 +31,12 @@ Imports:
     InteractiveComplexHeatmap, 
     RColorBrewer,
     circlize,
-    Biobase
+    Biobase,
+    BioQC
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Remotes: 
+    github::accio/BioQC,
     github::omnideconv/omnideconv,
     github::bbc/bbplot, 
     github::jokergoo/ComplexHeatmap,
