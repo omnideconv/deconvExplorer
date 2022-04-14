@@ -43,25 +43,22 @@ deconvExplorer <- function(usr_bulk = NULL,
   )
 
   # box definitions ---------------------------------------------------------
-  data_upload_box <- shinydashboard::box(
+  data_upload_box <- shinydashboard::box(id="tour_upload",
     title = "Upload your Data", status = "primary",
     solidHeader = TRUE, height = "34em", # collapsible = TRUE, # used to be 30em
-    introBox(
-      helpText("If no file is provided the analysis will be run with a sample dataset"),
-      fileInput("userBulk", "Upload Bulk RNAseq Data"),
-      div(style = "margin-top: -20px"),
-      fileInput("userSingleCell", "Upload Single Cell RNASeq Data"),
-      div(style = "margin-top: -20px"),
-      fileInput("userCellTypeAnnotations", "Upload Cell Type Annotations"),
-      div(style = "margin-top: -20px"),
-      fileInput("userBatchIDs", "Upload Batch IDs"),
-      div(style = "margin-top: -20px"),
-      fileInput("userSignature", "Upload your own Signature", multiple = TRUE),
-      data.step = 1, data.intro = "Upload your Data. Allowed formats: txt, csv, tsv"
-    )
+    helpText("If no file is provided the analysis will be run with a sample dataset"),
+    fileInput("userBulk", "Upload Bulk RNAseq Data"),
+    div(style = "margin-top: -20px"),
+    fileInput("userSingleCell", "Upload Single Cell RNASeq Data"),
+    div(style = "margin-top: -20px"),
+    fileInput("userCellTypeAnnotations", "Upload Cell Type Annotations"),
+    div(style = "margin-top: -20px"),
+    fileInput("userBatchIDs", "Upload Batch IDs"),
+    div(style = "margin-top: -20px"), 
+    fileInput("userSignature", "Upload your own Signature", multiple = TRUE)
   )
 
-  settings_box <- shinydashboard::box(
+  settings_box <- shinydashboard::box(id = "tour_deconvSettings",
     title = "Deconvolution Settings", status = "primary",
     solidHeader = TRUE, height = "34em", # collapsible = TRUE, # used to be 30em
     introBox(
@@ -91,47 +88,50 @@ deconvExplorer <- function(usr_bulk = NULL,
           condition = "input.deconvMethod == 'bseqsc'",
           fileInput("userMarker", "Marker Genes")
         )
-      ),
-      column(
-        12,
-        actionButton("deconvolute", "Deconvolute"),
-        waiter::useWaitress(),
-        actionButton("deconvoluteAll", "Deconvolute All")
-      ),
-      data.step = 2, data.intro = "Select preferred Deconvolution and Signature calculation Method"
+      )
+    ),
+    column(
+      6,
+      conditionalPanel(
+        condition = "input.deconvMethod == 'bseqsc'",
+        fileInput("userMarker", "Marker Genes")
+      )
+    ),
+    column(
+      12,
+      actionButton("deconvolute", "Deconvolute"),
+      waiter::useWaitress(),
+      actionButton("deconvoluteAll", "Deconvolute All")
     )
   )
 
-  deconv_plot_box <- shinydashboard::box(
+  deconv_plot_box <- shinydashboard::box(id = "tour_deconvPlot",
     title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
-    introBox(
-      column(
-        3,
-        selectInput("plotMethod", "Plot as: ",
-          choices = c(
-            "Bar Plot" = "bar", "Scatter" = "scatter",
-            "Jitter Plot" = "jitter", "Box Plot" = "box",
-            "Heatmap" = "heatmap"
-          )
+    column(
+      3,
+      selectInput("plotMethod", "Plot as: ",
+        choices = c(
+          "Bar Plot" = "bar", "Scatter" = "scatter",
+          "Jitter Plot" = "jitter", "Box Plot" = "box",
+          "Heatmap" = "heatmap"
         )
-      ),
-      column(
-        3,
-        selectInput("facets", "Group Plots By",
-          choices = c(
-            "Deconvolution Method" = "method",
-            "Cell Type" = "cell_type", "Sample" = "sample"
-          )
+      )
+    ),
+    column(
+      3,
+      selectInput("facets", "Group Plots By",
+        choices = c(
+          "Deconvolution Method" = "method",
+          "Cell Type" = "cell_type", "Sample" = "sample"
         )
-      ),
-      column(
-        12,
-        shinycssloaders::withSpinner(
-          plotly::plotlyOutput("plotBox", height = "500px") # standard is 400
-        )
-      ),
-      data.step = 4, data.intro = "View the deconvolution results and compare "
+      )
+    ),
+    column(
+      12,
+      shinycssloaders::withSpinner(
+        plotly::plotlyOutput("plotBox", height = "500px") # standard is 400
+      )
     )
   )
 
@@ -169,18 +169,15 @@ deconvExplorer <- function(usr_bulk = NULL,
       )
     )
   )
-  deconv_all_results <- shinydashboard::box(
+  deconv_all_results <- shinydashboard::box(id = "tour_deconvPlotSettings",
     title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
-    introBox(
-      column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
-      column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
-      column(
-        4,
-        actionButton("loadDeconvolution", "Load Deconvolution Result", style = "margin-top: 1.7em"),
-        actionButton("addToPlot", "Compare: Add to Plot", style = "margin-top: 1.7em"),
-        actionButton("removeFromPlot", "Compare: Remove from Plot", style = "margin-top: 1.7em")
-      ),
-      data.step = 3, data.intro = "Deconvolution results are stored and can be reloaded for visualization and comparison"
+    column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
+    column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
+    column(
+      4,
+      actionButton("loadDeconvolution", "Load Deconvolution Result", style = "margin-top: 1.7em"),
+      actionButton("addToPlot", "Compare: Add to Plot", style = "margin-top: 1.7em"),
+      actionButton("removeFromPlot", "Compare: Remove from Plot", style = "margin-top: 1.7em")
     )
   )
 
@@ -201,6 +198,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
   # Signature Exploration Boxes ---------------------------------------------
+
   signature_genesPerMethod <- shinydashboard::box(
     title = "Genes per Method", status = "info", solidHeader = TRUE, width = 4,
     shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
@@ -569,6 +567,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     # start the tour
     observeEvent(input$startTour, {
       introjs(session, options = list(
+        steps=getTour(),
         "nextLabel" = ">",
         "prevLabel" = "<",
         "skipLabel" = "X"
