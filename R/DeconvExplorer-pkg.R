@@ -5,16 +5,16 @@
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
 #' @import omnideconv
 #' @importFrom shinydashboard box dashboardBody dashboardHeader dashboardPage
-#' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu
+#' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu valueBox valueBoxOutput renderValueBox
 #' tabItem tabItems
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly layout config
 #' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip element_text
 #' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
-#' geom_hline scale_colour_brewer scale_fill_brewer
+#' geom_hline scale_colour_brewer scale_fill_brewer ylim
 #' @importFrom shinycssloaders withSpinner 
 #' @importFrom waiter Waitress
-#' @importFrom rintrojs introBox introjs introjsUI
+#' @importFrom rintrojs introBox introjs introjsUI readCallback
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
 #' @importFrom magrittr "%>%"

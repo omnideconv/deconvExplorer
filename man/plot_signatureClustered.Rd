@@ -4,12 +4,21 @@
 \alias{plot_signatureClustered}
 \title{Calculate Clustered Heatmap of Signature Genes}
 \usage{
-plot_signatureClustered(signature, palette = "Set1")
+plot_signatureClustered(
+  signature,
+  score = "entropy",
+  annotation_type = "line",
+  palette = "Spectral"
+)
 }
 \arguments{
 \item{signature}{One Signature to plot}
 
-\item{palette}{RColorBrewer Palette name, standard = Set1}
+\item{score}{The score used to annotate the genes}
+
+\item{annotation_type}{How the score is rendered}
+
+\item{palette}{RColorBrewer Palette name, standard = Spectral}
 }
 \value{
 A Heatmap
