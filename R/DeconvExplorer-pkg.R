@@ -5,7 +5,7 @@
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
 #' @import omnideconv
 #' @importFrom shinydashboard box dashboardBody dashboardHeader dashboardPage
-#' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu
+#' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu valueBox valueBoxOutput renderValueBox
 #' tabItem tabItems
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly layout config
 #' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip element_text

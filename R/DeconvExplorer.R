@@ -290,7 +290,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Signature", solidHeader = TRUE, width = 12, status = "info", 
     column(2, selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
     column(2, selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
-    column(8, div(textOutput("refinementSignatureInfo"), style="font-size:1.5em; margin-top:1.5em")),
+    shinydashboard::valueBoxOutput("refinementGenes", width=2), 
+    shinydashboard::valueBoxOutput("refinementCellTypes", width=2),
+    shinydashboard::valueBoxOutput("refinementKappa", width=2),
+    shinydashboard::valueBoxOutput("refinementMeanEntropy", width=2),
     column(12, shinycssloaders::withSpinner(plotOutput("refinementHeatmapPlot")))
   )
   
@@ -471,7 +474,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     #   df[i, i] = "X" # todo: skip the ones already inserted in for loop above
     # }
     #
-    waitress <- Waitress$new("#deconvolute", infinite = TRUE)
+    waitress <- waiter::Waitress$new("#deconvolute", infinite = TRUE)
 
     ### ersetzten mit dem laden der user Uploads!
     userData$singleCell <- omnideconv::single_cell_data_1
@@ -893,19 +896,43 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
     
 
-    # Texts -------------------------------------------------------------------
-
-    output$refinementSignatureInfo <- renderText({
+    # ValueBoxes --------------------------------------------------------------
+    
+    output$refinementGenes <- shinydashboard::renderValueBox({
       req(signatureRefined())
       
-      nGenes <- nrow(signatureRefined()) 
-      nCellTypes <- ncol(signatureRefined()) 
-      kappa <- kappa(signatureRefined(), exact=TRUE) %>% round(2)
-      meanEntropy <- mean(apply(signatureRefined(), 1, scoreEntropy)) %>% round(2)
-      
-      paste("Number of Genes: ", nGenes, "   Number of Cell Types: ", nCellTypes, "   Condition Number: ", kappa, "   Mean Entropy: ", meanEntropy)
-    })    
+      shinydashboard::valueBox(value=nrow(signatureRefined()),
+               subtitle = "Number of Genes", 
+               icon=icon("dna"),
+               color="blue")
+    })
     
+    output$refinementCellTypes <- shinydashboard::renderValueBox({
+      req(signatureRefined())
+      
+      shinydashboard::valueBox(value=ncol(signatureRefined()),
+               subtitle = "Number of Cell Types", 
+               icon=icon("disease"),
+               color="light-blue")
+    })
+    
+    output$refinementKappa <- shinydashboard::renderValueBox({
+      req(signatureRefined())
+      kappa <- kappa(signatureRefined(), exact=TRUE) %>% round(2)
+      shinydashboard::valueBox(value=kappa,
+               subtitle = "Condition Number", 
+               icon=icon("hashtag"),
+               color="blue")
+    })
+    
+    output$refinementMeanEntropy <- shinydashboard::renderValueBox({
+      req(signatureRefined())
+      meanEntropy <- mean(apply(signatureRefined(), 1, scoreEntropy)) %>% round(2)
+      shinydashboard::valueBox(value=meanEntropy,
+               subtitle = "Mean Entropy", 
+               icon=icon("hashtag"),
+               color="light-blue")
+    })
 
     # Tables ------------------------------------------------------------------
 
