@@ -14,7 +14,7 @@
 #' geom_hline scale_colour_brewer scale_fill_brewer ylim
 #' @importFrom shinycssloaders withSpinner 
 #' @importFrom waiter Waitress
-#' @importFrom rintrojs introBox introjs introjsUI
+#' @importFrom rintrojs introBox introjs introjsUI readCallback
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
 #' @importFrom magrittr "%>%"

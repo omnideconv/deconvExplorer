@@ -528,7 +528,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         "nextLabel" = ">",
         "prevLabel" = "<",
         "skipLabel" = "X"
-      ))
+      ), events = list(onbeforechange = rintrojs::readCallback("switchTabs")))
     })
 
 
@@ -578,22 +578,25 @@ deconvExplorer <- function(usr_bulk = NULL,
       signatureRefined(all_signatures[[input$signatureToRefine]])
     })
     
-    
+    # run signature refinement "unzero"
     observeEvent(input$refinePercentZeroGo, {
       req(signatureRefined(), input$refinePercentZero)
       signatureRefined(removePercentZeros(signatureRefined(), input$refinePercentZero/100)) # update reactive Value with result
     })
     
+    # run signature refinement "unspecific"
     observeEvent(input$refineUnspecificGo, {
       req(signatureRefined(), input$refineUnspecific)
       signatureRefined(removeUnspecificGenes(signatureRefined(), numberOfBins=3, maxCount =input$refineUnspecific))
     })
     
+    # run signature refinement "bestN"
     observeEvent(input$refineBestNGo, {
       req(signatureRefined(), input$refineBestN)
       signatureRefined(selectGenesByScore(signatureRefined(), genesPerCellType = input$refineBestN))
     })
     
+    # run signature refinement "manual"
     observeEvent(input$refinementManualGo, {
       if (input$refinementManualGene ==""){
         showNotification("Please provide a Gene Identifier", type = "warning")
@@ -607,10 +610,12 @@ deconvExplorer <- function(usr_bulk = NULL,
         showNotification("Gene not in Signature!", type="error")
       } else {
         # remove unwanted gene from gene list
-        genes <- genes[!genes %in% gene]
+        genes <- genes[!genes %in% input$refinementManualGene]
         
         # subselect Signature and save to reactiveVal
         signatureRefined(signatureRefined()[genes, ])
+        
+        showNotification(paste0("Removed Gene ", input$refinementManualGene, " from the signature"), type = "message")
       }
     })
     
@@ -623,6 +628,8 @@ deconvExplorer <- function(usr_bulk = NULL,
       req(signatureRefined(), input$refinementNewName)
       
       all_signatures[[input$refinementNewName]] <- isolate(signatureRefined())
+      
+      showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
     })
     
 
