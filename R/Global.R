@@ -1,6 +1,8 @@
 
 
 # functions ---------------------------------------------------------------
+removeReactiveValuesIndex <- function(rv, ind) { .subset2(rv, "impl")$.values$remove(ind) } # see rstudio/shiny#2439
+
 
 # named deconvolution list
 returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){

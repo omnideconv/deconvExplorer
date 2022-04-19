@@ -680,15 +680,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     observeEvent(input$signatureToTableDelete, {
       req(input$signatureToTable)
       View(reactiveValuesToList(all_signatures), "before")
-      message(input$signatureToTable)
-      tmp <- reactiveValuesToList(all_signatures)
-      tmp[[input$signatureToTable]] <- NULL
-      message(names(tmp))
-      View(tmp, "middle")
-      all_signatures <- reactiveValues(tmp)
-      View(reactiveValuesToList(all_signatures), "after")
+      #message(input$signatureToTable)
+      removeReactiveValuesIndex(all_signatures, input$signatureToTable)
+      
+      View(reactiveValuesToList(all_signatures))
+      invalidateLater(0, session)
+      # tmp <- reactiveValuesToList(all_signatures)
+      # message(names(tmp))
+      # tmp[[input$signatureToTable]] <- NULL
+      # newV <- reactiveValues()
+      # for (name in names(tmp)){
+      #   newV[[name]] <- tmp[[name]]
+      # }
+      # 
+      # all_signatures <- newV
+      # invalidateLater(0, session)
+      # View(reactiveValuesToList(all_signatures), "after")
       showNotification("Deleted Signature")
     })
+    
+    #observe(all_signatures)
 
 
     # set CIBERSORTx Credentials from User Input
