@@ -181,14 +181,33 @@ deconvExplorer <- function(usr_bulk = NULL,
     )
   )
 
-  benchmark_all_results <- shinydashboard::box(
-    title = "All Deconvolutions", status = "info", solidHeader = TRUE, width = 12,
-    selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL),
-    selectInput("computedSignatureMethod", "Signature Method", choices = NULL),
-    fileInput("groundTruth", "Reference Data (Ground Truth)"),
-    actionButton("benchmark", "Benchmark")
-  )
 
+  # Benchmarking Boxes ------------------------------------------------------
+  benchmark_simbuData <- shinydashboard::box(
+    title = "Simulation Dataset", status = "info", solidHeader = TRUE, width = 6,
+    fileInput("simbuUserData", "Upload your Data")
+  )
+  
+  benchmark_simbuSettings <- shinydashboard::box(
+    title = "Simulation Settings", status = "info", solidHeader = TRUE, width = 6,
+    selectInput("simbuScenario", "Simulation Scenario", choices = c("Even" = "even", "Random" = "random", 
+                                                                    "Mirror_DB" = "mirror_db", "Weighted" = "weighted", 
+                                                                    "Pure" = "pure", "Custom" = "custom")),
+    numericInput("simbuNCells", "Number Of Cells", value = 1000),
+    numericInput("simbuNSamples", "Number of Samples", value = 100),
+    textInput("simbuWhitelist", "Cell Type Whitelist")
+  )
+  
+  benchmark_deconvolutionSettings <- shinydashboard::box(
+    title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width=12,
+    selectInput("benchmark_deconvMethod", "Deconvolution Method",
+                choices = omnideconv::deconvolution_methods
+    ),
+    selectInput("benchmark_Signature", "Signature", choices = NULL), 
+    actionButton("benchmark_run", "Run Benchmark")
+  )
+  
+  
   benchmark_plot_box <- shinydashboard::box(
     title = "Benchmark", status = "info", solidHeader = TRUE, width = 12,
     shinycssloaders::withSpinner(
@@ -461,6 +480,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           )
         )),
         tabItem(tabName = "benchmark", fluidPage(
+          fluidRow(benchmark_simbuData, benchmark_simbuSettings), 
+          fluidRow(benchmark_deconvolutionSettings),
           fluidRow(benchmark_plot_box)
         )),
         tabItem(tabName = "fInfo", fluidPage(
