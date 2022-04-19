@@ -159,8 +159,10 @@ deconvExplorer <- function(usr_bulk = NULL,
       selectInput("signatureToTable", "Signature", choices = NULL)
     ),
     column(
-      3,
-      div(downloadButton("signatureDownload", "Download Signature"), style = "margin-top:1.9em")
+      2,
+      div(downloadButton("signatureDownload", "Download Signature"),
+          actionButton("signatureToTableDelete", icon("trash")),
+          style = "margin-top:1.9em")
     ),
     column(
       12,
@@ -673,6 +675,19 @@ deconvExplorer <- function(usr_bulk = NULL,
       all_signatures[[input$refinementNewName]] <- isolate(signatureRefined())
 
       showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
+    })
+    
+    observeEvent(input$signatureToTableDelete, {
+      req(input$signatureToTable)
+      View(reactiveValuesToList(all_signatures), "before")
+      message(input$signatureToTable)
+      tmp <- reactiveValuesToList(all_signatures)
+      tmp[[input$signatureToTable]] <- NULL
+      message(names(tmp))
+      View(tmp, "middle")
+      all_signatures <- reactiveValues(tmp)
+      View(reactiveValuesToList(all_signatures), "after")
+      showNotification("Deleted Signature")
     })
 
 
