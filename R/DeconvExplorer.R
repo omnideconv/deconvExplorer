@@ -494,7 +494,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # storing all calculated deconvolutions and signatures
     all_deconvolutions <- reactiveValues()
-    all_signatures <- reactiveValues()
+    #all_signatures <- reactiveValues()
+    
+    internal <- shiny::reactiveValues(signatures = list("momf" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer")))) # this is new
+    #internal$signatures <- list() # signatures
+    #internal$deconvolutions <- list() # deconv
 
     userData <- reactiveValues() # whatever this does
 
@@ -529,8 +533,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     userData$deconvolution_result <- c("momf_momf")
 
     all_deconvolutions[["momf_momf"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
-    all_signatures[["momf"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+    #internal$signatures[["momf"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
+
+    
 
 
 
@@ -542,7 +548,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       precalcSignatures <- NULL
 
       # add token to make clear that these represent precalculated signatures
-      for (name in names(all_signatures)) {
+      for (name in names(internal$signatures)) {
         token <- stringr::str_to_title(name)
         if (grepl("precalculated_", name)) {
           token <- stringr::str_split(token, "_")[[1]][2] # remove precalc and
@@ -602,8 +608,8 @@ deconvExplorer <- function(usr_bulk = NULL,
       # checks and filename
       filename <- input$userSignature$name
 
-      # add to all_signatures
-      all_signatures[[filename]] <- loadFile(input$userSignature)
+      # add to internal$signatures
+      internal$signatures[[filename]] <- loadFile(input$userSignature)
     })
 
     # update Signature Select Options
@@ -613,14 +619,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # for selecting a siganture to refine, users should be able to select from all already available signatures
     observe({
-      updateSelectInput(session, "signatureToRefine", choices = names(all_signatures))
+      updateSelectInput(session, "signatureToRefine", choices = names(internal$signatures))
     })
 
     # when "load Refinement" is clickes, load siganture in reactive Value
     observeEvent(input$loadRefinementSignature, {
       req(input$signatureToRefine)
       showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
-      signatureRefined(all_signatures[[input$signatureToRefine]])
+      signatureRefined(internal$signatures[[input$signatureToRefine]])
     })
 
     # run signature refinement "unzero"
@@ -672,21 +678,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       req(signatureRefined(), input$refinementNewName)
 
-      all_signatures[[input$refinementNewName]] <- isolate(signatureRefined())
+      internal$signatures[[input$refinementNewName]] <- isolate(signatureRefined())
 
       showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
     })
     
     observeEvent(input$signatureToTableDelete, {
       req(input$signatureToTable)
-      View(reactiveValuesToList(all_signatures), "before")
-      message(input$signatureToTable)
-      tmp <- reactiveValuesToList(all_signatures)
-      tmp[[input$signatureToTable]] <- NULL
-      message(names(tmp))
-      View(tmp, "middle")
-      all_signatures <- reactiveValues(tmp)
-      View(reactiveValuesToList(all_signatures), "after")
+      internal$signatures[[input$signatureToTable]] <- NULL
       showNotification("Deleted Signature")
     })
 
@@ -715,7 +714,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       }
 
       for (name in names(session_signatures)) {
-        all_signatures[[name]] <- session_signatures[[name]]
+        internal$signatures[[name]] <- session_signatures[[name]]
       }
 
       showNotification(paste0("Loaded ", nDeconvolutions, " deconvolutions and ", nSignatures, " signatures"))
@@ -737,7 +736,9 @@ deconvExplorer <- function(usr_bulk = NULL,
         # load signature
         token <- stringr::str_split(signature_Method, "_")[[1]][2] # get the signature name
         signature_Method <- token
-        signature <- all_signatures[[token]]
+        message(token)
+        View(isolate(internal$signatures))
+        signature <- isolate(internal$signatures[[token]])
         showNotification(paste0("Using Available Signature ", signature_Method, " for deconvolution"))
       } else {
         # calculate signature from signature method
@@ -753,6 +754,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           verbose = TRUE
         )
       }
+      
+      View(signature)
 
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
@@ -772,7 +775,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # only add signature if not null
       if (!is.null(signature) && signature_Method != "autogenes" && signature_Method != "scaden") {
-        all_signatures[[signature_Method]] <- signature
+        internal$signatures[[signature_Method]] <- signature
       }
 
       waitress$close()
@@ -812,7 +815,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     # update Signature Tab Choices when new Deconvolution Added
 
     observe({
-      updateSelectInput(session, inputId = "signatureToHeatmap", choices = names(all_signatures)) # used to be allSignatures()
+      updateSelectInput(session, inputId = "signatureToHeatmap", choices = names(internal$signatures)) # used to be allSignatures()
     })
 
     # add Deconvolution to ToPlot list
@@ -847,7 +850,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     # update selection inputs if deconvolution gets added
     observe({
       updateSelectInput(session, inputId = "deconvolutionToTable", choices = names(all_deconvolutions))
-      updateSelectInput(session, inputId = "signatureToTable", choices = names(all_signatures))
+      updateSelectInput(session, inputId = "signatureToTable", choices = names(internal$signatures))
     })
 
     # Plots -------------------------------------------------------------------
@@ -871,21 +874,21 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # Number Of Genes Barplot
     output$signatureGenesPerMethod <- renderPlot({
-      req(all_signatures)
-      signatures <- shiny::reactiveValuesToList(all_signatures)
+      req(internal$signatures)
+      signatures <- shiny::isolate(internal$signatures)
       plot_signatureGenesPerMethod(signatures, input$globalColor)
     })
 
     # Condition Number Plot
     output$kappaPerMethod <- renderPlot({
-      req(all_signatures)
-      signatures <- shiny::reactiveValuesToList(all_signatures)
+      req(internal$signatures)
+      signatures <- shiny::isolate(internal$signatures)
       plot_conditionNumberPerMethod(signatures, input$globalColor)
     })
 
     output$signatureEntropyPerMethod <- renderPlot({
-      req(all_signatures)
-      signatures <- shiny::reactiveValuesToList(all_signatures)
+      req(internal$signatures)
+      signatures <- shiny::isolate(internal$signatures)
       plot_meanEntropyPerMethod(signatures, input$globalColor)
     })
 
@@ -896,7 +899,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         input$signatureAnnotationScore,
         input$signatureAnnotationPlotType
       )
-      signature <- all_signatures[[input$signatureToHeatmap]]
+      signature <- isolate(internal$signatures[[input$signatureToHeatmap]])
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
         output,
         session,
@@ -912,18 +915,18 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(all_signatures, input$upSetDegree, input$upSetOrder)
+      req(internal$signatures, input$upSetDegree, input$upSetOrder)
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
-      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(all_signatures), inline = TRUE)
+      updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(isolate(internal$signatures)), inline = TRUE)
 
       # get upset Degree Choices from slider Input
       minDegree <- input$upSetDegree[[1]]
       maxDegree <- input$upSetDegree[[2]]
 
       # calculate the plot
-      result <- plot_signatureUpset(shiny::reactiveValuesToList(all_signatures),
+      result <- plot_signatureUpset(shiny::isolate(internal$signatures),
         mode = input$upsetMode,
         minDegree = minDegree,
         maxDegree = maxDegree,
@@ -1033,11 +1036,11 @@ deconvExplorer <- function(usr_bulk = NULL,
         input$signatureToTable != "",
         input$signatureToTable != "autogenes",
         input$signatureToTable != "scaden",
-        all_signatures[[input$signatureToTable]]
+        internal$signatures[[input$signatureToTable]]
       )
 
       # load signature
-      signature <- all_signatures[[input$signatureToTable]]
+      signature <- isolate(internal$signatures[[input$signatureToTable]])
 
       # turn rownames to column to enable DT Search
       signature <- data.frame("Gene" = rownames(signature), signature, check.names = FALSE) # check.names prevents Cell Type names to be changed
@@ -1059,7 +1062,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       },
       content = function(file) {
         # data <- all_deconvolutions[[input$signatureToTable]][[2]]
-        data <- all_signatures[[input$signatureToTable]]
+        data <- isolate(internal$signatures[[input$signatureToTable]])
         write.csv(data, file)
       }
     )
@@ -1084,7 +1087,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
         # save separate for later distinction
         data[["deconvolutions"]] <- shiny::reactiveValuesToList(all_deconvolutions)
-        data[["signatures"]] <- shiny::reactiveValuesToList(all_signatures)
+        data[["signatures"]] <- shiny::isolate(internal$signatures)
 
         # save data
         saveRDS(data, file)
@@ -1099,7 +1102,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       content = function(file) {
         # get subset selection from checkbox
         # Variable which contains the info: input$upSetDownloadSelection
-        signatures <- shiny::reactiveValuesToList(all_signatures)
+        signatures <- shiny::isolate(internal$signatures)
 
         data <- download_signatureUpset(signatures,
           combination = input$upSetDownloadSelection,
@@ -1183,7 +1186,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
-      req(all_signatures, input$signatureToHeatmap) # used to contain all_deconvolutions
+      req(internal$signatures, input$signatureToHeatmap) # used to contain all_deconvolutions
 
       # ClusteredHeatmapSelectedGenes(Table)
 
@@ -1192,7 +1195,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # get full dataset
       # signature <- allSignatures()[[input$signatureToHeatmap]]
-      signature <- all_signatures[[input$signatureToHeatmap]]
+      signature <- isolate(internal$signatures[[input$signatureToHeatmap]])
 
       # get selected subset
       selected <- signature[column_index, ]
