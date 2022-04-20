@@ -688,6 +688,8 @@ deconvExplorer <- function(usr_bulk = NULL,
       internal$signatures[[input$signatureToTable]] <- NULL
       showNotification("Deleted Signature")
     })
+    
+    #observe(all_signatures)
 
 
     # set CIBERSORTx Credentials from User Input
