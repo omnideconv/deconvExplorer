@@ -876,20 +876,20 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # Number Of Genes Barplot
     output$signatureGenesPerMethod <- renderPlot({
-      req(internal$signatures)
+      req(length(internal$signatures)>0)
       signatures <- shiny::isolate(internal$signatures)
       plot_signatureGenesPerMethod(signatures, input$globalColor)
     })
 
     # Condition Number Plot
     output$kappaPerMethod <- renderPlot({
-      req(internal$signatures)
+      req(length(internal$signatures)>0)
       signatures <- shiny::isolate(internal$signatures)
       plot_conditionNumberPerMethod(signatures, input$globalColor)
     })
 
     output$signatureEntropyPerMethod <- renderPlot({
-      req(internal$signatures)
+      req(length(internal$signatures)>0)
       signatures <- shiny::isolate(internal$signatures)
       plot_meanEntropyPerMethod(signatures, input$globalColor)
     })
@@ -917,7 +917,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(internal$signatures, input$upSetDegree, input$upSetOrder)
+      req(length(internal$signatures)>0, input$upSetDegree, input$upSetOrder)
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
