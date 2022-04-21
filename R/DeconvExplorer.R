@@ -493,10 +493,11 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
     # storing all calculated deconvolutions and signatures
-    all_deconvolutions <- reactiveValues()
+    #all_deconvolutions <- reactiveValues()
     #all_signatures <- reactiveValues()
     
-    internal <- shiny::reactiveValues(signatures = list("momf" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer")))) # this is new
+    internal <- shiny::reactiveValues(signatures = list("momf" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
+                                      deconvolutions = list("momf_momf" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer")))) # this is new
     #internal$signatures <- list() # signatures
     #internal$deconvolutions <- list() # deconv
 
@@ -532,7 +533,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     userData$deconvolution_result <- c("momf_momf")
 
-    all_deconvolutions[["momf_momf"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+    #all_deconvolutions[["momf_momf"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
     #internal$signatures[["momf"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 
@@ -712,7 +713,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
       # works, i checked that
       for (name in names(session_deconvolutions)) {
-        all_deconvolutions[[name]] <- session_deconvolutions[[name]]
+        internal$deconvolutions[[name]] <- session_deconvolutions[[name]]
       }
 
       for (name in names(session_signatures)) {
@@ -772,8 +773,8 @@ deconvExplorer <- function(usr_bulk = NULL,
           verbose = TRUE
         )
 
-      # insert result into the all_deconvolutions reactive Value
-      all_deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- deconvolution_result
+      # insert result into the internal$deconvolutions reactive Value
+      internal$deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- deconvolution_result
 
       # only add signature if not null
       if (!is.null(signature) && signature_Method != "autogenes" && signature_Method != "scaden") {
@@ -787,7 +788,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # update Deconvolution Method and signature method choices when new deconvolution result is calculated
     observe({
-      deconv_choices <- unlist(strsplit(names(all_deconvolutions), "_"))
+      deconv_choices <- unlist(strsplit(names(internal$deconvolutions), "_"))
       deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
       updateSelectInput(session,
         inputId = "computedDeconvMethod",
@@ -797,7 +798,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # update signature Method choices when selecting deconvolution to load
     observe({
-      signature_choices <- names(all_deconvolutions) %>%
+      signature_choices <- names(internal$deconvolutions) %>%
         stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
         strsplit("_") %>%
         unlist()
@@ -851,7 +852,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # update selection inputs if deconvolution gets added
     observe({
-      updateSelectInput(session, inputId = "deconvolutionToTable", choices = names(all_deconvolutions))
+      updateSelectInput(session, inputId = "deconvolutionToTable", choices = names(internal$deconvolutions))
       updateSelectInput(session, inputId = "signatureToTable", choices = names(internal$signatures))
     })
 
@@ -860,7 +861,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     output$plotBox <- plotly::renderPlotly({
       req(userData$deconvolution_result)
       omnideconv::plot_deconvolution(
-        returnSelectedDeconvolutions(userData$deconvolution_result, shiny::reactiveValuesToList(all_deconvolutions)),
+        returnSelectedDeconvolutions(userData$deconvolution_result, shiny::isolate(internal$deconvolutions)),
         input$plotMethod,
         input$facets,
         input$globalColor
@@ -870,7 +871,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     output$benchmarkPlot <- plotly::renderPlotly({
       plot_benchmark(returnSelectedDeconvolutions(
         userData$deconvolution_result,
-        shiny::reactiveValuesToList(all_deconvolutions)
+        shiny::isolate(internal$deconvolutions)
       ))
     })
 
@@ -1010,11 +1011,11 @@ deconvExplorer <- function(usr_bulk = NULL,
     output$tableBox <- DT::renderDataTable({
       req(
         input$deconvolutionToTable != "",
-        all_deconvolutions[[input$deconvolutionToTable]]
+        internal$deconvolutions[[input$deconvolutionToTable]]
       )
 
       # load deconvolution
-      deconvolution <- all_deconvolutions[[input$deconvolutionToTable]]
+      deconvolution <- internal$deconvolutions[[input$deconvolutionToTable]]
 
       # turn rownames to column to enable DT search
       deconvolution <- data.frame("Gene" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
@@ -1074,7 +1075,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         paste("deconvolution_", input$deconvolutionToTable, ".csv", sep = "")
       },
       content = function(file) {
-        data <- all_deconvolutions[[input$deconvolutionToTable]] # removed [[1]]
+        data <- internal$deconvolutions[[input$deconvolutionToTable]] # removed [[1]]
         write.csv(data, file)
       }
     )
@@ -1088,7 +1089,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         data <- list()
 
         # save separate for later distinction
-        data[["deconvolutions"]] <- shiny::reactiveValuesToList(all_deconvolutions)
+        data[["deconvolutions"]] <- shiny::isolate(internal$deconvolutions)
         data[["signatures"]] <- shiny::isolate(internal$signatures)
 
         # save data
