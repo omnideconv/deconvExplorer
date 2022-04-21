@@ -743,8 +743,6 @@ deconvExplorer <- function(usr_bulk = NULL,
         # load signature
         token <- stringr::str_split(signature_Method, "_")[[1]][2] # get the signature name
         signature_Method <- token
-        message(token)
-        View(isolate(internal$signatures))
         signature <- isolate(internal$signatures[[token]])
         showNotification(paste0("Using Available Signature ", signature_Method, " for deconvolution"))
       } else {
@@ -762,7 +760,6 @@ deconvExplorer <- function(usr_bulk = NULL,
         )
       }
       
-      View(signature)
 
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
