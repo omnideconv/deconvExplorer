@@ -1,7 +1,4 @@
 
-
-# functions ---------------------------------------------------------------
-
 # named deconvolution list
 returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
   
