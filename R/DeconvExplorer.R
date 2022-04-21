@@ -142,7 +142,9 @@ deconvExplorer <- function(usr_bulk = NULL,
       3,
       selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL)
     ),
-    column(3, div(downloadButton("deconvolutionDownload", "Download Deconvolution"), style = "margin-top:1.9em")),
+    column(3, div(downloadButton("deconvolutionDownload", "Download Deconvolution"),
+                  actionButton("deconvolutionToTableDelete", icon("trash")),
+                  style = "margin-top:1.9em")),
     column(
       12,
       shinycssloaders::withSpinner(
@@ -492,14 +494,9 @@ deconvExplorer <- function(usr_bulk = NULL,
     # General Setup -----------------------------------------------------------
 
 
-    # storing all calculated deconvolutions and signatures
-    #all_deconvolutions <- reactiveValues()
-    #all_signatures <- reactiveValues()
     
     internal <- shiny::reactiveValues(signatures = list("momf" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
                                       deconvolutions = list("momf_momf" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer")))) # this is new
-    #internal$signatures <- list() # signatures
-    #internal$deconvolutions <- list() # deconv
 
     userData <- reactiveValues() # whatever this does
 
@@ -532,9 +529,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     # SAMPLE DATA
 
     userData$deconvolution_result <- c("momf_momf")
-
-    #all_deconvolutions[["momf_momf"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
-    #internal$signatures[["momf"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 
     
@@ -684,13 +678,23 @@ deconvExplorer <- function(usr_bulk = NULL,
       showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
     })
     
+    # delete signatures
     observeEvent(input$signatureToTableDelete, {
       req(input$signatureToTable)
       internal$signatures[[input$signatureToTable]] <- NULL
       showNotification("Deleted Signature")
     })
     
-    #observe(all_signatures)
+    # delete deconvolution results
+    observeEvent(input$deconvolutionToTableDelete, {
+      req(input$deconvolutionToTable)
+      internal$deconvolutions[[input$deconvolutionToTable]] <- NULL
+      
+      # check if plot currently loaded, if yes, update variable
+      userData$deconvolution_result = userData$deconvolution_result[!userData$deconvolution_result %in% input$deconvolutionToTable]
+      
+      showNotification("Deleted Deconvolution Result")
+    })
 
 
     # set CIBERSORTx Credentials from User Input
@@ -861,7 +865,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     output$plotBox <- plotly::renderPlotly({
       req(userData$deconvolution_result)
       omnideconv::plot_deconvolution(
-        returnSelectedDeconvolutions(userData$deconvolution_result, shiny::isolate(internal$deconvolutions)),
+        returnSelectedDeconvolutions(userData$deconvolution_result, internal$deconvolutions),
         input$plotMethod,
         input$facets,
         input$globalColor
