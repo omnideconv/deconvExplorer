@@ -42,7 +42,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     "DWLS" = "dwls", "MOMF" = "momf"
   )
 
-  # box definitions ---------------------------------------------------------
+  # Deconvolution Boxes -------------------------------------------------------
   data_upload_box <- shinydashboard::box(id="tour_upload",
     title = "Upload your Data", status = "primary",
     solidHeader = TRUE, height = "34em", # collapsible = TRUE, # used to be 30em
@@ -173,15 +173,26 @@ deconvExplorer <- function(usr_bulk = NULL,
       )
     )
   )
-  deconv_all_results <- shinydashboard::box(id = "tour_deconvPlotSettings",
-    title = "Plotting Settings", status = "info", solidHeader = TRUE, width = 12,
-    column(3, selectInput("computedDeconvMethod", "Deconvolution Method", choices = NULL)),
-    column(3, selectInput("computedSignatureMethod", "Signature Method", choices = NULL)),
+  
+  deconv_all_results <- shinydashboard::box(
+    id = "tour_deconvPlotSettings",
+    title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
-      4,
-      actionButton("loadDeconvolution", "Load Deconvolution Result", style = "margin-top: 1.7em"),
-      actionButton("addToPlot", "Compare: Add to Plot", style = "margin-top: 1.7em"),
-      actionButton("removeFromPlot", "Compare: Remove from Plot", style = "margin-top: 1.7em")
+      5,
+      checkboxGroupInput("deconvolutionToPlot", "Select Deconvolution results to plot", choices = c("dwls_dwls"), selected = "dwls_dwls", inline = TRUE)
+    ),
+    column(4, helpText("Select the deconvolution results to be plotted on the left side."),
+              helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))),
+    column(
+      2,
+      selectInput("deconvolutionToDelete", "Delete a deconvolution result", choices = NULL)
+    ),
+    column(
+      1,
+      div(
+        actionButton("deconvolutionToDeleteButton", icon("trash")),
+        style = "margin-top:1.7em"
+      )
     )
   )
 
@@ -434,7 +445,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           icon = icon("info", verify_fa = FALSE)
         ),
         notificationItem(
-          text = fileInput("uploadSession", "Upload Session File"),
+          text = fileInput("uploadSession", "Upload Session File", accept = c(".rds")),
           icon = icon("info", verfiy_fa = FALSE), status = "primary"
         )
       )
@@ -500,24 +511,12 @@ deconvExplorer <- function(usr_bulk = NULL,
   # server definition  ------------------------------------------------------
 
   de_server <- shinyServer(function(input, output, session) {
-    ### background datastructure to store several deconvolution results
-
-    # functions
-    getSelectionToPlot <- function() {
-      req(
-        input$computedDeconvMethod != "",
-        input$computedSignatureMethod != ""
-      )
-      return(paste0(input$computedDeconvMethod, "_", input$computedSignatureMethod))
-    }
-
-
     # General Setup -----------------------------------------------------------
 
 
     
-    internal <- shiny::reactiveValues(signatures = list("momf" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
-                                      deconvolutions = list("momf_momf" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer")))) # this is new
+    internal <- shiny::reactiveValues(signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
+                                      deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer")))) # this is new
 
     userData <- reactiveValues() # whatever this does
 
@@ -549,7 +548,7 @@ deconvExplorer <- function(usr_bulk = NULL,
 
     # SAMPLE DATA
 
-    userData$deconvolution_result <- c("momf_momf")
+    userData$deconvolution_result <- c("dwls_dwls")
 
 
     
@@ -712,7 +711,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       internal$deconvolutions[[input$deconvolutionToTable]] <- NULL
       
       # check if plot currently loaded, if yes, update variable
-      userData$deconvolution_result = userData$deconvolution_result[!userData$deconvolution_result %in% input$deconvolutionToTable]
+      #userData$deconvolution_result = userData$deconvolution_result[!userData$deconvolution_result %in% input$deconvolutionToTable]
       
       showNotification("Deleted Deconvolution Result")
     })
@@ -807,69 +806,28 @@ deconvExplorer <- function(usr_bulk = NULL,
       showNotification("Deconvolution finished", type = "message")
       print("Finished Deconvolution") # debug reasons
     })
-
-    # update Deconvolution Method and signature method choices when new deconvolution result is calculated
+    
+    # update avaible deconvolutions for plotting 
     observe({
-      deconv_choices <- unlist(strsplit(names(internal$deconvolutions), "_"))
-      deconv_choices <- deconv_choices[seq(1, length(deconv_choices), 2)] # jede 2, startend von 1
-      updateSelectInput(session,
-        inputId = "computedDeconvMethod",
-        choices = deconv_choices
-      )
+      selection <- input$deconvolutionToPlot
+      #selection <- intersect(selection, names(internal$deconvolutions)) # remove deleted ones
+      updateCheckboxGroupInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection, inline = TRUE)
     })
-
-    # update signature Method choices when selecting deconvolution to load
+    
     observe({
-      signature_choices <- names(internal$deconvolutions) %>%
-        stringr::str_subset(pattern = paste0(input$computedDeconvMethod, "_")) %>%
-        strsplit("_") %>%
-        unlist()
-
-      if (length(signature_choices) > 1) {
-        signature_choices <- signature_choices[seq(2, length(signature_choices), 2)] # jede zweite ab dem zweiten
-      } else {
-        signature_choices <- signature_choices[2] # nur das zweite
-      }
-
-      updateSelectInput(session,
-        inputId = "computedSignatureMethod",
-        choices = signature_choices
-      )
+      updateSelectInput(session, "deconvolutionToDelete", "Choose a deconvolution to delete", choices = names(internal$deconvolutions))
+    })
+    
+    observeEvent(input$deconvolutionToDeleteButton, {
+      req(input$deconvolutionToDelete)
+      internal$deconvolutions[[input$deconvolutionToDelete]] <- NULL
+      
+      showNotification("Deleted Deconvolution", type = "message")
     })
 
     # update Signature Tab Choices when new Deconvolution Added
-
     observe({
       updateSelectInput(session, inputId = "signatureToHeatmap", choices = names(internal$signatures)) # used to be allSignatures()
-    })
-
-    # add Deconvolution to ToPlot list
-    observeEvent(input$addToPlot, {
-      tmp <- userData$deconvolution_result
-      userData$deconvolution_result <- c(tmp, getSelectionToPlot())
-    })
-
-    # remove deconvolution from To Plot list
-    observeEvent(input$removeFromPlot, {
-      tmp <- userData$deconvolution_result
-      tmp <- tmp[!tmp %in% getSelectionToPlot()]
-      userData$deconvolution_result <- tmp
-    })
-
-    # load Deconvolution result
-    observeEvent(input$loadDeconvolution, {
-      userData$deconvolution_result <- c(getSelectionToPlot())
-    })
-
-    # observe the selection to plot and show buttons if conditions match
-    observe({
-      if (getSelectionToPlot() %in% userData$deconvolution_result) {
-        shinyjs::hide("addToPlot")
-        shinyjs::show("removeFromPlot")
-      } else {
-        shinyjs::hide("removeFromPlot")
-        shinyjs::show("addToPlot")
-      }
     })
 
     # update selection inputs if deconvolution gets added
@@ -881,9 +839,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     # Plots -------------------------------------------------------------------
 
     output$plotBox <- plotly::renderPlotly({
-      req(userData$deconvolution_result)
+      #req(userData$deconvolution_result)
+      req(input$deconvolutionToPlot)
       omnideconv::plot_deconvolution(
-        returnSelectedDeconvolutions(userData$deconvolution_result, internal$deconvolutions),
+        returnSelectedDeconvolutions(input$deconvolutionToPlot, isolate(internal$deconvolutions)),
         input$plotMethod,
         input$facets,
         input$globalColor
@@ -891,10 +850,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
 
     output$benchmarkPlot <- plotly::renderPlotly({
-      plot_benchmark(returnSelectedDeconvolutions(
-        userData$deconvolution_result,
-        shiny::isolate(internal$deconvolutions)
-      ))
+        NULL
     })
 
     # Number Of Genes Barplot
