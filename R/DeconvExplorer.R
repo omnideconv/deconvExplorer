@@ -357,12 +357,19 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = "Settings", solidHeader = TRUE, width = 4, status = "info",
     column(8, selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)),
     column(4, actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")),
-    # column with text/instructions
     column(8, textInput("refinementNewName", "New Signature Name")),
     column(4, actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")),
-    column(8, selectInput("cellTypeToRename", "Cell Type to Rename", choices = NULL),
-              textInput("cellTypeNewName", "New cell type name")),
-    column(4, actionButton("renameCellTypeGo", "Rename"))
+    column(
+      12,
+      helpText(icon("arrow-up"), "  Load a signature to run refinements and choose a new name when saving"),
+      div(helpText(icon("arrow-down"), "  If required rename specific cell types"), style="margin-top:2.5em")
+    ),
+    column(
+      8, 
+      selectInput("cellTypeToRename", "Cell Type to Rename", choices = NULL),
+      textInput("cellTypeNewName", "New cell type name")
+    ),
+    column(4, div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em"))
   )
 
 
@@ -709,7 +716,13 @@ deconvExplorer <- function(usr_bulk = NULL,
     # rename celltype if button is clicked
     observeEvent(input$renameCellTypeGo, {
       req(input$cellTypeNewName, signatureRefined(), input$cellTypeToRename)
-      signatureRefined(renameCellType(isolate(signatureRefined()), input$cellTypeToRename, input$cellTypeNewName))
+      
+      if (input$cellTypeToRename %in% colnames(signatureRefined())){
+        signatureRefined(renameCellType(isolate(signatureRefined()), input$cellTypeToRename, input$cellTypeNewName))
+        showNotification("Renamed cell type", type = "message")
+      } else {
+        showNotification("Cell Type does not exist in signature", type="error")
+      }
     })
     
     # delete signatures
