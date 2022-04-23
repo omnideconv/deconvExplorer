@@ -1,4 +1,35 @@
+#' Rename Cell Types of Gene Expression Signature
+#' 
+#' @param signature gene expression signature
+#' @param cellType cell type to rename
+#' @param newName new cell type name
+#' 
+#' @returns gene expression signature with updated cell type names
 
+renameCellType <- function(signature, cellType, newName){
+  if (is.null(signature)){
+    stop("Please provide a signature")
+  }
+  
+  if (is.null(cellType) | is.null(newName)){
+    stop("cellType or newName is NULL, cannot rename")
+  }
+  
+  if (cellType == "" | newName ==""){
+    stop("cellType or newName empty! Cannot rename")
+  }
+  
+  if (!(cellType %in% colnames(signature))){
+    stop("Cannot rename celltype: cell type does not exist in signature")
+  }
+  
+  newSignature <- as.data.frame(signature)
+  
+  names(newSignature)[names(newSignature) == cellType] <- newName
+  
+  return(as.matrix(newSignature))
+  
+}
 
 #' Remove Rows from base expression matrix with a specified amount of zeros in a row
 #' 
