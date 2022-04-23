@@ -90,18 +90,18 @@ deconvExplorer <- function(usr_bulk = NULL,
         )
       )
     ),
-    column(
-      6,
-      conditionalPanel(
-        condition = "input.deconvMethod == 'bseqsc'",
-        fileInput("userMarker", "Marker Genes")
-      )
-    ),
+    # column(
+    #   6,
+    #   conditionalPanel(
+    #     condition = "input.deconvMethod == 'bseqsc'",
+    #     fileInput("userMarker", "Marker Genes")
+    #   )
+    # ),
     column(
       12,
       actionButton("deconvolute", "Deconvolute"),
-      waiter::useWaitress(),
-      actionButton("deconvoluteAll", "Deconvolute All")
+      waiter::useWaitress()
+      #actionButton("deconvoluteAll", "Deconvolute All")
     )
   )
 
@@ -179,7 +179,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
       5,
-      checkboxGroupInput("deconvolutionToPlot", "Select Deconvolution results to plot", choices = c("dwls_dwls"), selected = "dwls_dwls", inline = TRUE)
+      checkboxGroupInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", inline = TRUE)
     ),
     column(4, helpText("Select the deconvolution results to be plotted on the left side."),
               helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))),
@@ -410,12 +410,12 @@ deconvExplorer <- function(usr_bulk = NULL,
           text = actionButton("startTour", "Start Tour",
             icon = icon("directions")
           ),
-          icon = icon("info", verify_fa = FALSE)
+          icon = icon("", verify_fa = FALSE)
         ),
         notificationItem(text = actionButton("githubLink", "View the Code",
           onclick = "window.open('https://github.com/omnideconv', '_blank')",
           icon = icon("github")
-        ), icon = icon("info", verify_fa = FALSE))
+        ), icon = icon("", verify_fa = FALSE))
       ),
       dropdownMenu(
         type = "task",
@@ -442,11 +442,11 @@ deconvExplorer <- function(usr_bulk = NULL,
         badgeStatus = NULL,
         notificationItem(
           text = downloadButton("downloadSession", "Download Session"),
-          icon = icon("info", verify_fa = FALSE)
+          icon = icon("", verify_fa = FALSE)
         ),
         notificationItem(
           text = fileInput("uploadSession", "Upload Session File", accept = c(".rds")),
-          icon = icon("info", verfiy_fa = FALSE), status = "primary"
+          icon = icon("", verify_fa = FALSE), status = "primary"
         )
       )
     ),
