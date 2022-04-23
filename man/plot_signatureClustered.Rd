@@ -14,7 +14,7 @@ plot_signatureClustered(
 \arguments{
 \item{signature}{One Signature to plot}
 
-\item{score}{The score used to annotate the genes}
+\item{score}{The score used to annotate the genes (entropy, gini)}
 
 \item{annotation_type}{How the score is rendered}
 

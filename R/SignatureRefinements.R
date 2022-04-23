@@ -2,7 +2,7 @@
 
 #' Remove Rows from base expression matrix with a specified amount of zeros in a row
 #' 
-#' @param baseSignatue GenesXcelltype Matrix with expression values
+#' @param baseSignature GenesXcelltype Matrix with expression values
 #' @param percentage maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
 removePercentZeros <- function (baseSignature, percentage = 0.5){
