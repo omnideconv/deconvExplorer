@@ -359,7 +359,10 @@ deconvExplorer <- function(usr_bulk = NULL,
     column(4, actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")),
     # column with text/instructions
     column(8, textInput("refinementNewName", "New Signature Name")),
-    column(4, actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em"))
+    column(4, actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")),
+    column(8, selectInput("cellTypeToRename", "Cell Type to Rename", choices = NULL),
+              textInput("cellTypeNewName", "New cell type name")),
+    column(4, actionButton("renameCellTypeGo", "Rename"))
   )
 
 
@@ -637,7 +640,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       updateSelectInput(session, "signatureToRefine", choices = names(internal$signatures))
     })
 
-    # when "load Refinement" is clickes, load siganture in reactive Value
+    # when "load Refinement" is clicked, load siganture in reactive Value
     observeEvent(input$loadRefinementSignature, {
       req(input$signatureToRefine)
       showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
@@ -696,6 +699,17 @@ deconvExplorer <- function(usr_bulk = NULL,
       internal$signatures[[input$refinementNewName]] <- isolate(signatureRefined())
 
       showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
+    })
+    
+    # load cell types of currently loaded signature
+    observe({
+      updateSelectInput(session, "cellTypeToRename", choices = colnames(signatureRefined()))
+    })
+    
+    # rename celltype if button is clicked
+    observeEvent(input$renameCellTypeGo, {
+      req(input$cellTypeNewName, signatureRefined(), input$cellTypeToRename)
+      signatureRefined(renameCellType(isolate(signatureRefined()), input$cellTypeToRename, input$cellTypeNewName))
     })
     
     # delete signatures
