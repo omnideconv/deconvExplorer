@@ -220,28 +220,10 @@ deconvExplorer <- function(usr_bulk = NULL,
 
 
   # Benchmarking Boxes ------------------------------------------------------
-  benchmark_simbuData <- shinydashboard::box(
-    title = "Simulation Dataset", status = "info", solidHeader = TRUE, width = 6,
-    fileInput("simbuUserData", "Upload your Data")
-  )
-  
-  benchmark_simbuSettings <- shinydashboard::box(
-    title = "Simulation Settings", status = "info", solidHeader = TRUE, width = 6,
-    selectInput("simbuScenario", "Simulation Scenario", choices = c("Even" = "even", "Random" = "random", 
-                                                                    "Mirror_DB" = "mirror_db", "Weighted" = "weighted", 
-                                                                    "Pure" = "pure", "Custom" = "custom")),
-    numericInput("simbuNCells", "Number Of Cells", value = 1000),
-    numericInput("simbuNSamples", "Number of Samples", value = 100),
-    textInput("simbuWhitelist", "Cell Type Whitelist")
-  )
-  
-  benchmark_deconvolutionSettings <- shinydashboard::box(
+  benchmark_deconvolutionSelection <- shinydashboard::box(
     title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width=12,
-    selectInput("benchmark_deconvMethod", "Deconvolution Method",
-                choices = omnideconv::deconvolution_methods
-    ),
-    selectInput("benchmark_Signature", "Signature", choices = NULL), 
-    actionButton("benchmark_run", "Run Benchmark")
+    selectInput("benchmark_reference", "Reference", choices=NULL),
+    selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices=NULL)
   )
   
   
@@ -567,8 +549,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           )
         )),
         tabItem(tabName = "benchmark", fluidPage(
-          fluidRow(benchmark_simbuData, benchmark_simbuSettings), 
-          fluidRow(benchmark_deconvolutionSettings),
+          fluidRow(benchmark_deconvolutionSelection),
           fluidRow(benchmark_plot_box)
         )),
         tabItem(tabName = "fInfo", fluidPage(
@@ -650,6 +631,11 @@ deconvExplorer <- function(usr_bulk = NULL,
       updateSelectInput(session, "annotationSelection", choices=names(internal$annotation))
       updateSelectInput(session, "batchSelection", choices=names(internal$batch))
       updateSelectInput(session, "markerSelection", choices=names(internal$markers))
+    })
+    
+    observe({
+      updateSelectInput(session, "benchmark_reference", choices=names(internal$deconvolutions))
+      updateSelectInput(session, "benchmark_ToPlot", choices=names(internal$deconvolutions))
     })
     
     observeEvent(input$loadSample, {
