@@ -425,6 +425,42 @@ deconvExplorer <- function(usr_bulk = NULL,
     column(7, textInput("refinementManualGene", "Type in a Gene Identifier to remove")),
     column(1, actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em"))
   )
+  
+
+  # Info Boxes --------------------------------------------------------------
+
+  info_overview <- shinydashboard::box(
+    title = "Overview", solidHeader = TRUE, 
+    p("DeconvExplorer is a web interface to streamline cell type deconvolution with omnideconv..."),
+    p("TODO"),
+    p("This will contain: short overview and small summaries for each module")
+  )
+  
+  info_link <- shinydashboard::box(
+    title = NULL, solidHeader = TRUE, 
+    column(12, imageOutput("logoInfo", width= "100%", height = "auto")), 
+    column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C; margin-bottom: 1.5em")),
+    column(12, 
+           div(
+           h3(icon("github"), style="display:inline; margin-right:1em"),
+           a("Omnideconv", href="https://github.com/omnideconv/omnideconv#omnideconv", target="_blank", style="margin-right:1em"),
+           a("SimBu", href="https://github.com/omnideconv/SimBu#simbu", target="_blank", style="margin-right:1em"),
+           a("DeconvExplorer", href="https://github.com/omnideconv/DeconvExplorer#deconvexplorer", target="_blank", style="margin-right:1em"),
+           h3(icon("link"), style="display: inline; margin-right:1em"),
+           a("omnideconv.org", href="https://www.omnideconv.org", target="_blank"), 
+           style="display:inline; font-size: 1.5em;"),
+    ),
+    column(12, 
+          div(
+           h3(icon("envelope"), style="display: inline; margin-right:1em"),
+           a("Francesca Finotello", href="mailto:francesca.finotello@uibk.ac.at", style="margin-right:1em"),
+           a("Markus List", href="mailto:markus.list@wzw.tum.de", style="margin-right:1em"),
+           a("Gregor Sturm", href="mailto:gregor.stum@i-med.ac.at", style="margin-right:1em"),
+           style="display:block; font-size:1.5em; margin-top:0.7em; "
+          )
+    )
+  )
+    
 
 
   # ui definition  ----------------------------------------------------------
@@ -536,9 +572,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           fluidRow(benchmark_plot_box)
         )),
         tabItem(tabName = "fInfo", fluidPage(
-          includeMarkdown(
-            system.file("www", "vignette.md", package = "DeconvExplorer")
-          )
+          fluidRow(info_overview, info_link)
         ))
       )
     )
@@ -849,7 +883,7 @@ deconvExplorer <- function(usr_bulk = NULL,
           verbose = TRUE
         )
 
-      # insert result into the internal$deconvolutions reactive Value
+      # insert result into the internal$deconvolutions reactive ValuelogoInfo
       internal$deconvolutions[[paste0(input$deconvMethod, "_", signature_Method)]] <- deconvolution_result
 
       # only add signature if not null
@@ -1292,6 +1326,17 @@ deconvExplorer <- function(usr_bulk = NULL,
       {
         list(
           src = system.file("www", "omnideconv_logo.svg", package = "DeconvExplorer"),
+          contentType = "image/svg+xml",
+          width = "100%"
+        )
+      },
+      deleteFile = TRUE
+    )
+    
+    output$logoInfo <- renderImage(
+      {
+        list(
+          src = system.file("www", "omnideconv_logo_info.svg", package = "DeconvExplorer"),
           contentType = "image/svg+xml",
           width = "100%"
         )
