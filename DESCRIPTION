@@ -13,6 +13,7 @@ Imports:
     omnideconv, 
     plotly,
     ggplot2, 
+    ggforce,
     shinycssloaders, 
     waiter,
     rintrojs, 
