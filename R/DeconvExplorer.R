@@ -223,15 +223,27 @@ deconvExplorer <- function(usr_bulk = NULL,
   benchmark_deconvolutionSelection <- shinydashboard::box(
     title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width=12,
     selectInput("benchmark_reference", "Reference", choices=NULL),
-    selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices=NULL)
+    selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices=NULL, multiple = TRUE)
   )
   
   
-  benchmark_plot_box <- shinydashboard::box(
-    title = "Benchmark", status = "info", solidHeader = TRUE, width = 12,
-    shinycssloaders::withSpinner(
-      plotly::plotlyOutput("benchmarkPlot")
-    )
+  benchmark_plot_box <- shinydashboard::tabBox(
+    title = "Benchmark",  width = 12,
+    tabPanel("Scatter Plot", shiny::plotOutput("benchmark_scatter") %>% withSpinner()),
+    tabPanel("Correlation", 
+             column(2,
+             selectInput("correlationPlotType", "Plot Type", choices=c("Circle" = "circle", "Square"="square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color"="color", "Pie" = "pie"), selected = "color"),
+             ),
+             column(2,
+             selectInput("correlationAnnotationType", "P Value Annotation Type", choices =c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
+             ),
+             column(2,
+             selectInput("correlationAnntotationColor", "Annotation Color", choices=c("Black" = "black", "White" = "white"), selected="white"),
+             ), 
+
+             shiny::plotOutput("benchmark_correlation") %>% withSpinner()
+             
+     )
   )
 
 
@@ -643,6 +655,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
       internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
       internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
+      internal$deconvolutions[["ref"]] <- omnideconv::RefData
       
       showNotification("Loaded Sample Data")
     })
@@ -805,6 +818,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       if (is.null(input$bulkSelection)| input$bulkSelection ==""){showNotification("Bulk Data Missing", type="error")}
       req(input$bulkSelection)
       bulkData <- internal$bulk[[input$bulkSelection]]
+    
       
       # check if Single Cell Data Necessary
       if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")){
@@ -856,6 +870,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )
       }
       
+
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
@@ -922,10 +937,6 @@ deconvExplorer <- function(usr_bulk = NULL,
         input$facets,
         input$globalColor
       )
-    })
-
-    output$benchmarkPlot <- plotly::renderPlotly({
-        NULL
     })
 
     # Number Of Genes Barplot
@@ -1010,7 +1021,26 @@ deconvExplorer <- function(usr_bulk = NULL,
         palette = input$globalColor
       )
     })
+    
+    output$benchmark_scatter <- renderPlot({
+      req(input$benchmark_reference, input$benchmark_ToPlot)
+      reference <- internal$deconvolutions[[input$benchmark_reference]]
+      estimates <- returnSelectedDeconvolutions(input$benchmark_ToPlot, isolate(internal$deconvolutions))
+      plot_benchmark_scatter(reference, estimates, input$globalColor)
+    })
 
+    output$benchmark_correlation <- renderPlot({
+      req(input$benchmark_reference, input$benchmark_ToPlot, input$correlationPlotType, input$correlationAnnotationType, input$correlationAnntotationColor)
+      reference <- internal$deconvolutions[[input$benchmark_reference]]
+      estimates <- returnSelectedDeconvolutions(input$benchmark_ToPlot, isolate(internal$deconvolutions))
+      plot_benchmark_correlation(
+        reference,
+        estimates,
+        plot_method = input$correlationPlotType,
+        pValueType = input$correlationAnnotationType,
+        pValueColor = input$correlationAnntotationColor
+      )
+    })
 
     # ValueBoxes --------------------------------------------------------------
 
@@ -1288,8 +1318,12 @@ deconvExplorer <- function(usr_bulk = NULL,
         # convert to dataframe and set colnames
         content <- as.data.frame(content)
         # content <- as.matrix(content)
-        rownames(content) <- content[, 1] # first column
-        content[, 1] <- NULL # remove first column
+        
+        # if first column is a character column use as rownames
+        if (typeof(content[,1])=="character" && dim(content)[2] > 1){
+          rownames(content) <- content[, 1] # first column
+          content[, 1] <- NULL # remove first column
+        }
 
         # if requested a vector turn into character vector
         if (type == "vector") {

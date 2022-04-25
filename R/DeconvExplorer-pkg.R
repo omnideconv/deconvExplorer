@@ -28,6 +28,7 @@
 #' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput makeInteractiveComplexHeatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom circlize colorRamp2
+#' @importFrom ggforce facet_grid_paginate
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package
