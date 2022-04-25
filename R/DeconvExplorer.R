@@ -805,6 +805,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       if (is.null(input$bulkSelection)| input$bulkSelection ==""){showNotification("Bulk Data Missing", type="error")}
       req(input$bulkSelection)
       bulkData <- internal$bulk[[input$bulkSelection]]
+    
       
       # check if Single Cell Data Necessary
       if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")){
@@ -856,6 +857,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         )
       }
       
+
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
@@ -1288,8 +1290,12 @@ deconvExplorer <- function(usr_bulk = NULL,
         # convert to dataframe and set colnames
         content <- as.data.frame(content)
         # content <- as.matrix(content)
-        rownames(content) <- content[, 1] # first column
-        content[, 1] <- NULL # remove first column
+        
+        # if first column is a character column use as rownames
+        if (typeof(content[,1])=="character" && dim(content)[2] > 1){
+          rownames(content) <- content[, 1] # first column
+          content[, 1] <- NULL # remove first column
+        }
 
         # if requested a vector turn into character vector
         if (type == "vector") {
