@@ -228,22 +228,39 @@ deconvExplorer <- function(usr_bulk = NULL,
   
   
   benchmark_plot_box <- shinydashboard::tabBox(
-    title = "Benchmark",  width = 12,
+    title = "Benchmark", width = 12,
     tabPanel("Scatter Plot", shiny::plotOutput("benchmark_scatter") %>% withSpinner()),
-    tabPanel("Correlation", 
-             column(2,
-             selectInput("correlationPlotType", "Plot Type", choices=c("Circle" = "circle", "Square"="square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color"="color", "Pie" = "pie"), selected = "color"),
-             ),
-             column(2,
-             selectInput("correlationAnnotationType", "P Value Annotation Type", choices =c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
-             ),
-             column(2,
-             selectInput("correlationAnntotationColor", "Annotation Color", choices=c("Black" = "black", "White" = "white"), selected="white"),
-             ), 
-
-             shiny::plotOutput("benchmark_correlation") %>% withSpinner()
-             
-     )
+    tabPanel(
+      "Correlation",
+      column(
+        2,
+        selectInput("correlationPlotType", "Plot Type", choices = c("Circle" = "circle", "Square" = "square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color" = "color", "Pie" = "pie"), selected = "color"),
+      ),
+      column(
+        2,
+        selectInput("correlationAnnotationType", "P Value Annotation Type", choices = c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
+      ),
+      column(
+        2,
+        selectInput("correlationAnntotationColor", "Annotation Color", choices = c("Black" = "black", "White" = "white"), selected = "white"),
+      ),
+      shiny::plotOutput("benchmark_correlation") %>% withSpinner()
+    ),
+    tabPanel(
+      "RMSE",
+      column(
+        2,
+        selectInput("rmsePlotType", "RMSE Plot Type", choices = c("Heatmap" = "heatmap", "Boxplot" = "boxplot"), selected = "heatmap")
+      ),
+      column(
+        2,
+        conditionalPanel(
+          condition = "input.rmsePlotType == 'heatmap'",
+          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method", choices = c("circle", "square", "ellipse", "number", "shade", "color", "pie"), selected = "color")
+        ),
+      ),
+      shiny::plotOutput("benchmark_rmse") %>% withSpinner()
+    )
   )
 
 
@@ -1039,6 +1056,20 @@ deconvExplorer <- function(usr_bulk = NULL,
         plot_method = input$correlationPlotType,
         pValueType = input$correlationAnnotationType,
         pValueColor = input$correlationAnntotationColor
+      )
+    })
+    
+    output$benchmark_rmse <- renderPlot({
+      req(input$benchmark_reference, input$benchmark_ToPlot, input$rmsePlotType, input$globalColor)
+      reference <- internal$deconvolutions[[input$benchmark_reference]]
+      estimates <- returnSelectedDeconvolutions(input$benchmark_ToPlot, isolate(internal$deconvolutions))
+      
+      
+      plot_benchmark_rmse(reference,
+                          estimates,
+                          plot_type = input$rmsePlotType,
+                          hm_method = input$rmseHeatmapMethod,
+                          palette = input$globalColor
       )
     })
 
