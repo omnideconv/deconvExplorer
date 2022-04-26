@@ -76,7 +76,69 @@ deconvExplorer <- function(usr_bulk = NULL,
   
   data_load_signature <- shinydashboard::box(
     title= "Upload Signature", solidHeader = TRUE, status = "primary", width= 12, 
-    fileInput("userSignatureUpload", "Upload Siganture")
+    fileInput("userSignatureUpload", "Upload Siganture"),
+    div(style = "margin-top: -25px")
+  )
+  
+  data_info <- shinydashboard::box(
+    title=NULL, solidHeader = FALSE, width=6, 
+     h3("Supported Datatypes:", style="margin-top:0.2em"), 
+     tags$ul(
+       tags$li("rds"), 
+       tags$li("csv"), 
+       tags$li("tsv"),
+       tags$li("txt")
+     ), 
+     h3("Data requirements:"),
+     tags$ol(
+       tags$li("Single cell RNA-seq data"),
+          tags$ul(
+            tags$li(strong("Genes"), "x", strong("Cells"), "matrix"),
+            tags$li("Counts are", strong("not log-transformed")),
+            tags$li("Rownames (gene names) are provided in the same format as in the bulk RNA-seq data, for instance HGNC symbols")
+          ),
+       tags$li("Cell type annotations"), 
+          tags$ul(
+            tags$li("Vector containing cell type annotations"),
+            tags$li("Annotations are in the same order as the columns of the single cell matrix")
+          ),
+       tags$li("Batch ids"), 
+          tags$ul(
+            tags$li("Vector containing batch ids, so sample or patient ids"),
+            tags$li("Ids are in the same order as the columns of the single cell matrix"),
+            tags$li("This is only necessary for Bisque, MuSiC and SCDC")
+          ),
+       tags$li("(Marker genes)"),
+          tags$ul(
+            tags$li("Vector containing gene names"),
+            tags$li("This is only necessary for BSeq-sc")
+          ),
+       tags$li("Bulk RNA-seq data"), 
+          tags$ul(
+            tags$li(strong("Genes"), "x", strong("Samples"), "matrix"),
+            tags$li("Rownames (gene names) are provided in the same format as in the sc RNA-seq data, for instance HGNC symbols")
+          )
+     )
+    
+  )
+  
+  data_info_simbu <- shinydashboard::box(
+    title="SimBu Data", solidHeader = FALSE, width=12, 
+    h3("Upload your SimBu simulation as .rds file:", style="margin-top:0em"), 
+    tags$pre("simulation <- SimBu::simulate_bulk(...)
+saveRDS(simulation, 'filepath.rds') # upload this file"),
+    helpText("For further Information see the SimBu Documentation")
+  )
+  
+  data_info_signature <- shinydashboard::box(
+    title="Signature", solidHeader = FALSE, width=12,
+    h3("Supported Datatypes:", style="margin-top:0em"),
+    tags$ul(
+      tags$li("csv"), 
+      tags$li("tsv"), 
+      tags$li("rds")
+    ),
+    helpText("For csv and tsv files the first column", strong("must"), "contain gene identifiers")
   )
   
 
@@ -552,6 +614,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       tabItems(
         tabItem(tabName="data", fluidPage(
           fluidRow(data_deconvolution, column(6, data_simbu_box, data_load_sample, data_load_signature)),
+          fluidRow(data_info, column(6, data_info_simbu, data_info_signature))
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(data_upload_box, settings_box),
