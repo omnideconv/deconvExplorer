@@ -114,7 +114,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         condition = "input.deconvMethod == 'cibersortx' ||
                   input.deconvMethod == 'dwls' ||
                     input.deconvMethod == 'momf'",
-        selectInput("signatureMethod", "Signature Calculation Method",
+        selectInput("signatureMethod", "Signature",
           choices = produces_signature
         )
       )
