@@ -69,7 +69,9 @@ deconvExplorer <- function(usr_bulk = NULL,
   
   data_load_sample <- shinydashboard::box(
     title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12, 
-    actionButton("loadSample", "Load Sample Files")
+    column(4, div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style="margin-top:0.5em;")),
+    column(3, div(actionButton("loadSample", "Load Sample Files"), style="margin-top:0.5em")), 
+    column(5, helpText("Ground truth data will be loaded as 'SampleReference'"))
   )
   
   data_load_signature <- shinydashboard::box(
@@ -668,11 +670,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
     
     observeEvent(input$loadSample, {
-      internal$bulk[["BulkSample1"]] <- omnideconv::bulk
-      internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
-      internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
-      internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
-      internal$deconvolutions[["ref"]] <- omnideconv::RefData
+      req(input$sampleNumber)
+      if (input$sampleNumber==1){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
+        internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
+        internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      } else if (input$sampleNumber==2){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample2"]] <- omnideconv::single_cell_data_2
+        internal$annotation[["CellTypeAnnotation2"]] <- omnideconv::cell_type_annotations_2
+        internal$batch[["BatchIDs2"]] <- omnideconv::batch_ids_2
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      } else if (input$sampleNumber == 3){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample3"]] <- omnideconv::single_cell_data_3
+        internal$annotation[["CellTypeAnnotation3"]] <- omnideconv::cell_type_annotations_3
+        internal$batch[["BatchIDs3"]] <- omnideconv::batch_ids_3
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      }
       
       showNotification("Loaded Sample Data")
     })
