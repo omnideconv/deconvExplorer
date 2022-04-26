@@ -69,12 +69,76 @@ deconvExplorer <- function(usr_bulk = NULL,
   
   data_load_sample <- shinydashboard::box(
     title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12, 
-    actionButton("loadSample", "Load Sample Files")
+    column(4, div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style="margin-top:0.5em;")),
+    column(3, div(actionButton("loadSample", "Load Sample Files"), style="margin-top:0.5em")), 
+    column(5, helpText("Ground truth data will be loaded as 'SampleReference'"))
   )
   
   data_load_signature <- shinydashboard::box(
     title= "Upload Signature", solidHeader = TRUE, status = "primary", width= 12, 
-    fileInput("userSignatureUpload", "Upload Siganture")
+    fileInput("userSignatureUpload", "Upload Siganture"),
+    div(style = "margin-top: -25px")
+  )
+  
+  data_info <- shinydashboard::box(
+    title=NULL, solidHeader = FALSE, width=6, 
+     h3("Supported Datatypes:", style="margin-top:0.2em"), 
+     tags$ul(
+       tags$li("rds"), 
+       tags$li("csv"), 
+       tags$li("tsv"),
+       tags$li("txt")
+     ), 
+     h3("Data requirements:"),
+     tags$ol(
+       tags$li("Single cell RNA-seq data"),
+          tags$ul(
+            tags$li(strong("Genes"), "x", strong("Cells"), "matrix"),
+            tags$li("Counts are", strong("not log-transformed")),
+            tags$li("Rownames (gene names) are provided in the same format as in the bulk RNA-seq data, for instance HGNC symbols")
+          ),
+       tags$li("Cell type annotations"), 
+          tags$ul(
+            tags$li("Vector containing cell type annotations"),
+            tags$li("Annotations are in the same order as the columns of the single cell matrix")
+          ),
+       tags$li("Batch ids"), 
+          tags$ul(
+            tags$li("Vector containing batch ids, so sample or patient ids"),
+            tags$li("Ids are in the same order as the columns of the single cell matrix"),
+            tags$li("This is only necessary for Bisque, MuSiC and SCDC")
+          ),
+       tags$li("(Marker genes)"),
+          tags$ul(
+            tags$li("Vector containing gene names"),
+            tags$li("This is only necessary for BSeq-sc")
+          ),
+       tags$li("Bulk RNA-seq data"), 
+          tags$ul(
+            tags$li(strong("Genes"), "x", strong("Samples"), "matrix"),
+            tags$li("Rownames (gene names) are provided in the same format as in the sc RNA-seq data, for instance HGNC symbols")
+          )
+     )
+    
+  )
+  
+  data_info_simbu <- shinydashboard::box(
+    title="SimBu Data", solidHeader = FALSE, width=12, 
+    h3("Upload your SimBu simulation as .rds file:", style="margin-top:0em"), 
+    tags$pre("simulation <- SimBu::simulate_bulk(...)
+saveRDS(simulation, 'filepath.rds') # upload this file"),
+    helpText("For further Information see the SimBu Documentation")
+  )
+  
+  data_info_signature <- shinydashboard::box(
+    title="Signature", solidHeader = FALSE, width=12,
+    h3("Supported Datatypes:", style="margin-top:0em"),
+    tags$ul(
+      tags$li("csv"), 
+      tags$li("tsv"), 
+      tags$li("rds")
+    ),
+    helpText("For csv and tsv files the first column", strong("must"), "contain gene identifiers")
   )
   
 
@@ -112,7 +176,7 @@ deconvExplorer <- function(usr_bulk = NULL,
         condition = "input.deconvMethod == 'cibersortx' ||
                   input.deconvMethod == 'dwls' ||
                     input.deconvMethod == 'momf'",
-        selectInput("signatureMethod", "Signature Calculation Method",
+        selectInput("signatureMethod", "Signature",
           choices = produces_signature
         )
       )
@@ -201,7 +265,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
       5,
-      checkboxGroupInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", inline = TRUE)
+      selectInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE)
     ),
     column(4, helpText("Select the deconvolution results to be plotted on the left side."),
               helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))),
@@ -228,22 +292,39 @@ deconvExplorer <- function(usr_bulk = NULL,
   
   
   benchmark_plot_box <- shinydashboard::tabBox(
-    title = "Benchmark",  width = 12,
+    title = "Benchmark", width = 12,
     tabPanel("Scatter Plot", shiny::plotOutput("benchmark_scatter") %>% withSpinner()),
-    tabPanel("Correlation", 
-             column(2,
-             selectInput("correlationPlotType", "Plot Type", choices=c("Circle" = "circle", "Square"="square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color"="color", "Pie" = "pie"), selected = "color"),
-             ),
-             column(2,
-             selectInput("correlationAnnotationType", "P Value Annotation Type", choices =c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
-             ),
-             column(2,
-             selectInput("correlationAnntotationColor", "Annotation Color", choices=c("Black" = "black", "White" = "white"), selected="white"),
-             ), 
-
-             shiny::plotOutput("benchmark_correlation") %>% withSpinner()
-             
-     )
+    tabPanel(
+      "Correlation",
+      column(
+        2,
+        selectInput("correlationPlotType", "Plot Type", choices = c("Circle" = "circle", "Square" = "square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color" = "color", "Pie" = "pie"), selected = "color"),
+      ),
+      column(
+        2,
+        selectInput("correlationAnnotationType", "P Value Annotation Type", choices = c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
+      ),
+      column(
+        2,
+        selectInput("correlationAnntotationColor", "Annotation Color", choices = c("Black" = "black", "White" = "white"), selected = "white"),
+      ),
+      shiny::plotOutput("benchmark_correlation") %>% withSpinner()
+    ),
+    tabPanel(
+      "RMSE",
+      column(
+        2,
+        selectInput("rmsePlotType", "RMSE Plot Type", choices = c("Heatmap" = "heatmap", "Boxplot" = "boxplot"), selected = "heatmap")
+      ),
+      column(
+        2,
+        conditionalPanel(
+          condition = "input.rmsePlotType == 'heatmap'",
+          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method", choices = c("circle", "square", "ellipse", "number", "shade", "color", "pie"), selected = "color")
+        ),
+      ),
+      shiny::plotOutput("benchmark_rmse") %>% withSpinner()
+    )
   )
 
 
@@ -387,7 +468,6 @@ deconvExplorer <- function(usr_bulk = NULL,
     ),
     column(4, div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em"))
   )
-
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
@@ -534,6 +614,7 @@ deconvExplorer <- function(usr_bulk = NULL,
       tabItems(
         tabItem(tabName="data", fluidPage(
           fluidRow(data_deconvolution, column(6, data_simbu_box, data_load_sample, data_load_signature)),
+          fluidRow(data_info, column(6, data_info_simbu, data_info_signature))
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(data_upload_box, settings_box),
@@ -651,11 +732,26 @@ deconvExplorer <- function(usr_bulk = NULL,
     })
     
     observeEvent(input$loadSample, {
-      internal$bulk[["BulkSample1"]] <- omnideconv::bulk
-      internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
-      internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
-      internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
-      internal$deconvolutions[["ref"]] <- omnideconv::RefData
+      req(input$sampleNumber)
+      if (input$sampleNumber==1){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
+        internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
+        internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      } else if (input$sampleNumber==2){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample2"]] <- omnideconv::single_cell_data_2
+        internal$annotation[["CellTypeAnnotation2"]] <- omnideconv::cell_type_annotations_2
+        internal$batch[["BatchIDs2"]] <- omnideconv::batch_ids_2
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      } else if (input$sampleNumber == 3){
+        internal$bulk[["BulkSample"]] <- omnideconv::bulk
+        internal$singleCell[["SingleCellSample3"]] <- omnideconv::single_cell_data_3
+        internal$annotation[["CellTypeAnnotation3"]] <- omnideconv::cell_type_annotations_3
+        internal$batch[["BatchIDs3"]] <- omnideconv::batch_ids_3
+        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      }
       
       showNotification("Loaded Sample Data")
     })
@@ -901,7 +997,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     observe({
       selection <- input$deconvolutionToPlot
       #selection <- intersect(selection, names(internal$deconvolutions)) # remove deleted ones
-      updateCheckboxGroupInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection, inline = TRUE)
+      updateSelectInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection)
     })
     
     observe({
@@ -1039,6 +1135,20 @@ deconvExplorer <- function(usr_bulk = NULL,
         plot_method = input$correlationPlotType,
         pValueType = input$correlationAnnotationType,
         pValueColor = input$correlationAnntotationColor
+      )
+    })
+    
+    output$benchmark_rmse <- renderPlot({
+      req(input$benchmark_reference, input$benchmark_ToPlot, input$rmsePlotType, input$globalColor)
+      reference <- internal$deconvolutions[[input$benchmark_reference]]
+      estimates <- returnSelectedDeconvolutions(input$benchmark_ToPlot, isolate(internal$deconvolutions))
+      
+      
+      plot_benchmark_rmse(reference,
+                          estimates,
+                          plot_type = input$rmsePlotType,
+                          hm_method = input$rmseHeatmapMethod,
+                          palette = input$globalColor
       )
     })
 
