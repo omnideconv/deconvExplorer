@@ -203,7 +203,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
       5,
-      checkboxGroupInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", inline = TRUE)
+      selectInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE)
     ),
     column(4, helpText("Select the deconvolution results to be plotted on the left side."),
               helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))),
@@ -934,7 +934,7 @@ deconvExplorer <- function(usr_bulk = NULL,
     observe({
       selection <- input$deconvolutionToPlot
       #selection <- intersect(selection, names(internal$deconvolutions)) # remove deleted ones
-      updateCheckboxGroupInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection, inline = TRUE)
+      updateSelectInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection)
     })
     
     observe({
