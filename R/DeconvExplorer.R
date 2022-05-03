@@ -80,6 +80,11 @@ deconvExplorer <- function(usr_bulk = NULL,
     div(style = "margin-top: -25px")
   )
   
+  data_load_reference <- shinydashboard::box(
+    title="Upload a custom reference file", solidHeader = TRUE, status="primary", width=12, 
+    fileInput("userReferenceUpload", "Upload Reference")
+  )
+  
   data_info <- shinydashboard::box(
     title=NULL, solidHeader = FALSE, width=6, 
      h3("Supported Datatypes:", style="margin-top:0.2em"), 
@@ -163,7 +168,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     imageOutput("logo", height = "auto"), 
     column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C; margin-top: 0.5em; margin-bottom: 0.5em")),
     column(
-      5,
+      4,
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
       )
@@ -182,7 +187,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )
     ), 
     column(
-      2,
+      3,
       div(
       actionButton("deconvolute", "Deconvolute"), style="margin-top:1.7em"),
       #actionButton("deconvoluteAll", "Deconvolute All")
@@ -505,36 +510,40 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   info_overview <- shinydashboard::box(
     title = "Overview", solidHeader = TRUE, 
-    p("DeconvExplorer is a web interface to streamline cell type deconvolution with omnideconv..."),
-    p("TODO"),
-    p("This will contain: short overview and small summaries for each module")
+    h3("DeconvExplorer is an interactive web interface to perform, evaluate and enhance cell type deconvolution
+      from trancsriptome data with the omnideconv framework.", style="margin-top:-10px;"), br(),
+    p("The app contains multiple modules further explained below."), br(),
+    column(12, 
+           div(
+             h3(icon("github"), style="display:inline; margin-right:1em"),
+             a("Omnideconv", href="https://github.com/omnideconv", target="_blank", style="margin-right:1em"),
+             h3(icon("link"), style="display: inline; margin-right:1em"),
+             a("omnideconv.org", href="https://www.omnideconv.org", target="_blank"), 
+             style="display:inline; font-size: 1.4em;"),
+    ),
+    column(12, 
+           div(
+             h3(icon("envelope"), style="display: inline; margin-right:1em"),
+             a("Francesca Finotello", href="mailto:francesca.finotello@uibk.ac.at", style="margin-right:1em"),
+             a("Markus List", href="mailto:markus.list@wzw.tum.de", style="margin-right:1em"),
+             a("Gregor Sturm", href="mailto:gregor.stum@i-med.ac.at", style="margin-right:1em"),
+             style="display:block; font-size:1.4em; margin-top:0.7em; "
+           )
+    ), br()
   )
   
   info_link <- shinydashboard::box(
     title = NULL, solidHeader = TRUE, 
     column(12, imageOutput("logoInfo", width= "100%", height = "auto")), 
-    column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C; margin-bottom: 1.5em")),
-    column(12, 
-           div(
-           h3(icon("github"), style="display:inline; margin-right:1em"),
-           a("Omnideconv", href="https://github.com/omnideconv/omnideconv#omnideconv", target="_blank", style="margin-right:1em"),
-           a("SimBu", href="https://github.com/omnideconv/SimBu#simbu", target="_blank", style="margin-right:1em"),
-           a("DeconvExplorer", href="https://github.com/omnideconv/DeconvExplorer#deconvexplorer", target="_blank", style="margin-right:1em"),
-           h3(icon("link"), style="display: inline; margin-right:1em"),
-           a("omnideconv.org", href="https://www.omnideconv.org", target="_blank"), 
-           style="display:inline; font-size: 1.5em;"),
-    ),
-    column(12, 
-          div(
-           h3(icon("envelope"), style="display: inline; margin-right:1em"),
-           a("Francesca Finotello", href="mailto:francesca.finotello@uibk.ac.at", style="margin-right:1em"),
-           a("Markus List", href="mailto:markus.list@wzw.tum.de", style="margin-right:1em"),
-           a("Gregor Sturm", href="mailto:gregor.stum@i-med.ac.at", style="margin-right:1em"),
-           style="display:block; font-size:1.5em; margin-top:0.7em; "
-          )
-    )
+    column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C;")),
   )
-    
+  
+  info_modules <- shinydashboard::box(
+    title="Information about each module", solidHeader = TRUE, width=12, status="primary",
+    div(includeMarkdown(system.file("extdata", "app_information.md", package="DeconvExplorer")),style="padding:1em; padding-top:0em")
+  )
+  
+
 
 
   # ui definition  ----------------------------------------------------------
@@ -596,7 +605,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       shinyjs::useShinyjs(),
       introjsUI(),
       menuItem("Data Upload", tabName = "data"),
-      menuItem("Deconvolution", tabName = "deconv", selected=T),
+      menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Signature Exploration", tabName = "signatureExploration"),
       menuItem("Signature Refinement", tabName = "signatureRefinement"),
       menuItem("Benchmark", tabName = "benchmark"),
@@ -614,7 +623,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       tabItems(
         tabItem(tabName="data", fluidPage(
           fluidRow(data_deconvolution, column(6, data_simbu_box, data_load_sample, data_load_signature)),
-          fluidRow(data_info, column(6, data_info_simbu, data_info_signature))
+          fluidRow(data_info, column(6, data_load_reference, data_info_simbu, data_info_signature))
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(data_upload_box, settings_box),
@@ -646,7 +655,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           fluidRow(benchmark_plot_box)
         )),
         tabItem(tabName = "fInfo", fluidPage(
-          fluidRow(info_overview, info_link)
+          fluidRow(info_overview, info_link), 
+          fluidRow(info_modules)
         ))
       )
     )
@@ -1271,6 +1281,15 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       tryCatch({
         internal$signatures[[paste0("Signature.", name)]] <- loadFile(input$userSignatureUpload)
       }, error = function (e){
+        showNotification("There was an error with your upload", type="error")
+      })
+    })
+    
+    observeEvent(input$userReferenceUpload, {
+      name <- input$userReferenceUpload$name
+      tryCatch({
+        internal$deconvolutions[[paste0("Reference", name)]] <- loadFile(input$userReferenceUpload)
+      }, error = function(e){
         showNotification("There was an error with your upload", type="error")
       })
     })
