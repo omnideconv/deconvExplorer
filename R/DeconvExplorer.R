@@ -46,14 +46,14 @@ deconvExplorer <- function(usr_bulk = NULL,
 
   # Data Upload Boxes -------------------------------------------------------
 
-  data_simbu_box <- shinydashboard::box(
+  data_simbu_box <- shinydashboard::box(id="tour_simbu",
     title = "SimBu", solidHeader = TRUE, status = "primary", width = 12,
     column(8, 
     fileInput("data_simbu_simulation", "SimBu Simulation", accept = c(".rds"))), 
     column(4, helpText("Upload a SimBu simulation result as .rds to load a bulk sample with corresponding cell fractions"))
   )
   
-  data_deconvolution <- shinydashboard::box(
+  data_deconvolution <- shinydashboard::box(id="tour_upload",
     title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 6, 
     fileInput("userBulkUpload", "Upload Bulk Data"),
     div(style = "margin-top: -20px"),
@@ -67,14 +67,14 @@ deconvExplorer <- function(usr_bulk = NULL,
     div(style = "margin-top: -20px"),
   )
   
-  data_load_sample <- shinydashboard::box(
+  data_load_sample <- shinydashboard::box(id="tour_sample",
     title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12, 
     column(4, div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style="margin-top:0.5em;")),
     column(3, div(actionButton("loadSample", "Load Sample Files"), style="margin-top:0.5em")), 
     column(5, helpText("Ground truth data will be loaded as 'SampleReference'"))
   )
   
-  data_load_signature <- shinydashboard::box(
+  data_load_signature <- shinydashboard::box(id="tour_signatureUpload",
     title= "Upload Signature", solidHeader = TRUE, status = "primary", width= 12, 
     fileInput("userSignatureUpload", "Upload Siganture"),
     div(style = "margin-top: -25px")
@@ -148,7 +148,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   
 
   # Deconvolution Boxes -------------------------------------------------------
-  data_upload_box <- shinydashboard::box(id="tour_upload",
+  data_upload_box <- shinydashboard::box(
     title = "Select your Data", status = "primary",
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
     selectInput("bulkSelection", "Select a bulk dataset", choices = NULL),
@@ -335,7 +335,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   # Signature Exploration Boxes ---------------------------------------------
 
-  signature_genesPerMethod <- shinydashboard::box(
+  signature_genesPerMethod <- shinydashboard::box(id="tour_genesPlot",
     title = "Genes per Method", status = "info", solidHeader = TRUE, width = 4,
     shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
   )
@@ -369,7 +369,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     column(
       12,
       InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-        width = "1500px", height = "450px", containment = TRUE
+        width = "1250px", height = "450px", containment = TRUE
       )
     )
   )
@@ -377,7 +377,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   signature_clusteredHeatmapSubPlot <- shinydashboard::box(
     title = "Sub Selection Heatmap", status = "info", solidHeader = TRUE,
     width = 12, collapsible = TRUE, collapsed = TRUE,
-    InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "1500px"),
+    InteractiveComplexHeatmap::subHeatmapOutput("clusteredHeatmapOneSignature", width = "1250px"),
     conditionalPanel(
       condition = "false",
       InteractiveComplexHeatmap::HeatmapInfoOutput("clusteredHeatmapOneSignature")
@@ -444,7 +444,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   # Signature Refinement Boxes ----------------------------------------------
 
-  refinementHeatmapBox <- shinydashboard::box(
+  refinementHeatmapBox <- shinydashboard::box(id="tour_refinementHeatmap",
     title = "Signature", solidHeader = TRUE, width = 12, status = "info",
     column(2, selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
     column(2, selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
@@ -508,7 +508,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   # Info Boxes --------------------------------------------------------------
 
-  info_overview <- shinydashboard::box(
+  info_overview <- shinydashboard::box(id="tour_infoOverview",
     title = "Overview", solidHeader = TRUE, 
     h3("DeconvExplorer is an interactive web interface to perform, evaluate and enhance cell type deconvolution
       from trancsriptome data with the omnideconv framework.", style="margin-top:-10px;"), br(),
