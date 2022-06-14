@@ -21,10 +21,9 @@ DeconvExplorer(bulkExpressionData, SingleCellData, CellTypeAnnotations, BatchIDs
 ```
 
 The Following formats are allowed for uploading data: 
-- here 
-- will 
-- be 
-- a 
-- list
+- txt
+- csv 
+- tsv 
+- rds
 
 For more information about DeconvExplorer and omnideconv please visit https://github.com/omnideconv
