@@ -1,7 +1,7 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
 #' CosTODO description
-#' @param signatures Named List of sigantures, names are the calculation methods
+#' @param signatures Named List of signatures, names are the calculation methods
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
@@ -48,7 +48,7 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' 
 #' CosTODO description 
 #' 
-#' @param signatures Named List of sigantures, names are the calculation methods
+#' @param signatures Named List of signatures, names are the calculation methods
 #' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
@@ -236,7 +236,7 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @param signatures named list of deconvolution signatures
 #' @param mode upSet Mode (distinct, intersect, union)
 #' @param minDegree minimal set degree to display in the plot 
-#' @param maxDegree maxmiaml set degree to display in the plot, NULL to display all sets
+#' @param maxDegree maximal set degree to display in the plot, NULL to display all sets
 #' @param order order Sets by Size or Degree (size, degree)
 #' @param invert invert the order of the Sets, standard = FALSE
 #' @param colorDegrees color sets according to their degree, standard = TRUE

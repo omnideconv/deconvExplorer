@@ -22,7 +22,7 @@ plot_signatureUpset(
 
 \item{minDegree}{minimal set degree to display in the plot}
 
-\item{maxDegree}{maxmiaml set degree to display in the plot, NULL to display all sets}
+\item{maxDegree}{maximal set degree to display in the plot, NULL to display all sets}
 
 \item{order}{order Sets by Size or Degree (size, degree)}
 

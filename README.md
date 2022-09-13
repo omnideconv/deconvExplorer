@@ -2,7 +2,7 @@
 
 [![R-CMD-check](https://github.com/omnideconv/DeconvExplorer/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/omnideconv/DeconvExplorer/actions/workflows/R-CMD-check.yaml)
 
-Shiny App for the omindeconv package. #toBeContinued
+Shiny App for the omnideconv package. #toBeContinued
 
 
 ## Installation 
