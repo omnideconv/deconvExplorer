@@ -34,7 +34,7 @@ Imports:
     circlize,
     Biobase,
     BioQC
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Remotes: 
     github::accio/BioQC,
@@ -42,4 +42,6 @@ Remotes:
     github::bbc/bbplot, 
     github::jokergoo/ComplexHeatmap,
     github::jokergoo/InteractiveComplexHeatmap
-    
+Suggests: 
+    knitr,
+    rmarkdown
