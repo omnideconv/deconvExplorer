@@ -14,6 +14,7 @@
 #' geom_hline scale_colour_brewer scale_fill_brewer ylim
 #' @importFrom shinycssloaders withSpinner 
 #' @importFrom waiter Waitress
+#' @importFrom rlang .data
 #' @importFrom rintrojs introBox introjs introjsUI readCallback
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
@@ -21,7 +22,7 @@
 #' @importFrom utils write.csv write.table
 #' @importFrom stringr str_subset
 #' @importFrom tidyr pivot_longer
-#' @importFrom stats sd
+#' @importFrom stats sd cor.test
 #' @importFrom bbplot bbc_style
 #' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size upset_top_annotation extract_comb
 #' @importFrom grid gpar unit
@@ -29,6 +30,7 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom circlize colorRamp2
 #' @importFrom ggforce facet_grid_paginate
+#' @importFrom grDevices colorRampPalette
 #' 
 #' @name DeconvExplorer-pkg
 #' @docType package
