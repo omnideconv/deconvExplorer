@@ -14,5 +14,8 @@ Score for the given gene based on information entropy
 Here: The lower the better
 }
 \description{
-Score Gene Expression of a single Gene based on information entropy
+CosTODO description
+}
+\examples{
+# CosTODO
 }

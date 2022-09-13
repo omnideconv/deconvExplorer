@@ -24,5 +24,8 @@ plot_signatureClustered(
 A Heatmap
 }
 \description{
-Calculate Clustered Heatmap of Signature Genes
+CosTODO description
+}
+\examples{
+# CosTODO
 }

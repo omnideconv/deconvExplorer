@@ -24,5 +24,8 @@ plot_benchmark_rmse(
 \item{palette}{RColorBrewer Palette}
 }
 \description{
-plot benchmark RMSE
+CosTODO description
+}
+\examples{
+# CosTODO
 }

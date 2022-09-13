@@ -17,5 +17,8 @@ renameCellType(signature, cellType, newName)
 gene expression signature with updated cell type names
 }
 \description{
-Rename Cell Types of Gene Expression Signature
+CosTODO description
+}
+\examples{
+# CosTODO
 }

@@ -14,5 +14,8 @@ plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 \item{palette}{RColorBrewer Palette}
 }
 \description{
-plot benchmark
+CosTODO description
+}
+\examples{
+# CosTODO
 }

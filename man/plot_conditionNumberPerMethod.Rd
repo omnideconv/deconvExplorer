@@ -15,5 +15,8 @@ plot_conditionNumberPerMethod(signatures, palette = "Set1")
 A Barplot
 }
 \description{
-Calculate Barplot of Signature Genes per Method
+CosTODO description
+}
+\examples{
+# CosTODO
 }

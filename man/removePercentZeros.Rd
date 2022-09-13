@@ -15,5 +15,8 @@ removePercentZeros(baseSignature, percentage = 0.5)
 A signature which matches the criteria above
 }
 \description{
-Remove Rows from base expression matrix with a specified amount of zeros in a row
+CosTODO description
+}
+\examples{
+# CosTODO
 }

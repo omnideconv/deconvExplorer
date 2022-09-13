@@ -23,3 +23,6 @@ deconvExplorer(
 \description{
 Run DeconvExplorer
 }
+\examples{
+# CosTODO
+}

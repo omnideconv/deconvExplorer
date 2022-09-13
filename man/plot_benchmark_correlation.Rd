@@ -24,5 +24,8 @@ plot_benchmark_correlation(
 \item{plot_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 }
 \description{
-plot benchmark correlation
+CosTODO description
+}
+\examples{
+# CosTODO
 }

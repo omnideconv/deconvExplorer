@@ -24,5 +24,8 @@ removeUnspecificGenes(
 a gene expression signature containing only genes matching the passed requirements
 }
 \description{
-Remove unspecific Genes of a Gene Expression Signature
+CosTODO description
+}
+\examples{
+# CosTODO
 }

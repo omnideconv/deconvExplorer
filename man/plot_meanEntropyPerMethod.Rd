@@ -15,5 +15,8 @@ plot_meanEntropyPerMethod(signatures, palette = "Set1")
 a plot
 }
 \description{
-Plot Mean Entropy for a set of singatures
+CosTODO description
+}
+\examples{
+# CosTODO
 }

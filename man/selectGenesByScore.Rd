@@ -21,5 +21,8 @@ selectGenesByScore(
 \item{genesPerCellType}{maximum of genes selected for each cell type}
 }
 \description{
-Select a specified amount of genes for each cell type based on a score, discard all other
+CosTODO description
+}
+\examples{
+# CosTODO
 }
