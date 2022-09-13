@@ -19,9 +19,9 @@
 #' @param usr_batch Batch IDs, only for some deconvolution methods
 #'
 #' @export
-
-
-
+#' 
+#' @examples 
+#' # CosTODO
 deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,

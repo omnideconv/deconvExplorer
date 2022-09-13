@@ -1,13 +1,13 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
+#' CosTODO description
 #' @param signatures Named List of sigantures, names are the calculation methods
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
-#'
-#'
-
+#' @examples 
+#' # CosTODO
 plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
@@ -45,12 +45,15 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 }
 
 #' Calculate Barplot of Signature Genes per Method
-#'
+#' 
+#' CosTODO description 
+#' 
 #' @param signatures Named List of sigantures, names are the calculation methods
 #' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
-
+#' @examples 
+#' # CosTODO
 plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
@@ -83,10 +86,15 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 
 #' Plot Mean Entropy for a set of singatures
 #' 
+#' CosTODO description
+#' 
 #' @param signatures named List of Signatures
 #' @param palette RColorBrewerPalette
 #' 
 #' @returns a plot
+#' 
+#' @examples 
+#' # CosTODO
 plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
   
   entropies <- data.frame(method=character(), meanEntropy=numeric())
@@ -120,13 +128,17 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 
 
 #' Calculate Clustered Heatmap of Signature Genes
-#'
+#' 
+#' CosTODO description
+#' 
 #' @param signature One Signature to plot
 #' @param palette RColorBrewer Palette name, standard = Spectral
 #' @param score The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered
 #'
 #' @returns A Heatmap
+#' @examples 
+#' # CosTODO
 plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -218,7 +230,9 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 
 
 #' Calculate UpSet Plot Signature Genes
-#'
+#' 
+#' CosTODO description
+#' 
 #' @param signatures named list of deconvolution signatures
 #' @param mode upSet Mode (distinct, intersect, union)
 #' @param minDegree minimal set degree to display in the plot 
@@ -229,7 +243,9 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @param palette Name of a RColorBrewer palette, standard = Set1
 #'
 #' @returns UpSet Plot
-
+#' 
+#' @examples 
+#' # CosTODO
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
                                 maxDegree = NULL, order = "size", invert = FALSE,
                                 colorDegrees = TRUE, palette = "Set1") {
@@ -284,6 +300,19 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 }
 
 # helper, migth go elsewere in the code but belongs to upset plot function
+#' Title
+#' 
+#' CosTODO
+#' 
+#' @param signatures CosTODO
+#' @param combination CosTODO
+#' @param mode CosTODO
+#'
+#' @return CosTODO
+#' @export
+#'
+#' @examples
+#' # CosTODO
 download_signatureUpset <- function(signatures, combination, mode = "distinct") {
   # in case no set is selected return NULL
   if (is.null(combination)) {

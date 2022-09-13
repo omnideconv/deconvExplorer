@@ -1,5 +1,7 @@
 #  basic script to assemble the rintrojs tour for DeconvExplorer
 
+# CosTODO
+# makes sense to have it done in a tabular format, much easier to curate - see GeneTonic for an example :)
 getTour <- function() {
   element <- intro <- character(0)
 

@@ -1,8 +1,13 @@
-
 #' plot benchmark
+#' 
+#' CosTODO description
+#' 
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
 #' @param palette RColorBrewer Palette
+#' 
+#' @examples 
+#' # CosTODO
 plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
   
   ref <- gtruth %>% as.data.frame()
@@ -54,11 +59,17 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 
 
 #' plot benchmark correlation
+#' 
+#' CosTODO description
+#' 
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
 #' @param plot_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param pValueColor color of p value annotation, "white" or "black"
 #' @param pValueType one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
+#' 
+#' @examples 
+#' # CosTODO
 plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig", pValueColor="black", plot_method = "number") {
   if (!plot_method %in% c("circle", "square", "ellipse", "number", "shade", "color", "pie")) {
     stop("correlation plot method not supported")
@@ -148,11 +159,16 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 }
 
 #' plot benchmark RMSE
+#' 
+#' CosTODO description
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
 #' @param hm_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param plot_type "heatmap" or "boxplot"
 #' @param palette RColorBrewer Palette
+#' 
+#' @examples 
+#' # CosTODO
 plot_benchmark_rmse <- function(gtruth, estimate, plot_type = "heatmap",  hm_method="color", palette="Spectral") {
   if (!(plot_type %in% c("heatmap", "boxplot"))){
     stop("plot_type not supported")

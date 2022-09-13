@@ -1,11 +1,15 @@
 #' Rename Cell Types of Gene Expression Signature
 #' 
+#' CosTODO description 
+#' 
 #' @param signature gene expression signature
 #' @param cellType cell type to rename
 #' @param newName new cell type name
 #' 
 #' @returns gene expression signature with updated cell type names
-
+#' 
+#' @examples 
+#' # CosTODO
 renameCellType <- function(signature, cellType, newName){
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -33,9 +37,14 @@ renameCellType <- function(signature, cellType, newName){
 
 #' Remove Rows from base expression matrix with a specified amount of zeros in a row
 #' 
+#' CosTODO description
+#' 
 #' @param baseSignature GenesXcelltype Matrix with expression values
 #' @param percentage maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
+#' 
+#' @examples 
+#' # CosTODO
 removePercentZeros <- function (baseSignature, percentage = 0.5){
   if(is.null(baseSignature)){
     stop("Please provide a signature")
@@ -58,12 +67,16 @@ removePercentZeros <- function (baseSignature, percentage = 0.5){
 
 #' Remove unspecific Genes of a Gene Expression Signature
 #' 
+#' CosTODO description
+#' 
 #' @param signature gene Expression Signature
 #' @param numberOfBins number of bins to categorize the data into 
 #' @param maxCount number of Cell Types allowed to be in the highest bin, all other cells are required to be in lower expressed bins
 #' @param labels vector of bin names, required if numberOfBins != 3
 #' 
 #' @returns a gene expression signature containing only genes matching the passed requirements
+#' @examples 
+#' # CosTODO
 removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, labels = c("low", "medium", "high")){
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -116,10 +129,15 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
 
 #' Select a specified amount of genes for each cell type based on a score, discard all other 
 #' 
+#' CosTODO description
+#' 
 #' @param signature gene expression matrix
 #' @param method method to score the genes
 #' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genesPerCellType maximum of genes selected for each cell type
+#' 
+#' @examples 
+#' # CosTODO
 selectGenesByScore <- function (signature, method = "entropy", selectCellType = "max", genesPerCellType = 20){
   # TODO Checks #####
   
@@ -185,9 +203,13 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
 
 #' Score Gene Expression of a single Gene based on information entropy
 #' 
+#' CosTODO description
 #' @param geneExpression row from Gene Expression Matrix = Expression Data for a single Gene
 #' @returns Score for the given gene based on information entropy
 #' Here: The lower the better
+#' 
+#' @examples 
+#' # CosTODO
 scoreEntropy <- function (geneExpression){
   # TODO add parameter checks ####
   probs <- list()
@@ -197,7 +219,7 @@ scoreEntropy <- function (geneExpression){
     if (val == 0){
       next
     }
-    probs <- append(probs, val/sum(geneExpression)) # turn in to propabilities
+    probs <- append(probs, val/sum(geneExpression)) # turn in to probabilities
   }
   
   entropy <- - sum (unlist(lapply(probs, function (x) log(x)*x)))

@@ -1,6 +1,6 @@
 #' DeconvExplorer
 #' 
-#' DeconvExplorer description TODO
+#' DeconvExplorer description CosTODO
 #' 
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
 #' @import omnideconv

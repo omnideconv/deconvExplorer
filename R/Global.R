@@ -1,5 +1,17 @@
 
 # named deconvolution list
+#' Title
+#' 
+#' CosTODO
+#' 
+#' @param to_plot_list CosTODO
+#' @param all_deconvolutions CosTODO
+#'
+#' @return CosTODO
+#' @export
+#'
+#' @examples
+#' # CosTODO
 returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
   
   deconvolutions <- list()
@@ -14,6 +26,17 @@ returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
 
 
 # plot benchmarking 
+#' Title 
+#' 
+#' CosTODO
+#'
+#' @param deconvolutions CosTODO
+#'
+#' @return CosTODO
+#' @export
+#'
+#' @examples
+#' # CosTODO
 plot_benchmark <- function(deconvolutions) {
   # import and preformat data
 
