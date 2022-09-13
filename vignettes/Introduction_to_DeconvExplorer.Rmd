@@ -1,19 +1,121 @@
 ---
-title: "Introduction to DeconvExplorer"
-output: rmarkdown::html_vignette
+title: >
+  The DeconvExplorer User's Guide
+author:
+- name: Constantin Zackl
+  affiliation: 
+  - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
+  email: zacklcon@uni-mainz.de
+- name: Federico Marini
+  affiliation: 
+  - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
+  email: marinif@uni-mainz.de
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
 vignette: >
-  %\VignetteIndexEntry{Introduction_to_DeconvExplorer}
+  %\VignetteIndexEntry{The DeconvExplorer User's Guide}
+  %\VignetteEncoding{UTF-8}  
+  %\VignettePackage{DeconvExplorer}
+  %\VignetteKeywords{GeneExpression, RNASeq, Visualization, GUI}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+editor_options: 
+  chunk_output_type: console
+bibliography: DeconvExplorer.bib
 ---
 
-```{r, include = FALSE}
+<style type="text/css">
+.smaller {
+  font-size: 10px
+}
+</style>
+
+**Package:** `r paste('DeconvExplorer', packageVersion('DeconvExplorer'))`
+
+**Compiled date**: `r Sys.Date()`
+
+**Last edited**: 2022-09-14
+
+**License**: `r packageDescription("DeconvExplorer")[["License"]]`
+
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment  = "#>",
+  error    = FALSE,
+  warning  = FALSE,
+  eval     = TRUE,
+  message  = FALSE,
+  fig.width = 10
 )
+options(width = 100)
 ```
 
-```{r setup}
-library(DeconvExplorer)
+---
+
+# Introduction {#introduction}
+
+This vignette describes how to use the `DeconvExplorer` package for...
+
+
+
+In order to use `DeconvExplorer` in your workflow, the following inputs are required: 
+
+- 
+
+
+
+The data is made available via the ...
+
+
+
+# Getting started {#gettingstarted}
+
+To install this package, start R and enter:
+
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("DeconvExplorer")
 ```
+
+Once installed, the package can be loaded and attached to your current workspace as follows:
+
+```{r loadlib, eval = TRUE}
+library("DeconvExplorer")
+```
+
+If you have all four input elements ready, you can launch the `DeconvExplorer()` app by running:
+
+```{r launchapp, eval=FALSE}
+DeconvExplorer(...)
+```
+
+
+
+# Additional Information {#additionalinfo}
+
+Bug reports can be posted ...
+If you use `DeconvExplorer` for your analysis, please cite it as shown below:
+
+```{r cite}
+citation("DeconvExplorer")
+```
+
+
+# FAQs {#faqs}
+
+**Q: Why is this package called `DeconvExplorer`?**
+
+A: For obvious reasons :) 
+
+# Session Info {- .smaller}
+
+```{r sessioninfo}
+sessionInfo()
+```
+
+# References {-}
