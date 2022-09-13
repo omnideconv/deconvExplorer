@@ -55,7 +55,7 @@ plot_benchmark <- function(deconvolutions) {
 
   # create plot
   plot <- ggplot(data, aes(
-    x = true_fraction, y = predicted_fraction, color = cell_type,
+    x = .data$true_fraction, y = predicted_fraction, color = cell_type,
     text = paste0("Sample: ", sample, "\nTrue: ", true_fraction, "\nPredicted: ", predicted_fraction)
   )) +
     geom_point(size = 4) +

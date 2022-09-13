@@ -23,10 +23,10 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
   merged.df <- merge(df, ref, all.x = TRUE) # keep all deconvolution results
   
   # build plot
-  plot <- ggplot(merged.df, aes(x = truth, y = estimate, color = cell_type)) +
+  plot <- ggplot(merged.df, aes(x = .data$truth, y = .data$estimate, color = .data$cell_type)) +
     geom_point(show.legend = FALSE) +
     ggpubr::stat_cor(label.sep = "\n", size = 3, color = "black", label.x.npc = 0.01) +
-    ggforce::facet_grid_paginate(method ~ cell_type,
+    ggforce::facet_grid_paginate(method ~ .data$cell_type,
                         margins = c("cell_type"), scales = "free"
     ) +
     ggplot2::theme_bw() +
@@ -35,7 +35,7 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
     theme(legend.position = "none", text = element_text(size = 15))
   
   plot <- plot + geom_abline() +
-    ggforce::facet_grid_paginate(method ~ cell_type,
+    ggforce::facet_grid_paginate(method ~ .data$cell_type,
                         margins = c("cell_type"), scales = "free"
     ) +
     ggpubr::rotate_x_text(angle = 60)
