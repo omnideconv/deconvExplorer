@@ -22,6 +22,7 @@ Imports:
     magrittr,
     stringr, 
     tidyr, 
+    rlang,
     utils,
     tools, 
     vroom,
@@ -45,3 +46,4 @@ Remotes:
 Suggests: 
     knitr,
     rmarkdown
+VignetteBuilder: knitr
