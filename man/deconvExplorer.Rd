@@ -24,5 +24,6 @@ deconvExplorer(
 Run DeconvExplorer
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+DeconvExplorer::deconvExplorer()
 }
