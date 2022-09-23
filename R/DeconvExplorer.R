@@ -21,8 +21,10 @@
 #' @export
 #' 
 #' @examples 
+#' \dontrun{
 #' library(DeconvExplorer)
 #' DeconvExplorer::deconvExplorer()
+#' }
 deconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,

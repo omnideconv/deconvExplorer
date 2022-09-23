@@ -24,6 +24,8 @@ deconvExplorer(
 Run DeconvExplorer
 }
 \examples{
+\dontrun{
 library(DeconvExplorer)
 DeconvExplorer::deconvExplorer()
+}
 }
