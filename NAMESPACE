@@ -2,6 +2,9 @@
 
 export(deconvExplorer)
 export(download_signatureUpset)
+export(plot_benchmark_correlation)
+export(plot_benchmark_rmse)
+export(plot_benchmark_scatter)
 export(plot_conditionNumberPerMethod)
 export(plot_meanEntropyPerMethod)
 export(plot_signatureClustered)

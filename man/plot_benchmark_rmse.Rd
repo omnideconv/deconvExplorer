@@ -24,8 +24,15 @@ plot_benchmark_rmse(
 \item{palette}{RColorBrewer Palette}
 }
 \description{
-CosTODO description
+Plot RMSE (root mean squared error) for a list of deconvolution results and the 
+corresponding ground truth
 }
 \examples{
-# CosTODO
+library(omnideconv)
+library(DeconvExplorer)
+data("RefData")
+RefData <- as.data.frame(RefData)
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+deconvList = list("momf" = deconv, "bisque" = deconv)
+plot_benchmark_rmse(RefData, deconvList)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/BenchmarkingPlots.R
 \name{plot_benchmark_correlation}
 \alias{plot_benchmark_correlation}
-\title{plot benchmark correlation}
+\title{Plot benchmark correlation}
 \usage{
 plot_benchmark_correlation(
   gtruth,
@@ -24,8 +24,14 @@ plot_benchmark_correlation(
 \item{plot_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 }
 \description{
-CosTODO description
+Plot the correlation of a deconvolution results and it's corresponding ground truth
 }
 \examples{
-# CosTODO
+library(omnideconv)
+library(DeconvExplorer)
+data("RefData")
+RefData <- as.data.frame(RefData)
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+deconvList = list("momf" = deconv, "bisque" = deconv)
+plot_benchmark_correlation(RefData, deconvList)
 }

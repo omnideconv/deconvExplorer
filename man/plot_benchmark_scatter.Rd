@@ -14,8 +14,14 @@ plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 \item{palette}{RColorBrewer Palette}
 }
 \description{
-plot a deconvolution results against it's corresponding ground truth.
+Plot a deconvolution results against it's corresponding ground truth.
 }
 \examples{
-# CosTODO
+library(omnideconv)
+library(DeconvExplorer)
+data("RefData")
+RefData <- as.data.frame(RefData)
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+deconvList = list("momf" = deconv, "bisque" = deconv)
+plot_benchmark_scatter(RefData, deconvList)
 }
