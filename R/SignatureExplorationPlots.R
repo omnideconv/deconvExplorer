@@ -1,12 +1,14 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
-#' CosTODO description
+#' This Barplot allows the comparison of the size of differnt signatures by plotting the
+#' number of genes for each signature as a barplot
+#'
 #' @param signatures Named List of signatures, names are the calculation methods
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
-#' @examples 
+#' @examples
 #' # CosTODO
 plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
@@ -36,23 +38,24 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
-    theme(legend.position = "none") + 
+    theme(legend.position = "none") +
     ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
     ggplot2::ylim (0, max(df$number_of_genes)*1.1) # scale y axis to contain bar label
-  
+
 
   plot
 }
 
-#' Calculate Barplot of Signature Genes per Method
-#' 
-#' CosTODO description 
-#' 
+#' Calculate Condition Number per Method
+#'
+#' This plot focuses on the condition number for each signature and simplifies
+#' the comparison by providion a barplot
+#'
 #' @param signatures Named List of signatures, names are the calculation methods
 #' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
-#' @examples 
+#' @examples
 #' # CosTODO
 plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), kappa = numeric())
@@ -78,33 +81,34 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) + 
+    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$kappa)*1.1) # scale y axis to contain bar label
 
   plot
 }
 
-#' Plot Mean Entropy for a set of singatures
-#' 
-#' CosTODO description
-#' 
+#' Plot Mean Entropy for multiple signatures
+#'
+#' This plot focuses on the mean entropy of a signature and simplifies the comparison
+#' to other signature with a barplot
+#'
 #' @param signatures named List of Signatures
 #' @param palette RColorBrewerPalette
-#' 
-#' @returns a plot
-#' 
-#' @examples 
+#'
+#' @returns a barplot
+#'
+#' @examples
 #' # CosTODO
 plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
-  
+
   entropies <- data.frame(method=character(), meanEntropy=numeric())
-  
+
   # calculate Mean Entropy for each signature
   for (name in names(signatures)) {
     meanEntropy <- mean(apply(signatures[[name]], 1, scoreEntropy))
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
-  
+
   plot <- ggplot(data = entropies, aes(
     x = method, y = meanEntropy, fill = method,
     text = paste0("Method: ", method, "\nEntropy: ", meanEntropy),
@@ -122,36 +126,37 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
     # ggplot2::ylim(0, 5)+ # could be changed
     ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
     ggplot2::ylim(0, max(entropies$meanEntropy)*1.1) # scale y axis to contain bar label
-  
+
   plot
 }
 
 
 #' Calculate Clustered Heatmap of Signature Genes
-#' 
-#' CosTODO description
-#' 
+#'
+#' This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
+#' by a gene scores ranking the distinctness of a gene in the signature.
+#'
 #' @param signature One Signature to plot
 #' @param palette RColorBrewer Palette name, standard = Spectral
 #' @param score The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered
 #'
 #' @returns A Heatmap
-#' @examples 
+#' @examples
 #' # CosTODO
 plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
   if (is.null(signature)){
     stop("Please provide a signature")
   }
-  
+
   if (!(score %in% c("entropy", "gini"))){
     stop("Score Method not supported")
   }
-  
+
   if (!(annotation_type %in% c("line", "bar"))){
     stop("annotation_type not supported")
   }
-  
+
   df <- data.frame(signature)
 
   df <- cbind("X" = rownames(df), df) # add gene names as column
@@ -176,31 +181,31 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
   df <- tidyr::pivot_wider(df, names_from = "cell_type", values_from = "z")
   mat <- as.matrix(df[, -1]) # without gene names
   rownames(mat) <- df$X # set gene names
-  
+
   #mat <- stats::na.omit(mat) #####
-  
+
   # calculate color palette
   col_fun = circlize::colorRamp2(c(-2, 0, 2), c(RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
                                                 "white", # middle color
                                                 RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
                                                 )
                                  )
-  
-  
+
+
   # render the signature annotation, this might also render multiple annotations
   # -> iterate over a list
-  
-  
+
+
   annotation <- NULL
-  
+
   if (score == "entropy"){
     if (annotation_type == "line"){
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
-      
+
     } else if (annotation_type == "bar"){
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
     }
-    
+
   }  else if (score == "gini"){
     if (annotation_type == "line"){
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
@@ -209,16 +214,16 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
     }
   }
 
-  
+
   # Plot with complex heatmap
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_names_side = "left",
-    border = TRUE, col=col_fun, 
+    border = TRUE, col=col_fun,
     #cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
     cluster_columns = TRUE, cluster_rows = TRUE,  # clustering_method_columns = "euclidean",
     top_annotation = annotation
-    
+
   )
 
 
@@ -229,13 +234,14 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 }
 
 
-#' Calculate UpSet Plot Signature Genes
-#' 
-#' CosTODO description
-#' 
+#' Calculate UpSet Plot for Signature Gene Sets
+#'
+#' This plot allows the comparison of multiple signature gene sets by utilizing
+#' UpSet Plots.
+#'
 #' @param signatures named list of deconvolution signatures
 #' @param mode upSet Mode (distinct, intersect, union)
-#' @param minDegree minimal set degree to display in the plot 
+#' @param minDegree minimal set degree to display in the plot
 #' @param maxDegree maximal set degree to display in the plot, NULL to display all sets
 #' @param order order Sets by Size or Degree (size, degree)
 #' @param invert invert the order of the Sets, standard = FALSE
@@ -243,8 +249,8 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @param palette Name of a RColorBrewer palette, standard = Set1
 #'
 #' @returns UpSet Plot
-#' 
-#' @examples 
+#'
+#' @examples
 #' # CosTODO
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
                                 maxDegree = NULL, order = "size", invert = FALSE,
@@ -299,11 +305,10 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
   # here is something missing, should evaluate the data here....
 }
 
-# helper, migth go elsewere in the code but belongs to upset plot function
-#' Title
-#' 
-#' CosTODO
-#' 
+#' Download a gene subset of multiple signature
+#'
+#' By pr
+#'
 #' @param signatures CosTODO
 #' @param combination CosTODO
 #' @param mode CosTODO
