@@ -2,21 +2,26 @@
 % Please edit documentation in R/Global.R
 \name{returnSelectedDeconvolutions}
 \alias{returnSelectedDeconvolutions}
-\title{Title}
+\title{Get subset of deconvolution results}
 \usage{
 returnSelectedDeconvolutions(to_plot_list, all_deconvolutions)
 }
 \arguments{
-\item{to_plot_list}{CosTODO}
+\item{to_plot_list}{list of deconvolution result names which should be plotted}
 
-\item{all_deconvolutions}{CosTODO}
+\item{all_deconvolutions}{List containing all available deconvolution results}
 }
 \value{
-CosTODO
+list of deconvolution results
 }
 \description{
-CosTODO
+This function returns the requested deconvolution results as a list
 }
 \examples{
-# CosTODO
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+
+# list containting deconvolution results
+deconvList = list("bisque" =deconv, "momf" = deconv)
+
+returnSelectedDeconvolutions(c("momf"), deconvList)
 }

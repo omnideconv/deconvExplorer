@@ -16,7 +16,7 @@ plot_signatureClustered(
 
 \item{score}{The score used to annotate the genes (entropy, gini)}
 
-\item{annotation_type}{How the score is rendered}
+\item{annotation_type}{How the score is rendered (line, bar)}
 
 \item{palette}{RColorBrewer Palette name, standard = Spectral}
 }
@@ -24,8 +24,12 @@ plot_signatureClustered(
 A Heatmap
 }
 \description{
-CosTODO description
+This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
+by a gene scores ranking the distinctness of a gene in the signature.
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+plot_signatureClustered(signatureList, score="gini", annotation_type="bar")
 }

@@ -5,5 +5,5 @@
 \alias{DeconvExplorer-pkg}
 \title{DeconvExplorer}
 \description{
-DeconvExplorer description CosTODO
+DeconvExplorer Interactive user interface for the omnideconv deconvolution toolset
 }

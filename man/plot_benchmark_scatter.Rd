@@ -2,7 +2,7 @@
 % Please edit documentation in R/BenchmarkingPlots.R
 \name{plot_benchmark_scatter}
 \alias{plot_benchmark_scatter}
-\title{plot benchmark}
+\title{plot benchmarking scatterplot}
 \usage{
 plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 }
@@ -14,7 +14,7 @@ plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 \item{palette}{RColorBrewer Palette}
 }
 \description{
-CosTODO description
+plot a deconvolution results against it's corresponding ground truth.
 }
 \examples{
 # CosTODO

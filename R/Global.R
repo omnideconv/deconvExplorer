@@ -10,7 +10,12 @@
 #' @export
 #'
 #' @examples
-#' # CosTODO
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+#' 
+#' # list containting deconvolution results
+#' deconvList = list("bisque" =deconv, "momf" = deconv)
+#' 
+#' returnSelectedDeconvolutions(c("momf"), deconvList)
 returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
 
   deconvolutions <- list()

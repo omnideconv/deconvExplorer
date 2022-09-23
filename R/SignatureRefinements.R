@@ -1,6 +1,6 @@
 #' Rename Cell Types of Gene Expression Signature
 #' 
-#' CosTODO description 
+#' Rename columns of a gene expression signature matrix. 
 #' 
 #' @param signature gene expression signature
 #' @param cellType cell type to rename
@@ -9,7 +9,10 @@
 #' @returns gene expression signature with updated cell type names
 #' 
 #' @examples 
-#' # CosTODO
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' # rename "B" to "B.cells"
+#' signature <- renameCellType(signature, "B", "B.cells")
 renameCellType <- function(signature, cellType, newName){
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -37,14 +40,20 @@ renameCellType <- function(signature, cellType, newName){
 
 #' Remove Rows from base expression matrix with a specified amount of zeros in a row
 #' 
-#' CosTODO description
+#' Remove Rows (Genes) from an expression matrix with more zeros than specified by 
+#' the percentage threshold parameter. This function aims to reduce sequencing artifacts by 
+#' removing genes that are only detected in a few cells/samples. 
 #' 
 #' @param baseSignature GenesXcelltype Matrix with expression values
 #' @param percentage maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
 #' 
 #' @examples 
-#' # CosTODO
+#' \dontrun{
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' signature <- removePercentZeros(signature, percentage = 0.5)
+#' }
 removePercentZeros <- function (baseSignature, percentage = 0.5){
   if(is.null(baseSignature)){
     stop("Please provide a signature")
@@ -67,7 +76,9 @@ removePercentZeros <- function (baseSignature, percentage = 0.5){
 
 #' Remove unspecific Genes of a Gene Expression Signature
 #' 
-#' CosTODO description
+#' Remove genes expressed in an unspecific manner. The expression range is devided into
+#' a user selected number of bins. Only genes expressed high in <maxCount> celltypes are returned. 
+#' Genes expressed high in more than <maxCount> cell types are discarded. 
 #' 
 #' @param signature gene Expression Signature
 #' @param numberOfBins number of bins to categorize the data into 
@@ -76,7 +87,11 @@ removePercentZeros <- function (baseSignature, percentage = 0.5){
 #' 
 #' @returns a gene expression signature containing only genes matching the passed requirements
 #' @examples 
-#' # CosTODO
+#' \dontrun{
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
+#' }
 removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, labels = c("low", "medium", "high")){
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -129,15 +144,20 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
 
 #' Select a specified amount of genes for each cell type based on a score, discard all other 
 #' 
-#' CosTODO description
+#' Reduce the amount of signature genes by selecting the best-scored genes for each celltype. 
+#' As scoring methods "Entropy" and "Gini" can be applied. 
 #' 
 #' @param signature gene expression matrix
-#' @param method method to score the genes
+#' @param method method to score the genes ("entropy", "gini")
 #' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genesPerCellType maximum of genes selected for each cell type
 #' 
 #' @examples 
-#' # CosTODO
+#' \dontrun{
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
+#' }
 selectGenesByScore <- function (signature, method = "entropy", selectCellType = "max", genesPerCellType = 20){
   # TODO Checks #####
   
@@ -203,13 +223,17 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
 
 #' Score Gene Expression of a single Gene based on information entropy
 #' 
-#' CosTODO description
+#' Score Genes Expression of a single gene across celltypes. The function returns 
+#' the calculated entropy of the expression value distribution. 
+#' 
 #' @param geneExpression row from Gene Expression Matrix = Expression Data for a single Gene
 #' @returns Score for the given gene based on information entropy
 #' Here: The lower the better
 #' 
 #' @examples 
-#' # CosTODO
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' entropy <- scoreEntropy (signature[1, ]) # scoring the first gene
 scoreEntropy <- function (geneExpression){
   # TODO add parameter checks ####
   probs <- list()

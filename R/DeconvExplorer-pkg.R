@@ -1,6 +1,6 @@
 #' DeconvExplorer
 #' 
-#' DeconvExplorer description CosTODO
+#' DeconvExplorer Interactive user interface for the omnideconv deconvolution toolset
 #' 
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
 #' @import omnideconv

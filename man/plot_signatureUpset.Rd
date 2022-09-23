@@ -2,7 +2,7 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{plot_signatureUpset}
 \alias{plot_signatureUpset}
-\title{Calculate UpSet Plot Signature Genes}
+\title{Calculate UpSet Plot for Signature Gene Sets}
 \usage{
 plot_signatureUpset(
   signatures,
@@ -36,8 +36,12 @@ plot_signatureUpset(
 UpSet Plot
 }
 \description{
-CosTODO description
+This plot allows the comparison of multiple signature gene sets by utilizing
+UpSet Plots.
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
+plot_signatureUpset(signatures, mode="union")
 }

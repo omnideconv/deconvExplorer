@@ -24,8 +24,14 @@ removeUnspecificGenes(
 a gene expression signature containing only genes matching the passed requirements
 }
 \description{
-CosTODO description
+Remove genes expressed in an unspecific manner. The expression range is devided into
+a user selected number of bins. Only genes expressed high in <maxCount> celltypes are returned. 
+Genes expressed high in more than <maxCount> cell types are discarded.
 }
 \examples{
-# CosTODO
+\dontrun{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
+}
 }

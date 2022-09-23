@@ -2,7 +2,7 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{plot_meanEntropyPerMethod}
 \alias{plot_meanEntropyPerMethod}
-\title{Plot Mean Entropy for a set of singatures}
+\title{Plot Mean Entropy for multiple signatures}
 \usage{
 plot_meanEntropyPerMethod(signatures, palette = "Set1")
 }
@@ -12,11 +12,18 @@ plot_meanEntropyPerMethod(signatures, palette = "Set1")
 \item{palette}{RColorBrewerPalette}
 }
 \value{
-a plot
+a barplot
 }
 \description{
-CosTODO description
+This plot focuses on the mean entropy of a signature and simplifies the comparison
+to other signature with a barplot
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+# list containting deconvolution results
+signatureList = list("bisque" =signature, "momf" = signature)
+
+plot_meanEntropyPerMethod(signatureList)
 }

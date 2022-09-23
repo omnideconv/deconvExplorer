@@ -14,15 +14,20 @@ selectGenesByScore(
 \arguments{
 \item{signature}{gene expression matrix}
 
-\item{method}{method to score the genes}
+\item{method}{method to score the genes ("entropy", "gini")}
 
 \item{selectCellType}{method to select the cell type the gene is contributing to, used to balance the number of genes between cell types}
 
 \item{genesPerCellType}{maximum of genes selected for each cell type}
 }
 \description{
-CosTODO description
+Reduce the amount of signature genes by selecting the best-scored genes for each celltype. 
+As scoring methods "Entropy" and "Gini" can be applied.
 }
 \examples{
-# CosTODO
+\dontrun{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
+}
 }

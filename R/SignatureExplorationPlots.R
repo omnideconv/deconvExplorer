@@ -7,9 +7,17 @@
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
+#' 
+#' @export
 #'
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' # list containing deconvolution results
+#' signatureList = list("bisque" =signature, "momf" = signature)
+#' 
+#' plot_signatureGenesPerMethod(signatureList)
 plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
@@ -55,8 +63,17 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
+#' 
+#' @export
+#' 
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' # list containting deconvolution results
+#' signatureList = list("bisque" =signature, "momf" = signature)
+#' 
+#' plot_conditionNumberPerMethod(signatureList)
 plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
@@ -96,9 +113,17 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #' @param palette RColorBrewerPalette
 #'
 #' @returns a barplot
+#' 
+#' @export
 #'
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' # list containting deconvolution results
+#' signatureList = list("bisque" =signature, "momf" = signature)
+#' 
+#' plot_meanEntropyPerMethod(signatureList)
 plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 
   entropies <- data.frame(method=character(), meanEntropy=numeric())
@@ -139,11 +164,15 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 #' @param signature One Signature to plot
 #' @param palette RColorBrewer Palette name, standard = Spectral
 #' @param score The score used to annotate the genes (entropy, gini)
-#' @param annotation_type How the score is rendered
+#' @param annotation_type How the score is rendered (line, bar)
 #'
 #' @returns A Heatmap
+#' @export
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' plot_signatureClustered(signatureList, score="gini", annotation_type="bar")
 plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -249,9 +278,13 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @param palette Name of a RColorBrewer palette, standard = Set1
 #'
 #' @returns UpSet Plot
+#' @export
 #'
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
+#' plot_signatureUpset(signatures, mode="union")
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
                                 maxDegree = NULL, order = "size", invert = FALSE,
                                 colorDegrees = TRUE, palette = "Set1") {
@@ -307,17 +340,22 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 
 #' Download a gene subset of multiple signature
 #'
-#' By pr
+#' Returns gene sets of signatures according to the selected combination. As
+#' intersection mode "distinct", "intersect" and "union" are available. 
 #'
-#' @param signatures CosTODO
-#' @param combination CosTODO
-#' @param mode CosTODO
+#' @param signatures list of named signatures
+#' @param combination vector of signaature names that should be intersected
+#' @param mode intersection type c("distinct", "intersect", "union")
 #'
-#' @return CosTODO
+#' @return List of genes
 #' @export
 #'
 #' @examples
-#' # CosTODO
+#' library(DeconvExplorer)
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' 
+#' signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
+#' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 download_signatureUpset <- function(signatures, combination, mode = "distinct") {
   # in case no set is selected return NULL
   if (is.null(combination)) {

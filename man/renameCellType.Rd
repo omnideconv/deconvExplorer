@@ -17,8 +17,11 @@ renameCellType(signature, cellType, newName)
 gene expression signature with updated cell type names
 }
 \description{
-CosTODO description
+Rename columns of a gene expression signature matrix.
 }
 \examples{
-# CosTODO
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+# rename "B" to "B.cells"
+signature <- renameCellType(signature, "B", "B.cells")
 }

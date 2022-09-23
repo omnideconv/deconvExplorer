@@ -2,23 +2,28 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{download_signatureUpset}
 \alias{download_signatureUpset}
-\title{Title}
+\title{Download a gene subset of multiple signature}
 \usage{
 download_signatureUpset(signatures, combination, mode = "distinct")
 }
 \arguments{
-\item{signatures}{CosTODO}
+\item{signatures}{list of named signatures}
 
-\item{combination}{CosTODO}
+\item{combination}{vector of signaature names that should be intersected}
 
-\item{mode}{CosTODO}
+\item{mode}{intersection type c("distinct", "intersect", "union")}
 }
 \value{
-CosTODO
+List of genes
 }
 \description{
-CosTODO
+Returns gene sets of signatures according to the selected combination. As
+intersection mode "distinct", "intersect" and "union" are available.
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
+download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 }

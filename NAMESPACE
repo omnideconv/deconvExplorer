@@ -2,7 +2,11 @@
 
 export(deconvExplorer)
 export(download_signatureUpset)
-export(plot_benchmark)
+export(plot_conditionNumberPerMethod)
+export(plot_meanEntropyPerMethod)
+export(plot_signatureClustered)
+export(plot_signatureGenesPerMethod)
+export(plot_signatureUpset)
 export(returnSelectedDeconvolutions)
 import(omnideconv)
 import(shiny, except = c(renderDataTable, dataTableOutput))

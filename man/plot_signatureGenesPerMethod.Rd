@@ -15,8 +15,15 @@ plot_signatureGenesPerMethod(signatures, palette = "Set1")
 A Barplot
 }
 \description{
-CosTODO description
+This Barplot allows the comparison of the size of differnt signatures by plotting the
+number of genes for each signature as a barplot
 }
 \examples{
-# CosTODO
+library(DeconvExplorer)
+signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+
+# list containing deconvolution results
+signatureList = list("bisque" =signature, "momf" = signature)
+
+plot_signatureGenesPerMethod(signatureList)
 }

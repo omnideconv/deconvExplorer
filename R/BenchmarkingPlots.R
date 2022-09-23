@@ -1,6 +1,6 @@
-#' plot benchmark
+#' plot benchmarking scatterplot
 #' 
-#' CosTODO description
+#' plot a deconvolution results against it's corresponding ground truth. 
 #' 
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
