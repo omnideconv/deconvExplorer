@@ -171,8 +171,7 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 #' @examples
 #' library(DeconvExplorer)
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
-#' 
-#' plot_signatureClustered(signatureList, score="gini", annotation_type="bar")
+#' plot_signatureClustered(signature, score="gini", annotation_type="bar")
 plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
   if (is.null(signature)){
     stop("Please provide a signature")

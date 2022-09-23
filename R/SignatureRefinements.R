@@ -7,8 +7,11 @@
 #' @param newName new cell type name
 #' 
 #' @returns gene expression signature with updated cell type names
+#'
+#' @export
 #' 
 #' @examples 
+#' library(DeconvExplorer)
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 #' 
 #' # rename "B" to "B.cells"
@@ -230,7 +233,10 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
 #' @returns Score for the given gene based on information entropy
 #' Here: The lower the better
 #' 
+#' @export
+#' 
 #' @examples 
+#' library(DeconvExplorer)
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 #' 
 #' entropy <- scoreEntropy (signature[1, ]) # scoring the first gene

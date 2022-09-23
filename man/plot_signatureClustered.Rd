@@ -30,6 +30,5 @@ by a gene scores ranking the distinctness of a gene in the signature.
 \examples{
 library(DeconvExplorer)
 signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
-
-plot_signatureClustered(signatureList, score="gini", annotation_type="bar")
+plot_signatureClustered(signature, score="gini", annotation_type="bar")
 }

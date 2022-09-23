@@ -20,6 +20,7 @@ gene expression signature with updated cell type names
 Rename columns of a gene expression signature matrix.
 }
 \examples{
+library(DeconvExplorer)
 signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 
 # rename "B" to "B.cells"
