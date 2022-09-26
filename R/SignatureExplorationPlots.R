@@ -322,7 +322,7 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 
   plot <- ComplexHeatmap::UpSet(mat,
     comb_order = combOrder,
-    top_annotation = ComplexHeatmap::upset_top_annotation(mat,
+    top_annotation = upset_top_annotation(mat,
       add_numbers = TRUE,
       numbers_gp = grid::gpar(
         fontsize = "14",
