@@ -28,7 +28,6 @@ This Heatmap displayes a z-scored signature in heatmap form. The plot is annotat
 by a gene scores ranking the distinctness of a gene in the signature.
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
-plot_signatureClustered(signature, score="gini", annotation_type="bar")
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
 }

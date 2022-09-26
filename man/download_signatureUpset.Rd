@@ -21,8 +21,7 @@ Returns gene sets of signatures according to the selected combination. As
 intersection mode "distinct", "intersect" and "union" are available.
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
 download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")

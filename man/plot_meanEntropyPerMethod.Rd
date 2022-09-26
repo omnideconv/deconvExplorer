@@ -19,8 +19,7 @@ This plot focuses on the mean entropy of a signature and simplifies the comparis
 to other signature with a barplot
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 # list containting deconvolution results
 signatureList = list("bisque" = signature, "momf" = signature)

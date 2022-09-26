@@ -18,8 +18,7 @@ Score Genes Expression of a single gene across celltypes. The function returns
 the calculated entropy of the expression value distribution.
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 entropy <- scoreEntropy (signature[1, ]) # scoring the first gene
 }

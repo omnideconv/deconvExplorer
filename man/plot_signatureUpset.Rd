@@ -40,8 +40,7 @@ This plot allows the comparison of multiple signature gene sets by utilizing
 UpSet Plots.
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 plot_signatureUpset(signatures, mode="union")
 }

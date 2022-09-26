@@ -28,9 +28,7 @@ Plot RMSE (root mean squared error) for a list of deconvolution results and the
 corresponding ground truth
 }
 \examples{
-library(omnideconv)
-library(DeconvExplorer)
-data("RefData")
+data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
 deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
 deconvList = list("momf" = deconv, "bisque" = deconv)

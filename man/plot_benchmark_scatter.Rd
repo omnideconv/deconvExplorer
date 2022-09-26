@@ -17,9 +17,7 @@ plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 Plot a deconvolution results against it's corresponding ground truth.
 }
 \examples{
-library(omnideconv)
-library(DeconvExplorer)
-data("RefData")
+data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
 deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
 deconvList = list("momf" = deconv, "bisque" = deconv)

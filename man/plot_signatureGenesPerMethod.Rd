@@ -19,8 +19,7 @@ This Barplot allows the comparison of the size of differnt signatures by plottin
 number of genes for each signature as a barplot
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 # list containing deconvolution results
 signatureList = list("bisque" = signature, "momf" = signature)

@@ -19,8 +19,7 @@ This plot focuses on the condition number for each signature and simplifies
 the comparison by providion a barplot
 }
 \examples{
-library(DeconvExplorer)
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 # list containting deconvolution results
 signatureList = list("bisque" = signature, "momf" = signature)
