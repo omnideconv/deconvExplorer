@@ -15,7 +15,7 @@
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 #' 
 #' # list containing deconvolution results
-#' signatureList = list("bisque" =signature, "momf" = signature)
+#' signatureList = list("bisque" = signature, "momf" = signature)
 #' 
 #' plot_signatureGenesPerMethod(signatureList)
 plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
@@ -29,11 +29,11 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 
   # plot
   plot <- ggplot(data = df, aes(
-    x = method, y = number_of_genes,
-    fill = method, text = paste0(
+    x = .data$method, y = .data$number_of_genes,
+    fill = .data$method, text = paste0(
       "Method: ",
-      method, "\nGene Count: ",
-      number_of_genes
+      .data$method, "\nGene Count: ",
+      .data$number_of_genes
     )
   )) +
     geom_col() +
@@ -49,7 +49,6 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
     theme(legend.position = "none") +
     ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
     ggplot2::ylim (0, max(df$number_of_genes)*1.1) # scale y axis to contain bar label
-
 
   plot
 }
@@ -71,7 +70,7 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 #' 
 #' # list containting deconvolution results
-#' signatureList = list("bisque" =signature, "momf" = signature)
+#' signatureList = list("bisque" = signature, "momf" = signature)
 #' 
 #' plot_conditionNumberPerMethod(signatureList)
 plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
@@ -85,12 +84,12 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 
   # plot
   plot <- ggplot(data = df, aes(
-    x = method, y = kappa, fill = method,
-    text = paste0("Method: ", method, "\nKappa: ", kappa)
+    x = .data$method, y = .data$kappa, fill = .data$method,
+    text = paste0("Method: ", .data$method, "\nKappa: ", .data$kappa)
   )) +
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
-    geom_text(aes(label = round(kappa, 2)),
+    geom_text(aes(label = round(.data$kappa, 2)),
       fontface = "bold", vjust = -1,
       color = "black", size = 7, family = "Helvetica"
     ) +
@@ -121,7 +120,7 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 #' 
 #' # list containting deconvolution results
-#' signatureList = list("bisque" =signature, "momf" = signature)
+#' signatureList = list("bisque" = signature, "momf" = signature)
 #' 
 #' plot_meanEntropyPerMethod(signatureList)
 plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
@@ -135,12 +134,12 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
   }
 
   plot <- ggplot(data = entropies, aes(
-    x = method, y = meanEntropy, fill = method,
-    text = paste0("Method: ", method, "\nEntropy: ", meanEntropy),
+    x = .data$method, y = .data$meanEntropy, fill = .data$method,
+    text = paste0("Method: ", .data$method, "\nEntropy: ", .data$meanEntropy),
   )) +
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
-    geom_text(aes(label = round(meanEntropy, 2)),
+    geom_text(aes(label = round(.data$meanEntropy, 2)),
               fontface = "bold", vjust = -1,
               color = "black", size = 7, family = "Helvetica"
     ) +
