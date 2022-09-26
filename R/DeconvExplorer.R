@@ -543,7 +543,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   
   info_modules <- shinydashboard::box(
     title="Information about each module", solidHeader = TRUE, width=12, status="primary",
-    div(includeMarkdown(system.file("extdata", "app_information.md", package="DeconvExplorer")),style="padding:1em; padding-top:0em")
+    div(includeMarkdown(system.file("extdata", "app_information.md", package = "DeconvExplorer")),style="padding:1em; padding-top:0em")
   )
   
 

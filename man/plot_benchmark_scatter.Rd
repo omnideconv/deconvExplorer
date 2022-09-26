@@ -19,7 +19,7 @@ Plot a deconvolution results against it's corresponding ground truth.
 \examples{
 data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
-deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 deconvList = list("momf" = deconv, "bisque" = deconv)
 plot_benchmark_scatter(RefData, deconvList)
 }

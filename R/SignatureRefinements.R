@@ -52,7 +52,7 @@ renameCellType <- function(signature, cellType, newName){
 #' 
 #' @examples 
 #' \dontrun{
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' signature <- removePercentZeros(signature, percentage = 0.5)
 #' }
@@ -90,7 +90,7 @@ removePercentZeros <- function (baseSignature, percentage = 0.5){
 #' @returns a gene expression signature containing only genes matching the passed requirements
 #' @examples 
 #' \dontrun{
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
 #' }
@@ -156,7 +156,7 @@ removeUnspecificGenes = function (signature, numberOfBins = 3, maxCount = 2, lab
 #' 
 #' @examples 
 #' \dontrun{
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
 #' }

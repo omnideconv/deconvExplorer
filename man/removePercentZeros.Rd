@@ -21,7 +21,7 @@ removing genes that are only detected in a few cells/samples.
 }
 \examples{
 \dontrun{
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 signature <- removePercentZeros(signature, percentage = 0.5)
 }

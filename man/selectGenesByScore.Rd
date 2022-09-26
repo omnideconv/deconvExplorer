@@ -26,7 +26,7 @@ As scoring methods "Entropy" and "Gini" can be applied.
 }
 \examples{
 \dontrun{
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
 }

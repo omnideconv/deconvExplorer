@@ -11,7 +11,7 @@
 #' @examples 
 #' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
-#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_scatter(RefData, deconvList)
 plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
@@ -79,7 +79,7 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 #' @examples 
 #' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
-#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_correlation(RefData, deconvList)
 plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig", pValueColor="black", plot_method = "number") {
@@ -186,7 +186,7 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 #' @examples 
 #' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
-#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_rmse(RefData, deconvList)
 plot_benchmark_rmse <- function(gtruth, estimate, plot_type = "heatmap",  hm_method="color", palette="Spectral") {

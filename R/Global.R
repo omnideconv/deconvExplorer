@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' 
 #' # list containting deconvolution results
 #' deconvList = list("bisque" =deconv, "momf" = deconv)

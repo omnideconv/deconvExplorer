@@ -30,7 +30,7 @@ Genes expressed high in more than <maxCount> cell types are discarded.
 }
 \examples{
 \dontrun{
-signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
 }
