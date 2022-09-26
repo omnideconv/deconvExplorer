@@ -9,9 +9,7 @@
 #' @export
 #' 
 #' @examples 
-#' library(omnideconv)
-#' library(DeconvExplorer)
-#' data("RefData")
+#' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)
@@ -79,9 +77,7 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 #' @export
 #' 
 #' @examples 
-#' library(omnideconv)
-#' library(DeconvExplorer)
-#' data("RefData")
+#' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)
@@ -188,9 +184,7 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 #' @export
 #' 
 #' @examples 
-#' library(omnideconv)
-#' library(DeconvExplorer)
-#' data("RefData")
+#' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package="DeconvExplorer"))
 #' deconvList = list("momf" = deconv, "bisque" = deconv)

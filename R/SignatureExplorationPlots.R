@@ -11,8 +11,7 @@
 #' @export
 #'
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' # list containing deconvolution results
 #' signatureList = list("bisque" = signature, "momf" = signature)
@@ -66,8 +65,7 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' @export
 #' 
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' # list containting deconvolution results
 #' signatureList = list("bisque" = signature, "momf" = signature)
@@ -116,8 +114,7 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #' @export
 #'
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' # list containting deconvolution results
 #' signatureList = list("bisque" = signature, "momf" = signature)
@@ -168,9 +165,8 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 #' @returns A Heatmap
 #' @export
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
-#' plot_signatureClustered(signature, score="gini", annotation_type="bar")
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+#' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
 plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
   if (is.null(signature)){
     stop("Please provide a signature")
@@ -279,8 +275,7 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @export
 #'
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' plot_signatureUpset(signatures, mode="union")
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
@@ -349,8 +344,7 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 #' @export
 #'
 #' @examples
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")

@@ -22,7 +22,7 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' library(DeconvExplorer)
+#' library("DeconvExplorer")
 #' DeconvExplorer::deconvExplorer()
 #' }
 deconvExplorer <- function(usr_bulk = NULL,

@@ -11,8 +11,7 @@
 #' @export
 #' 
 #' @examples 
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' # rename "B" to "B.cells"
 #' signature <- renameCellType(signature, "B", "B.cells")
@@ -236,8 +235,7 @@ selectGenesByScore <- function (signature, method = "entropy", selectCellType = 
 #' @export
 #' 
 #' @examples 
-#' library(DeconvExplorer)
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
+#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' 
 #' entropy <- scoreEntropy (signature[1, ]) # scoring the first gene
 scoreEntropy <- function (geneExpression){
