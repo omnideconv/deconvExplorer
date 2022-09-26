@@ -29,14 +29,14 @@ Imports:
     utils,
     tools, 
     vroom,
-    markdown,
     bbplot,
     ComplexHeatmap,
     grid,
     InteractiveComplexHeatmap, 
     RColorBrewer,
+    grDevices,
+    stats,
     circlize,
-    Biobase,
     BioQC
 RoxygenNote: 7.2.1
 Encoding: UTF-8
