@@ -1,2 +1,2 @@
 library("DeconvExplorer") 
-DeconvExplorer::deconvExplorer()
+DeconvExplorer::DeconvExplorer()

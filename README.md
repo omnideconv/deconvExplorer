@@ -8,7 +8,7 @@ Shiny App for the omnideconv package. #toBeContinued
 ## Installation 
 ```
 devtools::install_github("omnideconv/DeconvExplorer")
-# install.packages("deconvExplorer") # for later
+# install.packages("DeconvExplorer") # for later
 ```
 
 ## Usage 
