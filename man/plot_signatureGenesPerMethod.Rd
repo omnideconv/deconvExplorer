@@ -23,7 +23,7 @@ library(DeconvExplorer)
 signature <- readRDS(system.file("extdata", "signature_example.rds", package="DeconvExplorer"))
 
 # list containing deconvolution results
-signatureList = list("bisque" =signature, "momf" = signature)
+signatureList = list("bisque" = signature, "momf" = signature)
 
 plot_signatureGenesPerMethod(signatureList)
 }
