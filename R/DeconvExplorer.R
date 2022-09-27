@@ -23,9 +23,9 @@
 #' @examples 
 #' \dontrun{
 #' library("DeconvExplorer")
-#' DeconvExplorer::deconvExplorer()
+#' DeconvExplorer::DeconvExplorer()
 #' }
-deconvExplorer <- function(usr_bulk = NULL,
+DeconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
                            usr_batch = NULL) {
@@ -1523,4 +1523,4 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   shiny::shinyApp(ui = de_ui, server = de_server)
 }
 
-# deconvExplorer()
+# DeconvExplorer()
