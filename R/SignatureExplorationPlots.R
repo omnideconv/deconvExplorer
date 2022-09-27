@@ -7,17 +7,17 @@
 #' @param palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
-#' 
+#'
 #' @export
 #'
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' 
+#'
 #' # list containing deconvolution results
-#' signatureList = list("bisque" = signature, "momf" = signature)
-#' 
+#' signatureList <- list("bisque" = signature, "momf" = signature)
+#'
 #' plot_signatureGenesPerMethod(signatureList)
-plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
+plot_signatureGenesPerMethod <- function(signatures, palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
@@ -46,8 +46,8 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
-    ggplot2::ylim (0, max(df$number_of_genes)*1.1) # scale y axis to contain bar label
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
   plot
 }
@@ -61,17 +61,17 @@ plot_signatureGenesPerMethod <- function(signatures, palette="Set1") {
 #' @param palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' 
+#'
 #' # list containting deconvolution results
-#' signatureList = list("bisque" = signature, "momf" = signature)
-#' 
+#' signatureList <- list("bisque" = signature, "momf" = signature)
+#'
 #' plot_conditionNumberPerMethod(signatureList)
-plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
+plot_conditionNumberPerMethod <- function(signatures, palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
@@ -95,8 +95,8 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
-    ggplot2::ylim(0, max(df$kappa)*1.1) # scale y axis to contain bar label
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
   plot
 }
@@ -110,19 +110,18 @@ plot_conditionNumberPerMethod <- function(signatures, palette="Set1") {
 #' @param palette RColorBrewerPalette
 #'
 #' @returns a barplot
-#' 
+#'
 #' @export
 #'
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' 
+#'
 #' # list containting deconvolution results
-#' signatureList = list("bisque" = signature, "momf" = signature)
-#' 
+#' signatureList <- list("bisque" = signature, "momf" = signature)
+#'
 #' plot_meanEntropyPerMethod(signatureList)
-plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
-
-  entropies <- data.frame(method=character(), meanEntropy=numeric())
+plot_meanEntropyPerMethod <- function(signatures, palette = "Set1") {
+  entropies <- data.frame(method = character(), meanEntropy = numeric())
 
   # calculate Mean Entropy for each signature
   for (name in names(signatures)) {
@@ -137,16 +136,16 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
     geom_col() +
     # ggtitle("5. Condition Number per Method") +
     geom_text(aes(label = round(.data$meanEntropy, 2)),
-              fontface = "bold", vjust = -1,
-              color = "black", size = 7, family = "Helvetica"
+      fontface = "bold", vjust = -1,
+      color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
-    ggplot2::scale_fill_manual(values=RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))])+
-    ggplot2::ylim(0, max(entropies$meanEntropy)*1.1) # scale y axis to contain bar label
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
   plot
 }
@@ -167,16 +166,16 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1"){
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
-plot_signatureClustered <- function(signature, score="entropy", annotation_type="line", palette="Spectral") {
-  if (is.null(signature)){
+plot_signatureClustered <- function(signature, score = "entropy", annotation_type = "line", palette = "Spectral") {
+  if (is.null(signature)) {
     stop("Please provide a signature")
   }
 
-  if (!(score %in% c("entropy", "gini"))){
+  if (!(score %in% c("entropy", "gini"))) {
     stop("Score Method not supported")
   }
 
-  if (!(annotation_type %in% c("line", "bar"))){
+  if (!(annotation_type %in% c("line", "bar"))) {
     stop("annotation_type not supported")
   }
 
@@ -205,14 +204,14 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
   mat <- as.matrix(df[, -1]) # without gene names
   rownames(mat) <- df$X # set gene names
 
-  #mat <- stats::na.omit(mat) #####
+  # mat <- stats::na.omit(mat) #####
 
   # calculate color palette
-  col_fun = circlize::colorRamp2(c(-2, 0, 2), c(RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
-                                                "white", # middle color
-                                                RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
-                                                )
-                                 )
+  col_fun <- circlize::colorRamp2(c(-2, 0, 2), c(
+    RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
+    "white", # middle color
+    RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
+  ))
 
 
   # render the signature annotation, this might also render multiple annotations
@@ -221,18 +220,16 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 
   annotation <- NULL
 
-  if (score == "entropy"){
-    if (annotation_type == "line"){
+  if (score == "entropy") {
+    if (annotation_type == "line") {
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
-
-    } else if (annotation_type == "bar"){
+    } else if (annotation_type == "bar") {
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
     }
-
-  }  else if (score == "gini"){
-    if (annotation_type == "line"){
+  } else if (score == "gini") {
+    if (annotation_type == "line") {
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
-    } else if(annotation_type == "bar"){
+    } else if (annotation_type == "bar") {
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
     }
   }
@@ -242,18 +239,16 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_names_side = "left",
-    border = TRUE, col=col_fun,
-    #cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
-    cluster_columns = TRUE, cluster_rows = TRUE,  # clustering_method_columns = "euclidean",
+    border = TRUE, col = col_fun,
+    # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
+    cluster_columns = TRUE, cluster_rows = TRUE, # clustering_method_columns = "euclidean",
     top_annotation = annotation
-
   )
 
 
   heatmap <- ComplexHeatmap::draw(heatmap)
 
   return(heatmap)
-
 }
 
 
@@ -277,7 +272,7 @@ plot_signatureClustered <- function(signature, score="entropy", annotation_type=
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
-#' plot_signatureUpset(signatures, mode="union")
+#' plot_signatureUpset(signatures, mode = "union")
 plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
                                 maxDegree = NULL, order = "size", invert = FALSE,
                                 colorDegrees = TRUE, palette = "Set1") {
@@ -334,7 +329,7 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 #' Download a gene subset of multiple signature
 #'
 #' Returns gene sets of signatures according to the selected combination. As
-#' intersection mode "distinct", "intersect" and "union" are available. 
+#' intersection mode "distinct", "intersect" and "union" are available.
 #'
 #' @param signatures list of named signatures
 #' @param combination vector of signaature names that should be intersected
@@ -345,8 +340,8 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 #'
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' 
-#' signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
+#'
+#' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 download_signatureUpset <- function(signatures, combination, mode = "distinct") {
   # in case no set is selected return NULL

@@ -1,7 +1,7 @@
 #' DeconvExplorer
-#' 
+#'
 #' DeconvExplorer Interactive user interface for the omnideconv deconvolution toolset
-#' 
+#'
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
 #' @import omnideconv
 #' @importFrom shinydashboard box dashboardBody dashboardHeader dashboardPage
@@ -12,7 +12,7 @@
 #' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
 #' geom_hline scale_colour_brewer scale_fill_brewer ylim
-#' @importFrom shinycssloaders withSpinner 
+#' @importFrom shinycssloaders withSpinner
 #' @importFrom waiter Waitress
 #' @importFrom rlang .data
 #' @importFrom rintrojs introBox introjs introjsUI readCallback
@@ -34,7 +34,7 @@
 #' @importFrom ggpubr rotate_x_text stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
-#' 
+#'
 #' @name DeconvExplorer-pkg
 #' @docType package
 NULL

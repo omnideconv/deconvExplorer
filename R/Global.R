@@ -11,20 +11,19 @@
 #'
 #' @examples
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
-#' 
+#'
 #' # list containting deconvolution results
-#' deconvList = list("bisque" =deconv, "momf" = deconv)
-#' 
+#' deconvList <- list("bisque" = deconv, "momf" = deconv)
+#'
 #' returnSelectedDeconvolutions(c("momf"), deconvList)
-returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions){
-
+returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions) {
   deconvolutions <- list()
 
   for (deconvolution in to_plot_list) {
     deconvolutions[deconvolution] <- all_deconvolutions[deconvolution]
   }
 
-  return (deconvolutions)
+  return(deconvolutions)
 }
 
 
