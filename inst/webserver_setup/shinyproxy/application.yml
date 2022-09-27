@@ -20,7 +20,7 @@ proxy:
     display-name: DeconvExplorer
     description: Shiny App for the omnideconv package
     container-cmd: ["R", "-e", "shiny::runApp('/srv/shiny-server/', host = '0.0.0.0', port = 3838)"]
-    container-network: deconvexplorer_sp-net
+    container-network: webserversetup_sp-net-deconvexplorer
     container-image: deconv_explorer:latest
     #container-cpu-limit: 2
 
