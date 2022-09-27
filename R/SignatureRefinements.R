@@ -153,13 +153,18 @@ removeUnspecificGenes <- function(signature, numberOfBins = 3, maxCount = 2, lab
 #' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genesPerCellType maximum of genes selected for each cell type
 #'
+#' @return A data frame with the compacted signatures
+#' 
 #' @examples
 #' \dontrun{
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #'
 #' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
 #' }
-selectGenesByScore <- function(signature, method = "entropy", selectCellType = "max", genesPerCellType = 20) {
+selectGenesByScore <- function(signature, 
+                               method = "entropy", 
+                               selectCellType = "max", 
+                               genesPerCellType = 20) {
   # TODO Checks #####
 
   shiny::showNotification(paste0("Refining Signature by score: ", method))
@@ -186,13 +191,9 @@ selectGenesByScore <- function(signature, method = "entropy", selectCellType = "
       score[gene] <- 1 - BioQC::gini(row) # need to flip the value since lower scores schould be better (entropy!)
     }
 
-
-
     # append score to most expressed celltype
     scoresByCellType[[maxCelltype]] <- append(scoresByCellType[[maxCelltype]], score)
   }
-
-
 
   # initialize new refined signature with colnames, rows stay empty
   refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature)), dimnames = list(NULL, colnames(signature)))

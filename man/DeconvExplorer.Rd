@@ -20,6 +20,9 @@ DeconvExplorer(
 
 \item{usr_batch}{Batch IDs, only for some deconvolution methods}
 }
+\value{
+A Shiny app object is returned
+}
 \description{
 Run DeconvExplorer
 }

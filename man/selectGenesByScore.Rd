@@ -20,6 +20,9 @@ selectGenesByScore(
 
 \item{genesPerCellType}{maximum of genes selected for each cell type}
 }
+\value{
+A data frame with the compacted signatures
+}
 \description{
 Reduce the amount of signature genes by selecting the best-scored genes for each celltype.
 As scoring methods "Entropy" and "Gini" can be applied.

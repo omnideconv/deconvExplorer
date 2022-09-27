@@ -13,6 +13,9 @@ plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
 
 \item{palette}{RColorBrewer Palette}
 }
+\value{
+A `ggplot` object
+}
 \description{
 Plot a deconvolution results against it's corresponding ground truth.
 }

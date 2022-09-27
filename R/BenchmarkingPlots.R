@@ -5,7 +5,9 @@
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
 #' @param palette RColorBrewer Palette
-#'
+#' 
+#' @return A `ggplot` object
+#' 
 #' @export
 #'
 #' @examples
@@ -59,7 +61,7 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
   # color
   plot <- plot + ggplot2::scale_color_manual(values = getPalette(n_cell_types + 1))
 
-  plot
+  return(plot)
 }
 
 
@@ -72,7 +74,9 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 #' @param plot_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param pValueColor color of p value annotation, "white" or "black"
 #' @param pValueType one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
-#'
+#' 
+#' @return A list, as returned by the `corrplot` function
+#' 
 #' @export
 #'
 #' @examples
@@ -180,6 +184,8 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 #' @param plot_type "heatmap" or "boxplot"
 #' @param palette RColorBrewer Palette
 #'
+#' @return A `ggplot` object, or a list as returned by `corrplot()`
+#' 
 #' @export
 #'
 #' @examples
@@ -277,7 +283,6 @@ plot_benchmark_rmse <- function(gtruth, estimate, plot_type = "heatmap", hm_meth
       axis.text = ggplot2::element_text(size = 14),
       axis.title = ggplot2::element_text(size = 16)
     )
-
 
     return(plot)
   }

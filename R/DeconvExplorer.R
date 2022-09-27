@@ -18,6 +18,8 @@
 #' @param usr_cellAnnotation Cell Type annotations for the single cell data
 #' @param usr_batch Batch IDs, only for some deconvolution methods
 #'
+#' @return A Shiny app object is returned
+#' 
 #' @export
 #'
 #' @examples

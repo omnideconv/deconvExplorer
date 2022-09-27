@@ -23,6 +23,9 @@ plot_benchmark_rmse(
 
 \item{palette}{RColorBrewer Palette}
 }
+\value{
+A `ggplot` object, or a list as returned by `corrplot()`
+}
 \description{
 Plot RMSE (root mean squared error) for a list of deconvolution results and the
 corresponding ground truth

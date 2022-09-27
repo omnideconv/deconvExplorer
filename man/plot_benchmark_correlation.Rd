@@ -23,6 +23,9 @@ plot_benchmark_correlation(
 
 \item{plot_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 }
+\value{
+A list, as returned by the `corrplot` function
+}
 \description{
 Plot the correlation of a deconvolution results and it's corresponding ground truth
 }
