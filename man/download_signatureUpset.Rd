@@ -23,6 +23,6 @@ intersection mode "distinct", "intersect" and "union" are available.
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
-signatures = list("dwls" = signature, "momf" = signature, "bisque" = signature)
+signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 }

@@ -21,7 +21,7 @@ This function returns the requested deconvolution results as a list
 deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 
 # list containting deconvolution results
-deconvList = list("bisque" =deconv, "momf" = deconv)
+deconvList <- list("bisque" = deconv, "momf" = deconv)
 
 returnSelectedDeconvolutions(c("momf"), deconvList)
 }

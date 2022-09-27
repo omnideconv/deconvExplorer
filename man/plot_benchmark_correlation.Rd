@@ -30,6 +30,6 @@ Plot the correlation of a deconvolution results and it's corresponding ground tr
 data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
 deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
-deconvList = list("momf" = deconv, "bisque" = deconv)
+deconvList <- list("momf" = deconv, "bisque" = deconv)
 plot_benchmark_correlation(RefData, deconvList)
 }

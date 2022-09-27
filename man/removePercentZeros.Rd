@@ -15,8 +15,8 @@ removePercentZeros(baseSignature, percentage = 0.5)
 A signature which matches the criteria above
 }
 \description{
-Remove Rows (Genes) from an expression matrix with more zeros than specified by 
-the percentage threshold parameter. This function aims to reduce sequencing artifacts by 
+Remove Rows (Genes) from an expression matrix with more zeros than specified by
+the percentage threshold parameter. This function aims to reduce sequencing artifacts by
 removing genes that are only detected in a few cells/samples.
 }
 \examples{

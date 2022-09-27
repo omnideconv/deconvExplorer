@@ -22,7 +22,7 @@ the comparison by providion a barplot
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
 # list containting deconvolution results
-signatureList = list("bisque" = signature, "momf" = signature)
+signatureList <- list("bisque" = signature, "momf" = signature)
 
 plot_conditionNumberPerMethod(signatureList)
 }

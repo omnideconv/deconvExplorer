@@ -14,11 +14,11 @@ Score for the given gene based on information entropy
 Here: The lower the better
 }
 \description{
-Score Genes Expression of a single gene across celltypes. The function returns 
+Score Genes Expression of a single gene across celltypes. The function returns
 the calculated entropy of the expression value distribution.
 }
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
-entropy <- scoreEntropy (signature[1, ]) # scoring the first gene
+entropy <- scoreEntropy(signature[1, ]) # scoring the first gene
 }

@@ -42,5 +42,5 @@ UpSet Plots.
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
-plot_signatureUpset(signatures, mode="union")
+plot_signatureUpset(signatures, mode = "union")
 }
