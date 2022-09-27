@@ -1033,7 +1033,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
       waitress$close()
       showNotification("Deconvolution finished", type = "message")
-      print("Finished Deconvolution") # debug reasons
+      message("Finished Deconvolution") # debug reasons
     })
 
     # update avaible deconvolutions for plotting

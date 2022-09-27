@@ -103,7 +103,7 @@ doPerm <- function(perm, X, Y, absolute, abs_method){
     dist <- matrix()
     
     while(itor <= perm){
-        #print(itor)
+        # message(itor)
         
         #random mixture
         yr <- as.numeric(Ylist[sample(length(Ylist),dim(X)[1])])
