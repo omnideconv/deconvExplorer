@@ -61,6 +61,8 @@ Remotes:
     github::jokergoo/InteractiveComplexHeatmap
 Suggests: 
     knitr,
-    rmarkdown, 
-    bookdown
+    rmarkdown,
+    bookdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
