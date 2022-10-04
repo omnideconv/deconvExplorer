@@ -19,7 +19,7 @@
 #' @param usr_batch Batch IDs, only for some deconvolution methods
 #'
 #' @return A Shiny app object is returned
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -1520,7 +1520,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           }
           # turn into vector
           content <- as.vector(t(content))
-        } else { # all other cases: matrix?
+        } else {
+          # all other cases: matrix?
           content <- as.matrix(content)
         }
 

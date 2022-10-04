@@ -154,16 +154,16 @@ removeUnspecificGenes <- function(signature, numberOfBins = 3, maxCount = 2, lab
 #' @param genesPerCellType maximum of genes selected for each cell type
 #'
 #' @return A data frame with the compacted signatures
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #'
 #' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
 #' }
-selectGenesByScore <- function(signature, 
-                               method = "entropy", 
-                               selectCellType = "max", 
+selectGenesByScore <- function(signature,
+                               method = "entropy",
+                               selectCellType = "max",
                                genesPerCellType = 20) {
   # TODO Checks #####
 

@@ -298,14 +298,16 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
   # calculate order: size, degree
   if (order == "size") {
     combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert) # invert = FALSE -> will sort decreasing
-  } else { # order=="degree"
+  } else {
+    # order=="degree"
     combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert)
   }
 
   # calculate colors
   if (colorDegrees == TRUE) {
     upSetColors <- RColorBrewer::brewer.pal(8, palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
-  } else { # =FALSE
+  } else {
+    # =FALSE
     upSetColors <- c("black")
   }
 

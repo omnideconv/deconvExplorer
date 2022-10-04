@@ -5,9 +5,9 @@
 #' @param gtruth dataframe of gtruth/simulation fractions
 #' @param estimate deconvolution result list (named)
 #' @param palette RColorBrewer Palette
-#' 
+#'
 #' @return A `ggplot` object
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -74,9 +74,9 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 #' @param plot_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param pValueColor color of p value annotation, "white" or "black"
 #' @param pValueType one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
-#' 
+#'
 #' @return A list, as returned by the `corrplot` function
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -185,7 +185,7 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 #' @param palette RColorBrewer Palette
 #'
 #' @return A `ggplot` object, or a list as returned by `corrplot()`
-#' 
+#'
 #' @export
 #'
 #' @examples

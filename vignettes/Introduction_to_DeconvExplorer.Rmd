@@ -43,11 +43,11 @@ bibliography: DeconvExplorer.bib
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment  = "#>",
-  error    = FALSE,
-  warning  = FALSE,
-  eval     = TRUE,
-  message  = FALSE,
+  comment = "#>",
+  error = FALSE,
+  warning = FALSE,
+  eval = TRUE,
+  message = FALSE,
   fig.width = 10
 )
 options(width = 100)
@@ -76,8 +76,9 @@ The data is made available via the ...
 To install this package, start R and enter:
 
 ```{r install, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
+}
 
 BiocManager::install("DeconvExplorer")
 ```
