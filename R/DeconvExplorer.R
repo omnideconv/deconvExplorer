@@ -82,7 +82,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
     id = "tour_signatureUpload",
     title = "Upload Signature", solidHeader = TRUE, status = "primary", 
     width = 12,
-    fileInput("userSignatureUpload", "Upload Siganture"),
+    fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px")
   )
 
@@ -893,12 +893,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       updateSelectInput(session, "signatureMethod", choices = allSignatureOptions())
     })
 
-    # for selecting a siganture to refine, users should be able to select from all already available signatures
+    # for selecting a signature to refine, users should be able to select from all already available signatures
     observe({
       updateSelectInput(session, "signatureToRefine", choices = names(internal$signatures))
     })
 
-    # when "load Refinement" is clicked, load siganture in reactive Value
+    # when "load Refinement" is clicked, load signature in reactive Value
     observeEvent(input$loadRefinementSignature, {
       req(input$signatureToRefine)
       showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
