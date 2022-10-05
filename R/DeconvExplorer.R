@@ -675,8 +675,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   # server definition  ------------------------------------------------------
 
   deconvexplorer_server <- shinyServer(function(input, output, session) {
-    #nocov start
-    
+    # nocov start
+
     # General Setup -----------------------------------------------------------
 
 
@@ -1563,7 +1563,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       # Output List of Gene Names for Download
       signatureSelectedGenesDownloadContent(paste(rownames(selected), sep = "\n"))
     }
-    #nocov end
+    # nocov end
   })
 
   shiny::shinyApp(ui = deconvexplorer_ui, server = deconvexplorer_server)
