@@ -27,8 +27,7 @@ A Shiny app object is returned
 Run DeconvExplorer
 }
 \examples{
-\dontrun{
-library("DeconvExplorer")
-DeconvExplorer::DeconvExplorer()
+if (interactive()) {
+  DeconvExplorer::DeconvExplorer()
 }
 }
