@@ -17,7 +17,6 @@ DeconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
                            usr_batch = NULL) {
-  # library(Biobase) # as long as music isn't fixed
 
   # methods that produce a signature
   produces_signature <- c(
@@ -51,7 +50,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
   data_deconvolution <- shinydashboard::box(
     id = "tour_upload",
-    title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 6,
+    title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 12,
     fileInput("userBulkUpload", "Upload Bulk Data"),
     div(style = "margin-top: -20px"),
     fileInput("userSingleCellUpload", "Upload Single Cell Data"),
@@ -93,63 +92,11 @@ DeconvExplorer <- function(usr_bulk = NULL,
   )
 
   data_info <- shinydashboard::box(
-    title = NULL, solidHeader = FALSE, width = 6,
-    h3("Supported Datatypes:", style = "margin-top:0.2em"),
-    tags$ul(
-      tags$li("rds"),
-      tags$li("csv"),
-      tags$li("tsv"),
-      tags$li("txt")
-    ),
-    h3("Data requirements:"),
-    tags$ol(
-      tags$li("Single cell RNA-seq data"),
-      tags$ul(
-        tags$li(strong("Genes"), "x", strong("Cells"), "matrix"),
-        tags$li("Counts are", strong("not log-transformed")),
-        tags$li("Rownames (gene names) are provided in the same format as in the bulk RNA-seq data, for instance HGNC symbols")
-      ),
-      tags$li("Cell type annotations"),
-      tags$ul(
-        tags$li("Vector containing cell type annotations"),
-        tags$li("Annotations are in the same order as the columns of the single cell matrix")
-      ),
-      tags$li("Batch ids"),
-      tags$ul(
-        tags$li("Vector containing batch ids, so sample or patient ids"),
-        tags$li("Ids are in the same order as the columns of the single cell matrix"),
-        tags$li("This is only necessary for Bisque, MuSiC and SCDC")
-      ),
-      tags$li("(Marker genes)"),
-      tags$ul(
-        tags$li("Vector containing gene names"),
-        tags$li("This is only necessary for BSeq-sc")
-      ),
-      tags$li("Bulk RNA-seq data"),
-      tags$ul(
-        tags$li(strong("Genes"), "x", strong("Samples"), "matrix"),
-        tags$li("Rownames (gene names) are provided in the same format as in the sc RNA-seq data, for instance HGNC symbols")
-      )
+    title = span(icon("info-circle"), "Input data formats and requirements"), 
+    solidHeader = FALSE, width = 12,
+    collapsible = TRUE, collapsed = FALSE,
+    includeMarkdown(system.file("extdata", "data_info.md", package = "DeconvExplorer")
     )
-  )
-
-  data_info_simbu <- shinydashboard::box(
-    title = "SimBu Data", solidHeader = FALSE, width = 12,
-    h3("Upload your SimBu simulation as .rds file:", style = "margin-top:0em"),
-    tags$pre("simulation <- SimBu::simulate_bulk(...)
-saveRDS(simulation, 'filepath.rds') # upload this file"),
-    helpText("For further Information see the SimBu Documentation")
-  )
-
-  data_info_signature <- shinydashboard::box(
-    title = "Signature", solidHeader = FALSE, width = 12,
-    h3("Supported Datatypes:", style = "margin-top:0em"),
-    tags$ul(
-      tags$li("csv"),
-      tags$li("tsv"),
-      tags$li("rds")
-    ),
-    helpText("For csv and tsv files the first column", strong("must"), "contain gene identifiers")
   )
 
   # Deconvolution Boxes -------------------------------------------------------
@@ -230,8 +177,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     ),
     column(
       width = 12,
-      shinycssloaders::withSpinner(
-        plotly::plotlyOutput("plotBox", height = "500px") # standard is 400
+      withSpinner(
+        plotly::plotlyOutput("plotBox", height = "500px")
       )
     )
   )
@@ -251,7 +198,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )),
     column(
       width = 12,
-      shinycssloaders::withSpinner(
+      withSpinner(
         DT::dataTableOutput("tableBox")
       )
     )
@@ -273,7 +220,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     ),
     column(
       width = 12,
-      shinycssloaders::withSpinner(
+      withSpinner(
         DT::dataTableOutput("signatureBox")
       )
     )
@@ -315,10 +262,11 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   benchmark_plot_box <- shinydashboard::tabBox(
     title = "Benchmark", 
     width = 12,
-    tabPanel("Scatter Plot", 
-             withSpinner(
-               shiny::plotOutput("benchmark_scatter")
-             )
+    tabPanel(
+      "Scatter Plot", 
+      withSpinner(
+        shiny::plotOutput("benchmark_scatter")
+      )
     ),  
     tabPanel(
       "Correlation",
@@ -388,19 +336,25 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     id = "tour_genesPlot",
     title = "Genes per Method", status = "info", solidHeader = TRUE, 
     width = 4,
-    shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
+    withSpinner(
+      plotOutput("signatureGenesPerMethod")
+    )
   )
 
   signature_kappaPerMethod <- shinydashboard::box(
     title = "Condition Number per Method", status = "info", solidHeader = TRUE,
     width = 4,
-    shinycssloaders::withSpinner(plotOutput("kappaPerMethod"))
+    withSpinner(
+      plotOutput("kappaPerMethod")
+    )
   )
 
   signature_entropyPerMethod <- shinydashboard::box(
     title = "Mean Entropy per Method", status = "info", solidHeader = TRUE, 
     width = 4,
-    shinycssloaders::withSpinner(plotOutput("signatureEntropyPerMethod"))
+    withSpinner(
+      plotOutput("signatureEntropyPerMethod")
+    )
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
@@ -445,12 +399,16 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   signature_clusteredHeatmapSubTable <- shinydashboard::box(
     title = "Sub Selection Table", status = "info", solidHeader = TRUE,
     width = 12, collapsible = TRUE, collapsed = TRUE,
-    shinycssloaders::withSpinner(DT::dataTableOutput("signatureHeatmap_SelectedGenesTable"))
+    withSpinner(
+      DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
+    )
   )
 
   signature_upsetPlot <- shinydashboard::box(
     title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height = "33em",
-    shinycssloaders::withSpinner(plotOutput("signatureUpset"))
+    withSpinner(
+      plotOutput("signatureUpset")
+    )
   )
   signature_upsetPlotSettings <- shinydashboard::box(
     title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, 
@@ -517,7 +475,9 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     shinydashboard::valueBoxOutput("refinementMeanEntropy", width = 2),
     column(
       width = 12, 
-      shinycssloaders::withSpinner(plotOutput("refinementHeatmapPlot"))
+      withSpinner(
+        plotOutput("refinementHeatmapPlot")
+      )
     )
   )
 
@@ -728,44 +688,63 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       tabItems(
         tabItem(tabName = "data", fluidPage(
           fluidRow(
-            data_deconvolution, 
+            column(
+              width = 6,
+              data_deconvolution
+            ), 
             column(
               width = 6, 
               data_simbu_box, 
               data_load_sample, 
-              data_load_signature
+              data_load_signature,
+              data_load_reference
             )
           ),
           fluidRow(
-            data_info, 
             column(
-              width = 6, 
-              data_load_reference, 
-              data_info_simbu, 
-              data_info_signature
+              width = 8,
+              offset = 2,
+              data_info
             )
           )
         )),
         tabItem(tabName = "deconv", fluidPage(
-          fluidRow(data_upload_box, 
-                   settings_box),
-          fluidRow(deconv_all_results),
-          fluidRow(deconv_plot_box, 
-                   deconv_table_box, 
-                   deconv_signature_box)
-        )),
+          fluidRow(
+            data_upload_box, 
+            settings_box),
+          fluidRow(
+            deconv_all_results
+          ),
+          fluidRow(
+            deconv_plot_box, 
+            deconv_table_box, 
+            deconv_signature_box)
+          )
+        ),
         tabItem(tabName = "signatureExploration", fluidPage(
-          fluidRow(signature_genesPerMethod, 
-                   signature_kappaPerMethod, 
-                   signature_entropyPerMethod),
-          fluidRow(signature_clusteredHeatmap),
-          fluidRow(signature_clusteredHeatmapSubPlot),
-          fluidRow(signature_clusteredHeatmapSubTable),
-          fluidRow(signature_upsetPlot, 
-                   signature_upsetPlotSettings)
+          fluidRow(
+            signature_genesPerMethod, 
+            signature_kappaPerMethod, 
+            signature_entropyPerMethod
+          ),
+          fluidRow(
+            signature_clusteredHeatmap
+          ),
+          fluidRow(
+            signature_clusteredHeatmapSubPlot
+          ),
+          fluidRow(
+            signature_clusteredHeatmapSubTable
+          ),
+          fluidRow(
+            signature_upsetPlot,
+            signature_upsetPlotSettings
+          )
         )),
         tabItem(tabName = "signatureRefinement", fluidPage(
-          fluidRow(refinementHeatmapBox),
+          fluidRow(
+            refinementHeatmapBox
+          ),
           fluidRow(
             column(
               width = 8,
@@ -778,12 +757,21 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           )
         )),
         tabItem(tabName = "benchmark", fluidPage(
-          fluidRow(benchmark_deconvolutionSelection),
-          fluidRow(benchmark_plot_box)
+          fluidRow(
+            benchmark_deconvolutionSelection
+          ),
+          fluidRow(
+            benchmark_plot_box
+          )
         )),
         tabItem(tabName = "fInfo", fluidPage(
-          fluidRow(info_overview, info_link),
-          fluidRow(info_modules)
+          fluidRow(
+            info_overview, 
+            info_link
+          ),
+          fluidRow(
+            info_modules
+          )
         ))
       )
     )
