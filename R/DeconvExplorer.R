@@ -1,16 +1,3 @@
-
-# library(shiny)
-# library(shinydashboard)
-# library(shinycssloaders)
-# library(dplyr)
-# library(ggplot2)
-# library(omnideconv)
-# library(RColorBrewer)
-# library(waiter)
-# library(rintrojs)
-#
-# source("Global.R")
-
 #' Run DeconvExplorer
 #'
 #' @param usr_bulk Bulk Sequencing data which will be deconvoluted
@@ -572,7 +559,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   # ui definition  ----------------------------------------------------------
 
 
-  de_ui <- dashboardPage(
+  deconvexplorer_ui <- dashboardPage(
     dashboardHeader(
       title = "DeconvExplorer",
       dropdownMenu(
@@ -687,9 +674,10 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   # server definition  ------------------------------------------------------
 
-  de_server <- shinyServer(function(input, output, session) {
+  deconvexplorer_server <- shinyServer(function(input, output, session) {
+    #nocov start
+    
     # General Setup -----------------------------------------------------------
-
 
 
     internal <- shiny::reactiveValues(
@@ -1575,9 +1563,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       # Output List of Gene Names for Download
       signatureSelectedGenesDownloadContent(paste(rownames(selected), sep = "\n"))
     }
+    #nocov end
   })
 
-  shiny::shinyApp(ui = de_ui, server = de_server)
+  shiny::shinyApp(ui = deconvexplorer_ui, server = deconvexplorer_server)
 }
-
-# DeconvExplorer()
