@@ -10,9 +10,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' library("DeconvExplorer")
-#' DeconvExplorer::DeconvExplorer()
+#' if (interactive()) {
+#'   DeconvExplorer::DeconvExplorer()
 #' }
 DeconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
@@ -24,17 +23,17 @@ DeconvExplorer <- function(usr_bulk = NULL,
   produces_signature <- c(
     # "BSeq-sc" = "bseqsc", # markers!!!
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", "MOMF" = "momf",
+    "DWLS" = "dwls", 
+    "MOMF" = "momf",
     "MuSiC" = "music" # basicly a one step method but allow calculating a signature
   )
 
   # methods that allow the input of a custom signature
   two_step_methods <- c(
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", "MOMF" = "momf"
+    "DWLS" = "dwls", 
+    "MOMF" = "momf"
   )
-
-
 
   # Data Upload Boxes -------------------------------------------------------
 
@@ -73,13 +72,15 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
   data_load_signature <- shinydashboard::box(
     id = "tour_signatureUpload",
-    title = "Upload Signature", solidHeader = TRUE, status = "primary", width = 12,
+    title = "Upload Signature", solidHeader = TRUE, status = "primary", 
+    width = 12,
     fileInput("userSignatureUpload", "Upload Siganture"),
     div(style = "margin-top: -25px")
   )
 
   data_load_reference <- shinydashboard::box(
-    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary", width = 12,
+    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary", 
+    width = 12,
     fileInput("userReferenceUpload", "Upload Reference")
   )
 
@@ -142,7 +143,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     ),
     helpText("For csv and tsv files the first column", strong("must"), "contain gene identifiers")
   )
-
 
   # Deconvolution Boxes -------------------------------------------------------
   data_upload_box <- shinydashboard::box(
@@ -291,14 +291,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     )
   )
 
-
   # Benchmarking Boxes ------------------------------------------------------
   benchmark_deconvolutionSelection <- shinydashboard::box(
     title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width = 12,
     selectInput("benchmark_reference", "Reference", choices = NULL),
     selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices = NULL, multiple = TRUE)
   )
-
 
   benchmark_plot_box <- shinydashboard::tabBox(
     title = "Benchmark", width = 12,
@@ -336,9 +334,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     )
   )
 
-
   # Signature Exploration Boxes ---------------------------------------------
-
   signature_genesPerMethod <- shinydashboard::box(
     id = "tour_genesPlot",
     title = "Genes per Method", status = "info", solidHeader = TRUE, width = 4,
@@ -446,9 +442,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
 
-
   # Signature Refinement Boxes ----------------------------------------------
-
   refinementHeatmapBox <- shinydashboard::box(
     id = "tour_refinementHeatmap",
     title = "Signature", solidHeader = TRUE, width = 12, status = "info",
@@ -511,9 +505,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     column(1, actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em"))
   )
 
-
   # Info Boxes --------------------------------------------------------------
-
   info_overview <- shinydashboard::box(
     id = "tour_infoOverview",
     title = "Overview", solidHeader = TRUE,
@@ -553,12 +545,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     div(includeMarkdown(system.file("extdata", "app_information.md", package = "DeconvExplorer")), style = "padding:1em; padding-top:0em")
   )
 
-
-
-
   # ui definition  ----------------------------------------------------------
-
-
   deconvexplorer_ui <- dashboardPage(
     dashboardHeader(
       title = "DeconvExplorer",
@@ -632,20 +619,32 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )),
       tabItems(
         tabItem(tabName = "data", fluidPage(
-          fluidRow(data_deconvolution, column(6, data_simbu_box, data_load_sample, data_load_signature)),
-          fluidRow(data_info, column(6, data_load_reference, data_info_simbu, data_info_signature))
+          fluidRow(
+            data_deconvolution, 
+            column(6, data_simbu_box, data_load_sample, data_load_signature)
+          ),
+          fluidRow(
+            data_info, 
+            column(6, data_load_reference, data_info_simbu, data_info_signature)
+          )
         )),
         tabItem(tabName = "deconv", fluidPage(
-          fluidRow(data_upload_box, settings_box),
+          fluidRow(data_upload_box, 
+                   settings_box),
           fluidRow(deconv_all_results),
-          fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
+          fluidRow(deconv_plot_box, 
+                   deconv_table_box, 
+                   deconv_signature_box)
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
-          fluidRow(signature_genesPerMethod, signature_kappaPerMethod, signature_entropyPerMethod),
+          fluidRow(signature_genesPerMethod, 
+                   signature_kappaPerMethod, 
+                   signature_entropyPerMethod),
           fluidRow(signature_clusteredHeatmap),
           fluidRow(signature_clusteredHeatmapSubPlot),
           fluidRow(signature_clusteredHeatmapSubTable),
-          fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
+          fluidRow(signature_upsetPlot, 
+                   signature_upsetPlotSettings)
         )),
         tabItem(tabName = "signatureRefinement", fluidPage(
           fluidRow(refinementHeatmapBox),
@@ -678,8 +677,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     # nocov start
 
     # General Setup -----------------------------------------------------------
-
-
     internal <- shiny::reactiveValues(
       signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
       deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))),
@@ -690,17 +687,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       markers = list()
     ) # this is new
 
-
     # options
     options(shiny.maxRequestSize = 10 * 1024^2 * 100) # 1GB
 
-
     waitress <- waiter::Waitress$new("#deconvolute", infinite = TRUE)
 
-
-
     # Reactives ---------------------------------------------------------------
-
     # collect all available signature option (Calculate new one and already available)
     allSignatureOptions <- reactive({
       # collect all available precalculated signatures
@@ -721,7 +713,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         "Available Signatures" = precalcSignatures
       )
     })
-
 
     # reactiveVal of refinable signature, separated from the rest of signatures
     signatureRefined <- reactiveVal("")
@@ -885,7 +876,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       showNotification("Deleted Deconvolution Result")
     })
 
-
     # set CIBERSORTx Credentials from User Input
     observeEvent(input$setCSX, {
       req(input$csxEmail, input$csxToken)
@@ -939,7 +929,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       }
       req(input$bulkSelection)
       bulkData <- internal$bulk[[input$bulkSelection]]
-
 
       # check if Single Cell Data Necessary
       if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
@@ -999,7 +988,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         )
       }
 
-
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
       deconvolution_result <-
@@ -1056,7 +1044,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     })
 
     # Plots -------------------------------------------------------------------
-
     output$plotBox <- plotly::renderPlotly({
       # req(userData$deconvolution_result)
       req(input$deconvolutionToPlot)
@@ -1186,7 +1173,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     })
 
     # ValueBoxes --------------------------------------------------------------
-
     output$refinementGenes <- shinydashboard::renderValueBox({
       req(signatureRefined())
 
@@ -1233,7 +1219,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
 
     # Uploads -----------------------------------------------------------------
-
     # load simbu simulation from user and extract bulk and ground truth
     observeEvent(input$data_simbu_simulation, {
       # read rds
@@ -1342,8 +1327,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     })
 
     # Tables ------------------------------------------------------------------
-
-
     output$tableBox <- DT::renderDataTable({
       req(
         input$deconvolutionToTable != "",
@@ -1394,7 +1377,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
 
     # Downloads ---------------------------------------------------------------
-
     output$signatureDownload <- downloadHandler(
       filename = function() {
         paste("signature_", input$signatureToTable, ".csv", sep = "")
