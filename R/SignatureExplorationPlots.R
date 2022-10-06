@@ -17,7 +17,8 @@
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_signatureGenesPerMethod(signatureList)
-plot_signatureGenesPerMethod <- function(signatures, palette = "Set1") {
+plot_signatureGenesPerMethod <- function(signatures, 
+                                         palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
@@ -49,7 +50,7 @@ plot_signatureGenesPerMethod <- function(signatures, palette = "Set1") {
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
-  plot
+  return(plot)
 }
 
 #' Calculate Condition Number per Method
@@ -71,7 +72,8 @@ plot_signatureGenesPerMethod <- function(signatures, palette = "Set1") {
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_conditionNumberPerMethod(signatureList)
-plot_conditionNumberPerMethod <- function(signatures, palette = "Set1") {
+plot_conditionNumberPerMethod <- function(signatures, 
+                                          palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
@@ -98,7 +100,7 @@ plot_conditionNumberPerMethod <- function(signatures, palette = "Set1") {
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
-  plot
+  return(plot)
 }
 
 #' Plot Mean Entropy for multiple signatures
@@ -120,7 +122,8 @@ plot_conditionNumberPerMethod <- function(signatures, palette = "Set1") {
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_meanEntropyPerMethod(signatureList)
-plot_meanEntropyPerMethod <- function(signatures, palette = "Set1") {
+plot_meanEntropyPerMethod <- function(signatures, 
+                                      palette = "Set1") {
   entropies <- data.frame(method = character(), meanEntropy = numeric())
 
   # calculate Mean Entropy for each signature
@@ -147,7 +150,7 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1") {
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
-  plot
+  return(plot)
 }
 
 
@@ -166,7 +169,10 @@ plot_meanEntropyPerMethod <- function(signatures, palette = "Set1") {
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
-plot_signatureClustered <- function(signature, score = "entropy", annotation_type = "line", palette = "Spectral") {
+plot_signatureClustered <- function(signature, 
+                                    score = "entropy", 
+                                    annotation_type = "line", 
+                                    palette = "Spectral") {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
@@ -217,7 +223,6 @@ plot_signatureClustered <- function(signature, score = "entropy", annotation_typ
   # render the signature annotation, this might also render multiple annotations
   # -> iterate over a list
 
-
   annotation <- NULL
 
   if (score == "entropy") {
@@ -244,7 +249,6 @@ plot_signatureClustered <- function(signature, score = "entropy", annotation_typ
     cluster_columns = TRUE, cluster_rows = TRUE, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )
-
 
   heatmap <- ComplexHeatmap::draw(heatmap)
 
@@ -273,9 +277,14 @@ plot_signatureClustered <- function(signature, score = "entropy", annotation_typ
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' plot_signatureUpset(signatures, mode = "union")
-plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
-                                maxDegree = NULL, order = "size", invert = FALSE,
-                                colorDegrees = TRUE, palette = "Set1") {
+plot_signatureUpset <- function(signatures, 
+                                mode = "distinct", 
+                                minDegree = 1,
+                                maxDegree = NULL, 
+                                order = "size", 
+                                invert = FALSE,
+                                colorDegrees = TRUE, 
+                                palette = "Set1") {
   # takes list of signatures
   sets <- list()
 
@@ -345,7 +354,9 @@ plot_signatureUpset <- function(signatures, mode = "distinct", minDegree = 1,
 #'
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
-download_signatureUpset <- function(signatures, combination, mode = "distinct") {
+download_signatureUpset <- function(signatures, 
+                                    combination, 
+                                    mode = "distinct") {
   # in case no set is selected return NULL
   if (is.null(combination)) {
     return(NULL)
