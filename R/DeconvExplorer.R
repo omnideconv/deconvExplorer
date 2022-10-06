@@ -17,12 +17,11 @@ DeconvExplorer <- function(usr_bulk = NULL,
                            usr_singleCell = NULL,
                            usr_cellAnnotation = NULL,
                            usr_batch = NULL) {
-
   # methods that produce a signature
   produces_signature <- c(
     # "BSeq-sc" = "bseqsc", # markers!!!
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", 
+    "DWLS" = "dwls",
     "MOMF" = "momf",
     "MuSiC" = "music" # basicly a one step method but allow calculating a signature
   )
@@ -30,7 +29,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
   # methods that allow the input of a custom signature
   two_step_methods <- c(
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", 
+    "DWLS" = "dwls",
     "MOMF" = "momf"
   )
 
@@ -44,8 +43,9 @@ DeconvExplorer <- function(usr_bulk = NULL,
       fileInput("data_simbu_simulation", "SimBu Simulation", accept = c(".rds"))
     ),
     column(
-      width = 4, 
-      helpText("Upload a SimBu simulation result as .rds to load a bulk sample with corresponding cell fractions"))
+      width = 4,
+      helpText("Upload a SimBu simulation result as .rds to load a bulk sample with corresponding cell fractions")
+    )
   )
 
   data_deconvolution <- shinydashboard::box(
@@ -67,36 +67,38 @@ DeconvExplorer <- function(usr_bulk = NULL,
     id = "tour_sample",
     title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12,
     column(
-      width = 4, 
-      div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style = "margin-top:0.5em;")),
+      width = 4,
+      div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style = "margin-top:0.5em;")
+    ),
     column(
-      width = 3, 
-      div(actionButton("loadSample", "Load Sample Files"), style = "margin-top:0.5em")),
+      width = 3,
+      div(actionButton("loadSample", "Load Sample Files"), style = "margin-top:0.5em")
+    ),
     column(
-      width = 5, 
-      helpText("Ground truth data will be loaded as 'SampleReference'"))
+      width = 5,
+      helpText("Ground truth data will be loaded as 'SampleReference'")
+    )
   )
 
   data_load_signature <- shinydashboard::box(
     id = "tour_signatureUpload",
-    title = "Upload Signature", solidHeader = TRUE, status = "primary", 
+    title = "Upload Signature", solidHeader = TRUE, status = "primary",
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px")
   )
 
   data_load_reference <- shinydashboard::box(
-    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary", 
+    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary",
     width = 12,
     fileInput("userReferenceUpload", "Upload Reference")
   )
 
   data_info <- shinydashboard::box(
-    title = span(icon("info-circle"), "Input data formats and requirements"), 
+    title = span(icon("info-circle"), "Input data formats and requirements"),
     solidHeader = FALSE, width = 12,
     collapsible = TRUE, collapsed = FALSE,
-    includeMarkdown(system.file("extdata", "data_info.md", package = "DeconvExplorer")
-    )
+    includeMarkdown(system.file("extdata", "data_info.md", package = "DeconvExplorer"))
   )
 
   # Deconvolution Boxes -------------------------------------------------------
@@ -120,8 +122,9 @@ DeconvExplorer <- function(usr_bulk = NULL,
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
     imageOutput("logo", height = "auto"),
     column(
-      width = 12, 
-      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C; margin-top: 0.5em; margin-bottom: 0.5em")),
+      width = 12,
+      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C; margin-top: 0.5em; margin-bottom: 0.5em")
+    ),
     column(
       width = 4,
       selectInput("deconvMethod", "Deconvolution Method",
@@ -191,11 +194,12 @@ DeconvExplorer <- function(usr_bulk = NULL,
       selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL)
     ),
     column(
-      width = 3, 
+      width = 3,
       div(downloadButton("deconvolutionDownload", "Download Deconvolution"),
-          actionButton("deconvolutionToTableDelete", icon("trash")),
-          style = "margin-top:1.9em"
-      )),
+        actionButton("deconvolutionToTableDelete", icon("trash")),
+        style = "margin-top:1.9em"
+      )
+    ),
     column(
       width = 12,
       withSpinner(
@@ -214,8 +218,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
     column(
       width = 2,
       div(downloadButton("signatureDownload", "Download Signature"),
-          actionButton("signatureToTableDelete", icon("trash")),
-          style = "margin-top:1.9em"
+        actionButton("signatureToTableDelete", icon("trash")),
+        style = "margin-top:1.9em"
       )
     ),
     column(
@@ -231,11 +235,12 @@ DeconvExplorer <- function(usr_bulk = NULL,
     title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
       width = 5,
-      selectInput("deconvolutionToPlot", "Select Deconvolution results", 
-                  choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE)
+      selectInput("deconvolutionToPlot", "Select Deconvolution results",
+        choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE
+      )
     ),
     column(
-      width = 4, 
+      width = 4,
       helpText("Select the deconvolution results to be plotted on the left side."),
       helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))
     ),
@@ -260,42 +265,51 @@ DeconvExplorer <- function(usr_bulk = NULL,
   )
 
   benchmark_plot_box <- shinydashboard::tabBox(
-    title = "Benchmark", 
+    title = "Benchmark",
     width = 12,
     tabPanel(
-      "Scatter Plot", 
+      "Scatter Plot",
       withSpinner(
         shiny::plotOutput("benchmark_scatter")
       )
-    ),  
+    ),
     tabPanel(
       "Correlation",
       column(
         width = 2,
-        selectInput("correlationPlotType", "Plot Type", 
-                    choices = c("Circle" = "circle", 
-                                "Square" = "square", 
-                                "Ellipse" = "ellipse", 
-                                "Number" = "number", 
-                                "Shade" = "shade", 
-                                "Color" = "color", 
-                                "Pie" = "pie"), 
-                    selected = "color"),
+        selectInput("correlationPlotType", "Plot Type",
+          choices = c(
+            "Circle" = "circle",
+            "Square" = "square",
+            "Ellipse" = "ellipse",
+            "Number" = "number",
+            "Shade" = "shade",
+            "Color" = "color",
+            "Pie" = "pie"
+          ),
+          selected = "color"
+        ),
       ),
       column(
         width = 2,
-        selectInput("correlationAnnotationType", "P Value Annotation Type", 
-                    choices = c("None" = "n", 
-                                "Value" = "p-value", 
-                                "Significance" = "label_sig"), 
-                    selected = "label_sig"),
+        selectInput("correlationAnnotationType", "P Value Annotation Type",
+          choices = c(
+            "None" = "n",
+            "Value" = "p-value",
+            "Significance" = "label_sig"
+          ),
+          selected = "label_sig"
+        ),
       ),
       column(
         width = 2,
-        selectInput("correlationAnntotationColor", "Annotation Color", 
-                    choices = c("Black" = "black", 
-                                "White" = "white"), 
-                    selected = "white"),
+        selectInput("correlationAnntotationColor", "Annotation Color",
+          choices = c(
+            "Black" = "black",
+            "White" = "white"
+          ),
+          selected = "white"
+        ),
       ),
       withSpinner(
         shiny::plotOutput("benchmark_correlation")
@@ -305,24 +319,30 @@ DeconvExplorer <- function(usr_bulk = NULL,
       "RMSE",
       column(
         width = 2,
-        selectInput("rmsePlotType", "RMSE Plot Type", 
-                    choices = c("Heatmap" = "heatmap", 
-                                "Boxplot" = "boxplot"), 
-                    selected = "heatmap")
+        selectInput("rmsePlotType", "RMSE Plot Type",
+          choices = c(
+            "Heatmap" = "heatmap",
+            "Boxplot" = "boxplot"
+          ),
+          selected = "heatmap"
+        )
       ),
       column(
         width = 2,
         conditionalPanel(
           condition = "input.rmsePlotType == 'heatmap'",
-          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method", 
-                      choices = c("circle", 
-                                  "square", 
-                                  "ellipse", 
-                                  "number", 
-                                  "shade", 
-                                  "color", 
-                                  "pie"), 
-                      selected = "color")
+          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method",
+            choices = c(
+              "circle",
+              "square",
+              "ellipse",
+              "number",
+              "shade",
+              "color",
+              "pie"
+            ),
+            selected = "color"
+          )
         ),
       ),
       withSpinner(
@@ -334,7 +354,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
   # Signature Exploration Boxes ---------------------------------------------
   signature_genesPerMethod <- shinydashboard::box(
     id = "tour_genesPlot",
-    title = "Genes per Method", status = "info", solidHeader = TRUE, 
+    title = "Genes per Method", status = "info", solidHeader = TRUE,
     width = 4,
     withSpinner(
       plotOutput("signatureGenesPerMethod")
@@ -350,7 +370,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
   )
 
   signature_entropyPerMethod <- shinydashboard::box(
-    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE, 
+    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE,
     width = 4,
     withSpinner(
       plotOutput("signatureEntropyPerMethod")
@@ -358,22 +378,24 @@ DeconvExplorer <- function(usr_bulk = NULL,
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
-    title = "Clustered Signature", status = "info", solidHeader = TRUE, 
+    title = "Clustered Signature", status = "info", solidHeader = TRUE,
     width = 12,
     column(
       width = 4,
       selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
     ),
     column(
-      width = 2, 
+      width = 2,
       selectInput("signatureAnnotationScore", "Select an annotation score",
-      choices = c("Entropy" = "entropy", "Gini Index" = "gini")
-    )),
+        choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+      )
+    ),
     column(
-      width = 2, 
+      width = 2,
       selectInput("signatureAnnotationPlotType", "Annotation Type",
-      choices = c("Bars" = "bar", "Lines" = "line")
-    )),
+        choices = c("Bars" = "bar", "Lines" = "line")
+      )
+    ),
     column(
       width = 4,
       div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
@@ -411,7 +433,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
     )
   )
   signature_upsetPlotSettings <- shinydashboard::box(
-    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, 
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE,
     width = 4, height = "33em",
     column(
       width = 11,
@@ -464,17 +486,19 @@ DeconvExplorer <- function(usr_bulk = NULL,
     id = "tour_refinementHeatmap",
     title = "Signature", solidHeader = TRUE, width = 12, status = "info",
     column(
-      width = 2, 
-      selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
+      width = 2,
+      selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+    ),
     column(
-      width = 2, 
-      selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
+      width = 2,
+      selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))
+    ),
     shinydashboard::valueBoxOutput("refinementGenes", width = 2),
     shinydashboard::valueBoxOutput("refinementCellTypes", width = 2),
     shinydashboard::valueBoxOutput("refinementKappa", width = 2),
     shinydashboard::valueBoxOutput("refinementMeanEntropy", width = 2),
     column(
-      width = 12, 
+      width = 12,
       withSpinner(
         plotOutput("refinementHeatmapPlot")
       )
@@ -484,17 +508,21 @@ DeconvExplorer <- function(usr_bulk = NULL,
   refinementSettingsBox <- shinydashboard::box(
     title = "Settings", solidHeader = TRUE, width = 4, status = "info",
     column(
-      width = 8, 
-      selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)),
+      width = 8,
+      selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)
+    ),
     column(
-      width = 4, 
-      actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")),
+      width = 4,
+      actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")
+    ),
     column(
-      width = 8, 
-      textInput("refinementNewName", "New Signature Name")),
+      width = 8,
+      textInput("refinementNewName", "New Signature Name")
+    ),
     column(
-      width = 4, 
-      actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")),
+      width = 4,
+      actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")
+    ),
     column(
       width = 12,
       helpText(icon("arrow-up"), "  Load a signature to run refinements and choose a new name when saving"),
@@ -506,65 +534,79 @@ DeconvExplorer <- function(usr_bulk = NULL,
       textInput("cellTypeNewName", "New cell type name")
     ),
     column(
-      width = 4, 
-      div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em"))
+      width = 4,
+      div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em")
+    )
   )
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
     column(
-      width = 4, 
-      h1("Unzero")),
+      width = 4,
+      h1("Unzero")
+    ),
     column(
-      width = 7, 
+      width = 7,
       sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
-      min = 0, max = 100, value = 90, step = 1, post = "%"
-    )),
+        min = 0, max = 100, value = 90, step = 1, post = "%"
+      )
+    ),
     column(
-      width = 1, 
-      actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em"))
+      width = 1,
+      actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "yellow",
     column(
-      width = 4, 
-      h1("Remove Unspecific")),
+      width = 4,
+      h1("Remove Unspecific")
+    ),
     column(
-      width = 7, 
-      numericInput("refineUnspecific", "Remove unspecific genes", 1)),
+      width = 7,
+      numericInput("refineUnspecific", "Remove unspecific genes", 1)
+    ),
     column(
-      width = 1, 
-      actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em"))
+      width = 1,
+      actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
     column(
-      width = 4, 
-      h1("Best n genes")),
+      width = 4,
+      h1("Best n genes")
+    ),
     column(
-      width = 5, 
-      numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)),
+      width = 5,
+      numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)
+    ),
     column(
-      width = 2, 
-      selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
+      width = 2,
+      selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+    ),
     column(
-      width = 1, 
-      actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em"))
+      width = 1,
+      actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementManualBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "purple",
     column(
-      width = 4, 
-      h1("Remove manually")),
+      width = 4,
+      h1("Remove manually")
+    ),
     column(
-      width = 7, 
-      textInput("refinementManualGene", "Type in a Gene Identifier to remove")),
+      width = 7,
+      textInput("refinementManualGene", "Type in a Gene Identifier to remove")
+    ),
     column(
-      width = 1, 
-      actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em"))
+      width = 1,
+      actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   # Info Boxes --------------------------------------------------------------
@@ -599,16 +641,18 @@ DeconvExplorer <- function(usr_bulk = NULL,
   info_link <- shinydashboard::box(
     title = NULL, solidHeader = TRUE,
     column(
-      width = 12, 
-      imageOutput("logoInfo", width = "100%", height = "auto")),
+      width = 12,
+      imageOutput("logoInfo", width = "100%", height = "auto")
+    ),
     column(
-      width = 12, 
-      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C;")),
+      width = 12,
+      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C;")
+    ),
   )
 
   info_modules <- shinydashboard::box(
-    title = "Information about each module", solidHeader = TRUE, 
-    width = 12, 
+    title = "Information about each module", solidHeader = TRUE,
+    width = 12,
     status = "primary",
     div(includeMarkdown(system.file("extdata", "app_information.md", package = "DeconvExplorer")), style = "padding:1em; padding-top:0em")
   )
@@ -691,11 +735,11 @@ DeconvExplorer <- function(usr_bulk = NULL,
             column(
               width = 6,
               data_deconvolution
-            ), 
+            ),
             column(
-              width = 6, 
-              data_simbu_box, 
-              data_load_sample, 
+              width = 6,
+              data_simbu_box,
+              data_load_sample,
               data_load_signature,
               data_load_reference
             )
@@ -710,21 +754,22 @@ DeconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(
-            data_upload_box, 
-            settings_box),
+            data_upload_box,
+            settings_box
+          ),
           fluidRow(
             deconv_all_results
           ),
           fluidRow(
-            deconv_plot_box, 
-            deconv_table_box, 
-            deconv_signature_box)
+            deconv_plot_box,
+            deconv_table_box,
+            deconv_signature_box
           )
-        ),
+        )),
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(
-            signature_genesPerMethod, 
-            signature_kappaPerMethod, 
+            signature_genesPerMethod,
+            signature_kappaPerMethod,
             signature_entropyPerMethod
           ),
           fluidRow(
@@ -766,7 +811,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         )),
         tabItem(tabName = "fInfo", fluidPage(
           fluidRow(
-            info_overview, 
+            info_overview,
             info_link
           ),
           fluidRow(
