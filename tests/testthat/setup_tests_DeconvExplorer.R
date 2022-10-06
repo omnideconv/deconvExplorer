@@ -2,15 +2,22 @@ library("DeconvExplorer")
 
 message("--- Loading packages...")
 suppressPackageStartupMessages({
-  # TODO TODO
-  # TODO TODO
-  # TODO TODO
+  library("omnideconv")
 })
 message("- Done!")
 
+
+
 message("--- Generating objects for the testing setup...")
-# TODO TODO
-# TODO TODO
+data("RefData", package = "omnideconv")
+RefData <- as.data.frame(RefData)
+deconv_example <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+deconv_list <- list(
+  "momf" = deconv_example, 
+  "bisque" = deconv_example
+)
 message("- Done!")
+
+
 
 message("--- Test setup script completed!")
