@@ -16,6 +16,12 @@ deconv_list <- list(
   "momf" = deconv_example, 
   "bisque" = deconv_example
 )
+
+signature_example <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+signature_list <- list(
+  "bisque" = signature_example, 
+  "momf" = signature_example
+)
 message("- Done!")
 
 
