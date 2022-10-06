@@ -19,7 +19,7 @@
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
 #' @importFrom magrittr "%>%"
-#' @importFrom utils write.csv write.table
+#' @importFrom utils write.csv write.table read.delim
 #' @importFrom stringr str_subset
 #' @importFrom tidyr pivot_longer
 #' @importFrom stats sd cor.test
