@@ -51,6 +51,4 @@ test_that("Benchmark rmse are correct", {
                         estimate = deconv_list,
                         plot_type = "pie")
   )
-  file.remove("Rplots.pdf")
 })
-
