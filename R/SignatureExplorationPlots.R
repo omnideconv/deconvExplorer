@@ -17,7 +17,7 @@
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_signatureGenesPerMethod(signatureList)
-plot_signatureGenesPerMethod <- function(signatures, 
+plot_signatureGenesPerMethod <- function(signatures,
                                          palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
@@ -72,7 +72,7 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_conditionNumberPerMethod(signatureList)
-plot_conditionNumberPerMethod <- function(signatures, 
+plot_conditionNumberPerMethod <- function(signatures,
                                           palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
@@ -122,7 +122,7 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_meanEntropyPerMethod(signatureList)
-plot_meanEntropyPerMethod <- function(signatures, 
+plot_meanEntropyPerMethod <- function(signatures,
                                       palette = "Set1") {
   entropies <- data.frame(method = character(), meanEntropy = numeric())
 
@@ -169,9 +169,9 @@ plot_meanEntropyPerMethod <- function(signatures,
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
-plot_signatureClustered <- function(signature, 
-                                    score = "entropy", 
-                                    annotation_type = "line", 
+plot_signatureClustered <- function(signature,
+                                    score = "entropy",
+                                    annotation_type = "line",
                                     palette = "Spectral") {
   if (is.null(signature)) {
     stop("Please provide a signature")
@@ -277,13 +277,13 @@ plot_signatureClustered <- function(signature,
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' plot_signatureUpset(signatures, mode = "union")
-plot_signatureUpset <- function(signatures, 
-                                mode = "distinct", 
+plot_signatureUpset <- function(signatures,
+                                mode = "distinct",
                                 minDegree = 1,
-                                maxDegree = NULL, 
-                                order = "size", 
+                                maxDegree = NULL,
+                                order = "size",
                                 invert = FALSE,
-                                colorDegrees = TRUE, 
+                                colorDegrees = TRUE,
                                 palette = "Set1") {
   # takes list of signatures
   sets <- list()
@@ -354,8 +354,8 @@ plot_signatureUpset <- function(signatures,
 #'
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
-download_signatureUpset <- function(signatures, 
-                                    combination, 
+download_signatureUpset <- function(signatures,
+                                    combination,
                                     mode = "distinct") {
   # in case no set is selected return NULL
   if (is.null(combination)) {
