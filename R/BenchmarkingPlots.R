@@ -16,7 +16,19 @@
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_scatter(RefData, deconvList)
-plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
+plot_benchmark_scatter <- function(gtruth, 
+                                   estimate, 
+                                   palette = "Spectral") {
+  stopifnot(is.data.frame(gtruth))
+  
+  # is a list AND not a data frame
+  stopifnot(is.list(estimate))
+  if (is.data.frame(estimate)) {
+    stop("You should provide the set of estimates as a list, not as a single data frame")
+  }
+  # and contains data frames as expected
+  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  
   ref <- gtruth %>% as.data.frame()
   ref$sample <- rownames(ref)
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
@@ -85,7 +97,21 @@ plot_benchmark_scatter <- function(gtruth, estimate, palette = "Spectral") {
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_correlation(RefData, deconvList)
-plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig", pValueColor = "black", plot_method = "number") {
+plot_benchmark_correlation <- function(gtruth, 
+                                       estimate, 
+                                       pValueType = "label_sig", 
+                                       pValueColor = "black", 
+                                       plot_method = "number") {
+  stopifnot(is.data.frame(gtruth))
+  
+  # is a list AND not a data frame
+  stopifnot(is.list(estimate))
+  if (is.data.frame(estimate)) {
+    stop("You should provide the set of estimates as a list, not as a single data frame")
+  }
+  # and contains data frames as expected
+  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  
   if (!plot_method %in% c("circle", "square", "ellipse", "number", "shade", "color", "pie")) {
     stop("correlation plot method not supported")
   }
@@ -194,7 +220,21 @@ plot_benchmark_correlation <- function(gtruth, estimate, pValueType = "label_sig
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_rmse(RefData, deconvList)
-plot_benchmark_rmse <- function(gtruth, estimate, plot_type = "heatmap", hm_method = "color", palette = "Spectral") {
+plot_benchmark_rmse <- function(gtruth, 
+                                estimate, 
+                                plot_type = "heatmap", 
+                                hm_method = "color", 
+                                palette = "Spectral") {
+  stopifnot(is.data.frame(gtruth))
+  
+  # is a list AND not a data frame
+  stopifnot(is.list(estimate))
+  if (is.data.frame(estimate)) {
+    stop("You should provide the set of estimates as a list, not as a single data frame")
+  }
+  # and contains data frames as expected
+  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  
   if (!(plot_type %in% c("heatmap", "boxplot"))) {
     stop("plot_type not supported")
   }
