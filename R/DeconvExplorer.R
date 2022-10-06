@@ -946,7 +946,15 @@ DeconvExplorer <- function(usr_bulk = NULL,
     # run signature refinement "unzero"
     observeEvent(input$refinePercentZeroGo, {
       req(signatureRefined(), input$refinePercentZero)
+      
+      sig_pre <- signatureRefined()
+      percentage <- input$refinePercentZero / 100
+      shiny::showNotification(paste0("Removing genes with more than ", percentage * 100, "% zeroes in a row"))
+      
       signatureRefined(removePercentZeros(signatureRefined(), input$refinePercentZero / 100)) # update reactive Value with result
+      sig_post <- signatureRefined()
+      
+      shiny::showNotification(paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes"))
     })
 
     # run signature refinement "unspecific"

@@ -64,12 +64,8 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
     stop("Please provide a valid percentage between 0 and 1")
   }
 
-  shiny::showNotification(paste0("Removing genes with more than ", percentage * 100, "% zeroes in a row"))
-
   threshold <- ncol(baseSignature) * percentage # max number of zeroes allowed
   signature <- baseSignature[rowSums(baseSignature == 0) <= threshold, ]
-
-  shiny::showNotification(paste0("Removed a total of ", nrow(baseSignature) - nrow(signature), " genes"))
 
   return(signature)
 }
