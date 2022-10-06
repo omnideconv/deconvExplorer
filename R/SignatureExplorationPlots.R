@@ -28,7 +28,7 @@ plot_signatureGenesPerMethod <- function(signatures,
   }
 
   # plot
-  plot <- ggplot(data = df, aes(
+  p <- ggplot(data = df, aes(
     x = .data$method, y = .data$number_of_genes,
     fill = .data$method, text = paste0(
       "Method: ",
@@ -50,7 +50,7 @@ plot_signatureGenesPerMethod <- function(signatures,
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
-  return(plot)
+  return(p)
 }
 
 #' Calculate Condition Number per Method
@@ -83,7 +83,7 @@ plot_conditionNumberPerMethod <- function(signatures,
   }
 
   # plot
-  plot <- ggplot(data = df, aes(
+  p <- ggplot(data = df, aes(
     x = .data$method, y = .data$kappa, fill = .data$method,
     text = paste0("Method: ", .data$method, "\nKappa: ", .data$kappa)
   )) +
@@ -100,7 +100,7 @@ plot_conditionNumberPerMethod <- function(signatures,
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
-  return(plot)
+  return(p)
 }
 
 #' Plot Mean Entropy for multiple signatures
@@ -132,7 +132,7 @@ plot_meanEntropyPerMethod <- function(signatures,
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
 
-  plot <- ggplot(data = entropies, aes(
+  p <- ggplot(data = entropies, aes(
     x = .data$method, y = .data$meanEntropy, fill = .data$method,
     text = paste0("Method: ", .data$method, "\nEntropy: ", .data$meanEntropy),
   )) +
@@ -150,7 +150,7 @@ plot_meanEntropyPerMethod <- function(signatures,
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
-  return(plot)
+  return(p)
 }
 
 
@@ -320,7 +320,7 @@ plot_signatureUpset <- function(signatures,
     upSetColors <- c("black")
   }
 
-  plot <- ComplexHeatmap::UpSet(mat,
+  p <- ComplexHeatmap::UpSet(mat,
     comb_order = combOrder,
     top_annotation = upset_top_annotation(mat,
       add_numbers = TRUE,
@@ -333,7 +333,7 @@ plot_signatureUpset <- function(signatures,
     comb_col = upSetColors
   )
 
-  return(list(plot, mat))
+  return(list(p, mat))
   # here is something missing, should evaluate the data here....
 }
 
