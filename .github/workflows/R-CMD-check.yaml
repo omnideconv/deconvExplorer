@@ -43,7 +43,7 @@ jobs:
         run: |
           install.packages('markdown')
         shell: Rscript {0}
-        
+
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
