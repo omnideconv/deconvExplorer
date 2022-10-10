@@ -56,7 +56,7 @@ test_that("Signature exploration plots are correct", {
     signature = signature_list$bisque,
     score = "entropy", annotation_type = "bar"
   )
-  
+
   expect_s4_class(p_sig_clust2, "HeatmapList")
   expect_s4_class(p_sig_clust3, "HeatmapList")
   expect_s4_class(p_sig_clust4, "HeatmapList")
@@ -75,15 +75,15 @@ test_that("Signature exploration plots are correct", {
   expect_true(is(p_sig_upset2, "list"))
   p_sig_upset3 <- plot_signatureUpset(siglist2, mode = "union", colorDegrees = FALSE)
   expect_true(is(p_sig_upset3, "list"))
-  
-  
+
+
   sig_vec <- download_signatureUpset(
     signatures = siglist2,
     combination = c("dwls", "bisque"),
     mode = "intersect"
   )
   expect_true(is(sig_vec, "vector"))
-  
+
   sig_vec_null <- download_signatureUpset(
     signatures = siglist2,
     combination = NULL,

@@ -13,7 +13,7 @@
 #' if (interactive()) {
 #'   DeconvExplorer::DeconvExplorer()
 #' }
-#' 
+#'
 #' # COSTODO: an example where the parameters are provided before starting the app
 #' # my_usr_bulk <- ...
 #' # usr_singleCell <- ...
