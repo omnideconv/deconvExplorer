@@ -7,7 +7,6 @@
 #' @param all_deconvolutions List containing all available deconvolution results
 #'
 #' @return list of deconvolution results
-#' @export
 #'
 #' @examples
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))

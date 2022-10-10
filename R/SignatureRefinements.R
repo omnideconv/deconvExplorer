@@ -171,7 +171,6 @@ selectGenesByScore <- function(signature,
                                genesPerCellType = 20) {
   # TODO Checks #####
 
-
   # SCORE THE MATRIX
   scoresByCellType <- NULL
   for (celltype in colnames(signature)) {
