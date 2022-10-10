@@ -31,6 +31,35 @@ test_that("Signature exploration plots are correct", {
       score = "gini", annotation_type = "bar"
     )
   )
+  expect_error(
+    plot_signatureClustered(
+      signature = signature_list,
+      score = "gino", annotation_type = "bar"
+    )
+  )
+  expect_error(
+    plot_signatureClustered(
+      signature = signature_list,
+      score = "gini", annotation_type = "bart"
+    )
+  )
+  # some variations on that
+  p_sig_clust2 <- plot_signatureClustered(
+    signature = signature_list$bisque,
+    score = "gini", annotation_type = "line"
+  )
+  p_sig_clust3 <- plot_signatureClustered(
+    signature = signature_list$bisque,
+    score = "entropy", annotation_type = "bar"
+  )
+  p_sig_clust4 <- plot_signatureClustered(
+    signature = signature_list$bisque,
+    score = "entropy", annotation_type = "bar"
+  )
+  
+  expect_s4_class(p_sig_clust2, "HeatmapList")
+  expect_s4_class(p_sig_clust3, "HeatmapList")
+  expect_s4_class(p_sig_clust4, "HeatmapList")
 
   # generating a slghtly larger list with 3 elements
   siglist2 <- list(
@@ -41,11 +70,24 @@ test_that("Signature exploration plots are correct", {
   p_sig_upset <- plot_signatureUpset(siglist2, mode = "union")
   expect_true(is(p_sig_upset, "list"))
 
+  # some variations on that
+  p_sig_upset2 <- plot_signatureUpset(siglist2, mode = "union", order = "degree")
+  expect_true(is(p_sig_upset2, "list"))
+  p_sig_upset3 <- plot_signatureUpset(siglist2, mode = "union", colorDegrees = FALSE)
+  expect_true(is(p_sig_upset3, "list"))
+  
+  
   sig_vec <- download_signatureUpset(
     signatures = siglist2,
     combination = c("dwls", "bisque"),
     mode = "intersect"
   )
-
   expect_true(is(sig_vec, "vector"))
+  
+  sig_vec_null <- download_signatureUpset(
+    signatures = siglist2,
+    combination = NULL,
+    mode = "intersect"
+  )
+  expect_null(sig_vec_null)
 })
