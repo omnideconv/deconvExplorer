@@ -155,7 +155,7 @@ removeUnspecificGenes <- function(signature,
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
-#' 
+#'
 #' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
 #' dim(signature)
 selectGenesByScore <- function(signature,
