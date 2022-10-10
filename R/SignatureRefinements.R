@@ -85,12 +85,12 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
-#' 
+#'
 #' signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
 #' dim(signature)
-removeUnspecificGenes <- function(signature, 
-                                  numberOfBins = 3, 
-                                  maxCount = 2, 
+removeUnspecificGenes <- function(signature,
+                                  numberOfBins = 3,
+                                  maxCount = 2,
                                   labels = c("low", "medium", "high")) {
   if (is.null(signature)) {
     stop("Please provide a signature")
@@ -109,8 +109,10 @@ removeUnspecificGenes <- function(signature,
   }
 
   # initialize new refined signature with colnames, rows stay empty
-  refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature)), 
-                             dimnames = list(NULL, colnames(signature)))
+  refinedSignature <- matrix(
+    nrow = 0, ncol = length(colnames(signature)),
+    dimnames = list(NULL, colnames(signature))
+  )
 
   # calculate bins for each gene and keep only the genes where <= maxCount genes are in the highest bin
   for (i in 1:nrow(signature)) {

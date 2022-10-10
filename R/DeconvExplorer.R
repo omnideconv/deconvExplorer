@@ -956,25 +956,31 @@ DeconvExplorer <- function(usr_bulk = NULL,
       sig_post <- signatureRefined()
 
       shiny::showNotification(
-        paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes"))
+        paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes")
+      )
     })
 
     # run signature refinement "unspecific"
     observeEvent(input$refineUnspecificGo, {
       req(signatureRefined(), input$refineUnspecific)
-      
+
       sig_pre <- signatureRefined()
       shiny::showNotification("removing unspecific genes from signature")
-      
+
       signatureRefined(
-        removeUnspecificGenes(signatureRefined(), numberOfBins = 3, 
-                              maxCount = input$refineUnspecific)
+        removeUnspecificGenes(signatureRefined(),
+          numberOfBins = 3,
+          maxCount = input$refineUnspecific
+        )
       )
-      
+
       sig_post <- signatureRefined()
       shiny::showNotification(
-        paste("Removed", nrow(sig_pre) - nrow(sig_post), 
-              "unspecific genes from the signature."))
+        paste(
+          "Removed", nrow(sig_pre) - nrow(sig_post),
+          "unspecific genes from the signature."
+        )
+      )
     })
 
     # run signature refinement "bestN"
