@@ -151,18 +151,17 @@ removeUnspecificGenes <- function(signature,
 #' @return A data frame with the compacted signatures
 #'
 #' @examples
-#' \dontrun{
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#'
+#' dim(signature)
+#' 
 #' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
-#' }
+#' dim(signature)
 selectGenesByScore <- function(signature,
                                method = "entropy",
                                selectCellType = "max",
                                genesPerCellType = 20) {
   # TODO Checks #####
 
-  shiny::showNotification(paste0("Refining Signature by score: ", method))
 
   # SCORE THE MATRIX
   scoresByCellType <- NULL
@@ -213,8 +212,6 @@ selectGenesByScore <- function(signature,
       refinedSignature <- rbind(refinedSignature, row)
     }
   }
-
-  shiny::showNotification(paste0("removed a total of ", nrow(signature) - nrow(refinedSignature), " genes"))
 
   return(refinedSignature)
 }

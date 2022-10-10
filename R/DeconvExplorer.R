@@ -980,7 +980,19 @@ DeconvExplorer <- function(usr_bulk = NULL,
     # run signature refinement "bestN"
     observeEvent(input$refineBestNGo, {
       req(signatureRefined(), input$refineBestN)
-      signatureRefined(selectGenesByScore(signatureRefined(), genesPerCellType = input$refineBestN))
+      
+      sig_pre <- signatureRefined()
+      ref_method <- "entropy"   ## hard coded for now, could be a widget itself?
+      shiny::showNotification(paste0("Refining Signature by score: ", ref_method))
+      
+      signatureRefined(
+        selectGenesByScore(signatureRefined(), 
+                           method = ref_method,
+                           genesPerCellType = input$refineBestN))
+      
+      sig_post <- signatureRefined()
+      shiny::showNotification(
+        paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes"))
     })
 
     # run signature refinement "manual"
@@ -1002,7 +1014,9 @@ DeconvExplorer <- function(usr_bulk = NULL,
         # subselect Signature and save to reactiveVal
         signatureRefined(signatureRefined()[genes, ])
 
-        showNotification(paste0("Removed Gene ", input$refinementManualGene, " from the signature"), type = "message")
+        showNotification(
+          paste0("Removed Gene ", input$refinementManualGene, " from the signature"), 
+          type = "message")
       }
     })
 
