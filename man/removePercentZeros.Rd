@@ -20,9 +20,8 @@ the percentage threshold parameter. This function aims to reduce sequencing arti
 removing genes that are only detected in a few cells/samples.
 }
 \examples{
-\dontrun{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-
+dim(signature)
 signature <- removePercentZeros(signature, percentage = 0.5)
-}
+dim(signature)
 }

@@ -29,9 +29,9 @@ a user selected number of bins. Only genes expressed high in <maxCount> celltype
 Genes expressed high in more than <maxCount> cell types are discarded.
 }
 \examples{
-\dontrun{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+dim(signature)
 
 signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
-}
+dim(signature)
 }
