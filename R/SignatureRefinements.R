@@ -48,7 +48,9 @@ renameCellType <- function(signature, cellType, newName) {
 #' @param baseSignature GenesXcelltype Matrix with expression values
 #' @param percentage maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
-#'
+#' 
+#' @export
+#' 
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
@@ -82,6 +84,9 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #' @param labels vector of bin names, required if numberOfBins != 3
 #'
 #' @returns a gene expression signature containing only genes matching the passed requirements
+#' 
+#' @export
+#'  
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
@@ -151,7 +156,9 @@ removeUnspecificGenes <- function(signature,
 #' @param genesPerCellType maximum of genes selected for each cell type
 #'
 #' @return A data frame with the compacted signatures
-#'
+#' 
+#' @export
+#' 
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
