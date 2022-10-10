@@ -106,10 +106,9 @@ removeUnspecificGenes <- function(signature, numberOfBins = 3, maxCount = 2, lab
     stop("numberOfBins does not match label length")
   }
 
-  shiny::showNotification("removing unspecific genes from signature")
-
   # initialize new refined signature with colnames, rows stay empty
-  refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature)), dimnames = list(NULL, colnames(signature)))
+  refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature)), 
+                             dimnames = list(NULL, colnames(signature)))
 
   # calculate bins for each gene and keep only the genes where <= maxCount genes are in the highest bin
   for (i in 1:nrow(signature)) {
@@ -129,8 +128,6 @@ removeUnspecificGenes <- function(signature, numberOfBins = 3, maxCount = 2, lab
       refinedSignature <- rbind(refinedSignature, row)
     }
   }
-
-  shiny::showNotification(paste("removed", nrow(signature) - nrow(refinedSignature), "unspecific genes from the signature."))
 
   # turn back to a matrix
   refinedSignature <- as.matrix(refinedSignature)
