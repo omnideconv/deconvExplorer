@@ -50,11 +50,10 @@ renameCellType <- function(signature, cellType, newName) {
 #' @returns A signature which matches the criteria above
 #'
 #' @examples
-#' \dontrun{
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#'
+#' dim(signature)
 #' signature <- removePercentZeros(signature, percentage = 0.5)
-#' }
+#' dim(signature)
 removePercentZeros <- function(baseSignature, percentage = 0.5) {
   if (is.null(baseSignature)) {
     stop("Please provide a signature")
@@ -84,12 +83,15 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #'
 #' @returns a gene expression signature containing only genes matching the passed requirements
 #' @examples
-#' \dontrun{
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#'
+#' dim(signature)
+#' 
 #' signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
-#' }
-removeUnspecificGenes <- function(signature, numberOfBins = 3, maxCount = 2, labels = c("low", "medium", "high")) {
+#' dim(signature)
+removeUnspecificGenes <- function(signature, 
+                                  numberOfBins = 3, 
+                                  maxCount = 2, 
+                                  labels = c("low", "medium", "high")) {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
