@@ -80,7 +80,8 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #'
 #' @param signature gene Expression Signature
 #' @param numberOfBins number of bins to categorize the data into
-#' @param maxCount number of Cell Types allowed to be in the highest bin, all other cells are required to be in lower expressed bins
+#' @param maxCount number of Cell Types allowed to be in the highest bin, 
+#' all other cells are required to be in lower expressed bins
 #' @param labels vector of bin names, required if numberOfBins != 3
 #'
 #' @returns a gene expression signature containing only genes matching the passed requirements
@@ -112,34 +113,33 @@ removeUnspecificGenes <- function(signature,
   if (length(labels) != numberOfBins) {
     stop("numberOfBins does not match label length")
   }
-
-  # initialize new refined signature with colnames, rows stay empty
-  refinedSignature <- matrix(
-    nrow = 0, ncol = length(colnames(signature)),
-    dimnames = list(NULL, colnames(signature))
-  )
-
-  # calculate bins for each gene and keep only the genes where <= maxCount genes are in the highest bin
+  
+  signature <- as.matrix(signature)
+  
+  to_keep <- vector(length = nrow(signature))
+  
   for (i in 1:nrow(signature)) {
-    row <- signature[i, , drop = FALSE] # has colnames! drop FALSE is mandatory !!!!!
-
+    row <- signature[i, ] # has colnames! drop FALSE is mandatory !!!!!
+    
     # calculate bins to prevent error
     breaks <- seq(floor(min(row)), ceiling(max(row)), length.out = numberOfBins + 1)
-
+    
     # cut into bins, seperate for each gene
     bins <- cut(row, breaks = breaks, labels = labels, include.lowest = TRUE)
-
+    
     nHighBins <- sum(bins == "high") # not working when labels is something else
-
+    
     # this value needs to be greater than one, depending of the step in the pipeline there arent
     # any rows producing zeros left but that is not the case for all  signatures
     if (nHighBins <= maxCount & nHighBins > 0) {
-      refinedSignature <- rbind(refinedSignature, row)
+      to_keep[i] <- TRUE
     }
   }
+  
+  refinedSignature <- signature[to_keep , ]  
 
-  # turn back to a matrix
-  refinedSignature <- as.matrix(refinedSignature)
+  # # turn back to a matrix
+  # refinedSignature <- as.matrix(refinedSignature)
 
   return(refinedSignature)
 }

@@ -16,7 +16,8 @@ removeUnspecificGenes(
 
 \item{numberOfBins}{number of bins to categorize the data into}
 
-\item{maxCount}{number of Cell Types allowed to be in the highest bin, all other cells are required to be in lower expressed bins}
+\item{maxCount}{number of Cell Types allowed to be in the highest bin, 
+all other cells are required to be in lower expressed bins}
 
 \item{labels}{vector of bin names, required if numberOfBins != 3}
 }
