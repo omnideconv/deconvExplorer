@@ -24,6 +24,6 @@ signature_list <- list(
 )
 message("- Done!")
 
-
+library("markdown")
 
 message("--- Test setup script completed!")
