@@ -4,7 +4,7 @@
 #'
 #' @param gtruth_df dataframe of gtruth/simulation fractions
 #' @param deconv_list deconvolution result list (named)
-#' @param palette RColorBrewer Palette
+#' @param color_palette RColorBrewer Palette
 #'
 #' @return A `ggplot` object
 #'
@@ -19,7 +19,7 @@
 #' plot_benchmark_scatter(RefData, deconvList)
 plot_benchmark_scatter <- function(gtruth_df,
                                    deconv_list,
-                                   palette = "Spectral") {
+                                   color_palette = "Spectral") {
   stopifnot(is.data.frame(gtruth_df))
 
   # is a list AND not a data frame
@@ -67,9 +67,9 @@ plot_benchmark_scatter <- function(gtruth_df,
 
 
   # get palette
-  max_colors <- RColorBrewer::brewer.pal.info[palette, ]$maxcolors # for brewer.pal()
+  max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
   n_cell_types <- length(unique(merged.df$cell_type)) # number of needed colors
-  getPalette <- colorRampPalette(brewer.pal(max_colors, palette)) # function to return custom interpolated palettes
+  getPalette <- colorRampPalette(brewer.pal(max_colors, color_palette)) # function to return custom interpolated palettes
 
   # color
   plot <- plot + ggplot2::scale_color_manual(values = getPalette(n_cell_types + 1))
@@ -209,7 +209,7 @@ plot_benchmark_correlation <- function(gtruth_df,
 #' @param deconv_list deconvolution result list (named)
 #' @param hm_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param plot_type "heatmap" or "boxplot"
-#' @param palette RColorBrewer Palette
+#' @param color_palette RColorBrewer Palette
 #'
 #' @return A `ggplot` object, or a list as returned by `corrplot()`
 #'
@@ -225,7 +225,7 @@ plot_benchmark_rmse <- function(gtruth_df,
                                 deconv_list,
                                 plot_type = "heatmap",
                                 hm_method = "color",
-                                palette = "Spectral") {
+                                color_palette = "Spectral") {
   stopifnot(is.data.frame(gtruth_df))
 
   # is a list AND not a data frame
@@ -301,9 +301,9 @@ plot_benchmark_rmse <- function(gtruth_df,
     ))
   } else if (plot_type == "boxplot") {
     # get color first
-    max_colors <- RColorBrewer::brewer.pal.info[palette, ]$maxcolors # for brewer.pal()
+    max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
     n_methods <- length(unique(merged.df$method)) # number of needed colors
-    getPalette <- colorRampPalette(brewer.pal(max_colors, palette)) # function to return custom interpolated palettes
+    getPalette <- colorRampPalette(brewer.pal(max_colors, color_palette)) # function to return custom interpolated palettes
 
 
     plot <- ggplot(rmse.df, aes(x = method, y = rmse, fill = method)) +

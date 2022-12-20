@@ -1304,7 +1304,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         plot_signatureClustered(signature,
           score = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
-          palette = input$globalColor
+          color_palette = input$globalColor
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action
@@ -1331,7 +1331,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         order_sets = input$upSetOrder,
         invert_sets = input$upSetInvert,
         color_by_degrees = input$upSetColorDegrees,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
 
       # update settings
@@ -1349,7 +1349,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
       plot_signatureClustered(signatureRefined(),
         score = input$refinementHeatmapScore,
         annotation_type = input$refinementHeatmapScorePlotType,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
     })
 
@@ -1383,7 +1383,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         estimates,
         plot_type = input$rmsePlotType,
         hm_method = input$rmseHeatmapMethod,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
     })
 

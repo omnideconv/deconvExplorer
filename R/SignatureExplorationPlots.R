@@ -4,7 +4,7 @@
 #' number of genes for each signature as a barplot
 #'
 #' @param signatures Named List of signatures, names are the calculation methods
-#' @param palette RColorBrewer palette name, standard = Set1
+#' @param color_palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
@@ -18,7 +18,7 @@
 #'
 #' plot_signatureGenesPerMethod(signatureList)
 plot_signatureGenesPerMethod <- function(signatures,
-                                         palette = "Set1") {
+                                         color_palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
@@ -47,7 +47,7 @@ plot_signatureGenesPerMethod <- function(signatures,
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -59,7 +59,7 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' the comparison by providion a barplot
 #'
 #' @param signatures Named List of signatures, names are the calculation methods
-#' @param palette RColorBrewer Palette name, standard = Set1
+#' @param color_palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
@@ -73,7 +73,7 @@ plot_signatureGenesPerMethod <- function(signatures,
 #'
 #' plot_conditionNumberPerMethod(signatureList)
 plot_conditionNumberPerMethod <- function(signatures,
-                                          palette = "Set1") {
+                                          color_palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
@@ -97,7 +97,7 @@ plot_conditionNumberPerMethod <- function(signatures,
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -109,7 +109,7 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' to other signature with a barplot
 #'
 #' @param signatures named List of Signatures
-#' @param palette RColorBrewerPalette
+#' @param color_palette RColorBrewerPalette
 #'
 #' @returns a barplot
 #'
@@ -123,7 +123,7 @@ plot_conditionNumberPerMethod <- function(signatures,
 #'
 #' plot_meanEntropyPerMethod(signatureList)
 plot_meanEntropyPerMethod <- function(signatures,
-                                      palette = "Set1") {
+                                      color_palette = "Set1") {
   entropies <- data.frame(method = character(), meanEntropy = numeric())
 
   # calculate Mean Entropy for each signature
@@ -147,7 +147,7 @@ plot_meanEntropyPerMethod <- function(signatures,
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
     ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -160,7 +160,7 @@ plot_meanEntropyPerMethod <- function(signatures,
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
 #' @param signature One Signature to plot
-#' @param palette RColorBrewer Palette name, standard = Spectral
+#' @param color_palette RColorBrewer Palette name, standard = Spectral
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
 #'
@@ -172,7 +172,7 @@ plot_meanEntropyPerMethod <- function(signatures,
 plot_signatureClustered <- function(signature,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
-                                    palette = "Spectral") {
+                                    color_palette = "Spectral") {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
@@ -214,9 +214,9 @@ plot_signatureClustered <- function(signature,
 
   # calculate color palette
   col_fun <- circlize::colorRamp2(c(-2, 0, 2), c(
-    RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
+    RColorBrewer::brewer.pal(8, color_palette)[8:8], # first color of palette
     "white", # middle color
-    RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
+    RColorBrewer::brewer.pal(8, color_palette)[1:1] # last color of palette
   ))
 
 
@@ -269,7 +269,7 @@ plot_signatureClustered <- function(signature,
 #' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
 #' @param color_by_degrees Logical value. Whether to color sets according to their 
 #' degree, defaulting to TRUE
-#' @param palette Name of a RColorBrewer palette, standard Set1
+#' @param color_palette Name of a RColorBrewer palette, standard Set1
 #'
 #' @returns UpSet Plot
 #' @export
@@ -285,7 +285,7 @@ plot_signatureUpset <- function(signatures,
                                 order_sets = "size",
                                 invert_sets = FALSE,
                                 color_by_degrees = TRUE,
-                                palette = "Set1") {
+                                color_palette = "Set1") {
   # takes list of signatures
   sets <- list()
 
@@ -315,7 +315,7 @@ plot_signatureUpset <- function(signatures,
 
   # calculate colors
   if (color_by_degrees == TRUE) {
-    upSetColors <- RColorBrewer::brewer.pal(8, palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
+    upSetColors <- RColorBrewer::brewer.pal(8, color_palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
   } else {
     # =FALSE
     upSetColors <- c("black")
