@@ -1325,7 +1325,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       # calculate the plot
       result <- plot_signatureUpset(shiny::isolate(internal$signatures),
-        mode = input$upsetMode,
+        upset_mode = input$upsetMode,
         min_degree = minDegree,
         max_degree = maxDegree,
         order_sets = input$upSetOrder,
@@ -1642,7 +1642,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
         data <- download_signatureUpset(signatures,
           combination_to_include = input$upSetDownloadSelection,
-          mode = input$upsetMode
+          upset_mode = input$upsetMode
         )
 
         # get genes from function
