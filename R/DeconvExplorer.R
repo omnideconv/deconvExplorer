@@ -1302,7 +1302,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         output,
         session,
         plot_signatureClustered(signature,
-          score = input$signatureAnnotationScore,
+          scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
           color_palette = input$globalColor
         ),
@@ -1347,7 +1347,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
       req(input$refinementHeatmapScore, input$refinementHeatmapScorePlotType, signatureRefined()) # und die signature
 
       plot_signatureClustered(signatureRefined(),
-        score = input$refinementHeatmapScore,
+        scoring_method = input$refinementHeatmapScore,
         annotation_type = input$refinementHeatmapScorePlotType,
         color_palette = input$globalColor
       )
