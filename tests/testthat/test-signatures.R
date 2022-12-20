@@ -12,7 +12,7 @@ test_that("Signature refinement operations are correct", {
 
   signature_nozeros <- removePercentZeros(
     signature_mat = signature_list$bisque,
-    percentage = 0.5
+    max_percentage_zeroes = 0.5
   )
   expect_equal(nrow(signature_list$bisque) - nrow(signature_nozeros), 8)
 
@@ -43,7 +43,7 @@ test_that("Signature refinement operations are correct", {
   expect_error(renameCellType(signature_list$bisque, cell_type = "C cells", new_celltype_name = "B cells"))
 
   expect_error(removePercentZeros())
-  expect_error(removePercentZeros(signature_list$bisque, percentage = -1))
+  expect_error(removePercentZeros(signature_list$bisque, max_percentage_zeroes = -1))
 
   expect_error(removeUnspecificGenes())
   expect_error(removeUnspecificGenes(signature_list$bisque, number_of_bins = 1))

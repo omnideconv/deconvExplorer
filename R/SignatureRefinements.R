@@ -46,7 +46,7 @@ renameCellType <- function(signature, cell_type, new_celltype_name) {
 #' removing genes that are only detected in a few cells/samples.
 #'
 #' @param signature_mat GenesXcelltype Matrix with expression values
-#' @param percentage maximum percentage of row values allowed to be 0
+#' @param max_percentage_zeroes maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
 #'
 #' @export
@@ -54,18 +54,18 @@ renameCellType <- function(signature, cell_type, new_celltype_name) {
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
-#' signature <- removePercentZeros(signature, percentage = 0.5)
+#' signature <- removePercentZeros(signature, max_percentage_zeroes = 0.5)
 #' dim(signature)
-removePercentZeros <- function(signature_mat, percentage = 0.5) {
+removePercentZeros <- function(signature_mat, max_percentage_zeroes = 0.5) {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
 
-  if (percentage > 1 | percentage < 0.00001) {
+  if (max_percentage_zeroes > 1 | max_percentage_zeroes < 0.00001) {
     stop("Please provide a valid percentage between 0 and 1")
   }
 
-  threshold <- ncol(signature_mat) * percentage # max number of zeroes allowed
+  threshold <- ncol(signature_mat) * max_percentage_zeroes # max number of zeroes allowed
   signature <- signature_mat[rowSums(signature_mat == 0) <= threshold, ]
 
   return(signature)
