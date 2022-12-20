@@ -130,7 +130,7 @@ removeUnspecificGenes <- function(signature,
     nHighBins <- sum(bins == "high") # not working when labels is something else
 
     # this value needs to be greater than one, depending of the step in the pipeline there arent
-    # any rows producing zeros left but that is not the case for all  signatures
+    # any rows producing zeros left but that is not the case for all signatures
     if (nHighBins <= max_count & nHighBins > 0) {
       to_keep[i] <- TRUE
     }

@@ -1,22 +1,22 @@
 test_that("Signature exploration plots are correct", {
-  p_sig_met <- plot_signatureGenesPerMethod(signatures = signature_list)
+  p_sig_met <- plot_signatureGenesPerMethod(signature_list = signature_list)
 
   expect_s3_class(p_sig_met, "gg")
 
   expect_error(
-    plot_signatureGenesPerMethod(signatures = signature_list[[1]])
+    plot_signatureGenesPerMethod(signature_list = signature_list[[1]])
   )
 
   p_cond_nr_met <- plot_conditionNumberPerMethod(signature_list)
   expect_s3_class(p_cond_nr_met, "gg")
   expect_error(
-    plot_conditionNumberPerMethod(signatures = signature_list[[1]])
+    plot_conditionNumberPerMethod(signature_list = signature_list[[1]])
   )
 
   p_meanentropy <- plot_meanEntropyPerMethod(signature_list)
   expect_s3_class(p_meanentropy, "gg")
   expect_error(
-    plot_meanEntropyPerMethod(signatures = signature_list[[1]])
+    plot_meanEntropyPerMethod(signature_list = signature_list[[1]])
   )
 
   p_sig_clust <- plot_signatureClustered(
@@ -78,14 +78,14 @@ test_that("Signature exploration plots are correct", {
 
 
   sig_vec <- download_signatureUpset(
-    signatures = siglist2,
+    signature_list = siglist2,
     combination_to_include = c("dwls", "bisque"),
     upset_mode = "intersect"
   )
   expect_true(is(sig_vec, "vector"))
 
   sig_vec_null <- download_signatureUpset(
-    signatures = siglist2,
+    signature_list = siglist2,
     combination_to_include = NULL,
     upset_mode = "intersect"
   )

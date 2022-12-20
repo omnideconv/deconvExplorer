@@ -3,7 +3,7 @@
 #' This Barplot allows the comparison of the size of differnt signatures by plotting the
 #' number of genes for each signature as a barplot
 #'
-#' @param signatures Named List of signatures, names are the calculation methods
+#' @param signature_list Named List of signatures, names are the calculation methods
 #' @param color_palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
@@ -17,13 +17,13 @@
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_signatureGenesPerMethod(signatureList)
-plot_signatureGenesPerMethod <- function(signatures,
+plot_signatureGenesPerMethod <- function(signature_list,
                                          color_palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
-  for (name in names(signatures)) {
-    number_of_genes <- dim(signatures[[name]])[1]
+  for (name in names(signature_list)) {
+    number_of_genes <- dim(signature_list[[name]])[1]
     df[nrow(df) + 1, ] <- list(name, number_of_genes)
   }
 
@@ -47,7 +47,7 @@ plot_signatureGenesPerMethod <- function(signatures,
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -58,7 +58,7 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' This plot focuses on the condition number for each signature and simplifies
 #' the comparison by providion a barplot
 #'
-#' @param signatures Named List of signatures, names are the calculation methods
+#' @param signature_list Named List of signatures, names are the calculation methods
 #' @param color_palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
@@ -72,13 +72,13 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_conditionNumberPerMethod(signatureList)
-plot_conditionNumberPerMethod <- function(signatures,
+plot_conditionNumberPerMethod <- function(signature_list,
                                           color_palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
-  for (name in names(signatures)) {
-    kappa <- kappa(signatures[[name]][, -1], exact = TRUE)
+  for (name in names(signature_list)) {
+    kappa <- kappa(signature_list[[name]][, -1], exact = TRUE)
     df[nrow(df) + 1, ] <- list(name, kappa)
   }
 
@@ -97,7 +97,7 @@ plot_conditionNumberPerMethod <- function(signatures,
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -108,7 +108,7 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' This plot focuses on the mean entropy of a signature and simplifies the comparison
 #' to other signature with a barplot
 #'
-#' @param signatures named List of Signatures
+#' @param signature_list named List of Signatures
 #' @param color_palette RColorBrewerPalette
 #'
 #' @returns a barplot
@@ -122,13 +122,13 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_meanEntropyPerMethod(signatureList)
-plot_meanEntropyPerMethod <- function(signatures,
+plot_meanEntropyPerMethod <- function(signature_list,
                                       color_palette = "Set1") {
   entropies <- data.frame(method = character(), meanEntropy = numeric())
 
   # calculate Mean Entropy for each signature
-  for (name in names(signatures)) {
-    meanEntropy <- mean(apply(signatures[[name]], 1, scoreEntropy))
+  for (name in names(signature_list)) {
+    meanEntropy <- mean(apply(signature_list[[name]], 1, scoreEntropy))
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
 
@@ -147,7 +147,7 @@ plot_meanEntropyPerMethod <- function(signatures,
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -261,7 +261,7 @@ plot_signatureClustered <- function(signature,
 #' This plot allows the comparison of multiple signature gene sets by utilizing
 #' UpSet Plots.
 #'
-#' @param signatures named list of deconvolution signatures
+#' @param signature_list named list of deconvolution signatures
 #' @param upset_mode upSet Mode (distinct, intersect, union)
 #' @param min_degree minimal set degree to display in the plot
 #' @param max_degree maximal set degree to display in the plot, NULL to display all sets
@@ -278,7 +278,7 @@ plot_signatureClustered <- function(signature,
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' plot_signatureUpset(signatures, upset_mode = "union")
-plot_signatureUpset <- function(signatures,
+plot_signatureUpset <- function(signature_list,
                                 upset_mode = "distinct",
                                 min_degree = 1,
                                 max_degree = NULL,
@@ -289,8 +289,8 @@ plot_signatureUpset <- function(signatures,
   # takes list of signatures
   sets <- list()
 
-  for (name in names(signatures)) {
-    sets[[name]] <- rownames(signatures[[name]])
+  for (name in names(signature_list)) {
+    sets[[name]] <- rownames(signature_list[[name]])
   }
 
   # modes available: distinct, intersect and union
@@ -343,7 +343,7 @@ plot_signatureUpset <- function(signatures,
 #' Returns gene sets of signatures according to the selected combination. As
 #' intersection mode "distinct", "intersect" and "union" are available.
 #'
-#' @param signatures list of named signatures
+#' @param signature_list list of named signatures
 #' @param combination_to_include vector of signature names that should be intersected
 #' @param upset_mode intersection type c("distinct", "intersect", "union")
 #'
@@ -355,7 +355,7 @@ plot_signatureUpset <- function(signatures,
 #'
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
-download_signatureUpset <- function(signatures,
+download_signatureUpset <- function(signature_list,
                                     combination_to_include,
                                     upset_mode = "distinct") {
   # in case no set is selected return NULL
@@ -366,9 +366,9 @@ download_signatureUpset <- function(signatures,
     sets <- list()
     token <- ""
 
-    for (name in names(signatures)) {
+    for (name in names(signature_list)) {
       # add genes to set list
-      sets[[name]] <- rownames(signatures[[name]])
+      sets[[name]] <- rownames(signature_list[[name]])
 
       # check if name in combination and construct token
       if (name %in% combination_to_include) {
