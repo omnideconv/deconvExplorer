@@ -73,20 +73,20 @@ test_that("Signature exploration plots are correct", {
   # some variations on that
   p_sig_upset2 <- plot_signatureUpset(siglist2, mode = "union", order = "degree")
   expect_true(is(p_sig_upset2, "list"))
-  p_sig_upset3 <- plot_signatureUpset(siglist2, mode = "union", colorDegrees = FALSE)
+  p_sig_upset3 <- plot_signatureUpset(siglist2, mode = "union", color_by_degrees = FALSE)
   expect_true(is(p_sig_upset3, "list"))
 
 
   sig_vec <- download_signatureUpset(
     signatures = siglist2,
-    combination = c("dwls", "bisque"),
+    combination_to_include = c("dwls", "bisque"),
     mode = "intersect"
   )
   expect_true(is(sig_vec, "vector"))
 
   sig_vec_null <- download_signatureUpset(
     signatures = siglist2,
-    combination = NULL,
+    combination_to_include = NULL,
     mode = "intersect"
   )
   expect_null(sig_vec_null)

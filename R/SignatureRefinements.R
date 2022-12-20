@@ -4,7 +4,7 @@
 #'
 #' @param signature gene expression signature
 #' @param cell_type cell type to rename
-#' @param newName new cell type name
+#' @param new_celltype_name new cell type name
 #'
 #' @returns gene expression signature with updated cell type names
 #'
@@ -15,17 +15,17 @@
 #'
 #' # rename "B" to "B.cells"
 #' signature <- renameCellType(signature, "B", "B.cells")
-renameCellType <- function(signature, cell_type, newName) {
+renameCellType <- function(signature, cell_type, new_celltype_name) {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
 
-  if (is.null(cell_type) | is.null(newName)) {
-    stop("cell_type or newName is NULL, cannot rename")
+  if (is.null(cell_type) | is.null(new_celltype_name)) {
+    stop("cell_type or new_celltype_name is NULL, cannot rename")
   }
 
-  if (cell_type == "" | newName == "") {
-    stop("cell_type or newName empty! Cannot rename")
+  if (cell_type == "" | new_celltype_name == "") {
+    stop("cell_type or new_celltype_name empty! Cannot rename")
   }
 
   if (!(cell_type %in% colnames(signature))) {
@@ -34,7 +34,7 @@ renameCellType <- function(signature, cell_type, newName) {
 
   newSignature <- as.data.frame(signature)
 
-  names(newSignature)[names(newSignature) == cell_type] <- newName
+  names(newSignature)[names(newSignature) == cell_type] <- new_celltype_name
 
   return(as.matrix(newSignature))
 }
