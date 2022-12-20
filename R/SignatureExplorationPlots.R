@@ -159,7 +159,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
-#' @param signature One Signature to plot
+#' @param signature_mat One Signature to plot
 #' @param color_palette RColorBrewer Palette name, standard = Spectral
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
@@ -169,11 +169,11 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' plot_signatureClustered(signature, scoring_method = "gini", annotation_type = "bar")
-plot_signatureClustered <- function(signature,
+plot_signatureClustered <- function(signature_mat,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
                                     color_palette = "Spectral") {
-  if (is.null(signature)) {
+  if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
 
@@ -185,7 +185,7 @@ plot_signatureClustered <- function(signature,
     stop("annotation_type not supported")
   }
 
-  df <- data.frame(signature)
+  df <- data.frame(signature_mat)
 
   df <- cbind("X" = rownames(df), df) # add gene names as column
 
@@ -227,15 +227,15 @@ plot_signatureClustered <- function(signature,
 
   if (scoring_method == "entropy") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature_mat, 1, scoreEntropy), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, scoreEntropy), which = "row"))
     }
   } else if (scoring_method == "gini") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature_mat, 1, BioQC::gini), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, BioQC::gini), which = "row"))
     }
   }
 
