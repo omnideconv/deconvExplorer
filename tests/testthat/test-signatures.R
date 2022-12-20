@@ -25,14 +25,14 @@ test_that("Signature refinement operations are correct", {
 
   signature_selgenes <- selectGenesByScore(
     signature_mat = signature_list$bisque,
-    method = "gini",
+    scoring_method = "gini",
     genes_per_cell_type = 50
   )
   expect_equal(nrow(signature_list$bisque) - nrow(signature_selgenes), 126)
 
   signature_selgenes_entropy <- selectGenesByScore(
     signature_mat = signature_list$bisque,
-    method = "entropy",
+    scoring_method = "entropy",
     genes_per_cell_type = 50
   )
 
