@@ -49,8 +49,8 @@ test_that("Signature refinement operations are correct", {
   expect_error(removeUnspecificGenes(signature_list$bisque, number_of_bins = 1))
   expect_error(removeUnspecificGenes(signature_list$bisque, max_count = -2))
   expect_error(removeUnspecificGenes(signature_list$bisque,
-                                     max_count = 3,
-                                     labels = c("A", "B", "C", "D")
+    max_count = 3,
+    labels = c("A", "B", "C", "D")
   ))
 
 

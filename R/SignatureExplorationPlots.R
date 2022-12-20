@@ -267,7 +267,7 @@ plot_signatureClustered <- function(signature_mat,
 #' @param max_degree maximal set degree to display in the plot, NULL to display all sets
 #' @param order_sets order sets by Size or Degree (size, degree)
 #' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
-#' @param color_by_degrees Logical value. Whether to color sets according to their 
+#' @param color_by_degrees Logical value. Whether to color sets according to their
 #' degree, defaulting to TRUE
 #' @param color_palette Name of a RColorBrewer palette, standard Set1
 #'

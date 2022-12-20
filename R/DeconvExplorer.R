@@ -982,8 +982,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       signatureRefined(
         removeUnspecificGenes(signatureRefined(),
-                              number_of_bins = 3,
-                              max_count = input$refineUnspecific
+          number_of_bins = 3,
+          max_count = input$refineUnspecific
         )
       )
 
