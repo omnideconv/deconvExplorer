@@ -982,8 +982,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       signatureRefined(
         removeUnspecificGenes(signatureRefined(),
-          numberOfBins = 3,
-          maxCount = input$refineUnspecific
+                              number_of_bins = 3,
+                              max_count = input$refineUnspecific
         )
       )
 
@@ -1007,7 +1007,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
       signatureRefined(
         selectGenesByScore(signatureRefined(),
           method = ref_method,
-          genesPerCellType = input$refineBestN
+          genes_per_cell_type = input$refineBestN
         )
       )
 
@@ -1329,8 +1329,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
         minDegree = minDegree,
         maxDegree = maxDegree,
         order = input$upSetOrder,
-        invert = input$upSetInvert,
-        colorDegrees = input$upSetColorDegrees,
+        invert_sets = input$upSetInvert,
+        color_by_degrees = input$upSetColorDegrees,
         palette = input$globalColor
       )
 
@@ -1641,7 +1641,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         signatures <- shiny::isolate(internal$signatures)
 
         data <- download_signatureUpset(signatures,
-          combination = input$upSetDownloadSelection,
+          combination_to_include = input$upSetDownloadSelection,
           mode = input$upsetMode
         )
 

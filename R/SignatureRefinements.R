@@ -3,7 +3,7 @@
 #' Rename columns of a gene expression signature matrix.
 #'
 #' @param signature gene expression signature
-#' @param cellType cell type to rename
+#' @param cell_type cell type to rename
 #' @param newName new cell type name
 #'
 #' @returns gene expression signature with updated cell type names

@@ -282,8 +282,8 @@ plot_signatureUpset <- function(signatures,
                                 minDegree = 1,
                                 maxDegree = NULL,
                                 order = "size",
-                                invert = FALSE,
-                                colorDegrees = TRUE,
+                                invert_sets = FALSE,
+                                color_by_degrees = TRUE,
                                 palette = "Set1") {
   # takes list of signatures
   sets <- list()
@@ -306,14 +306,14 @@ plot_signatureUpset <- function(signatures,
 
   # calculate order: size, degree
   if (order == "size") {
-    combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert) # invert = FALSE -> will sort decreasing
+    combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert_sets) # invert_sets = FALSE -> will sort decreasing
   } else {
     # order=="degree"
-    combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert)
+    combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert_sets)
   }
 
   # calculate colors
-  if (colorDegrees == TRUE) {
+  if (color_by_degrees == TRUE) {
     upSetColors <- RColorBrewer::brewer.pal(8, palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
   } else {
     # =FALSE
@@ -343,7 +343,7 @@ plot_signatureUpset <- function(signatures,
 #' intersection mode "distinct", "intersect" and "union" are available.
 #'
 #' @param signatures list of named signatures
-#' @param combination vector of signaature names that should be intersected
+#' @param combination_to_include vector of signature names that should be intersected
 #' @param mode intersection type c("distinct", "intersect", "union")
 #'
 #' @return List of genes
@@ -355,10 +355,10 @@ plot_signatureUpset <- function(signatures,
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 download_signatureUpset <- function(signatures,
-                                    combination,
+                                    combination_to_include,
                                     mode = "distinct") {
   # in case no set is selected return NULL
-  if (is.null(combination)) {
+  if (is.null(combination_to_include)) {
     return(NULL)
   } else {
     # case: minimum of 1 Set selected
@@ -370,7 +370,7 @@ download_signatureUpset <- function(signatures,
       sets[[name]] <- rownames(signatures[[name]])
 
       # check if name in combination and construct token
-      if (name %in% combination) {
+      if (name %in% combination_to_include) {
         token <- paste0(token, "1")
       } else {
         token <- paste0(token, "0")
