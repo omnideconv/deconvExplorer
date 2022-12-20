@@ -1,7 +1,7 @@
 test_that("Benchmark scatter plots are correct", {
   p <- plot_benchmark_scatter(
     gtruth_df = RefData,
-    estimate = deconv_list
+    deconv_list = deconv_list
   )
 
   expect_s3_class(p, "gg")
@@ -9,7 +9,7 @@ test_that("Benchmark scatter plots are correct", {
   expect_error(
     plot_benchmark_scatter(
       gtruth_df = RefData,
-      estimate = deconv_example
+      deconv_list = deconv_example
     )
   )
 })
@@ -18,7 +18,7 @@ test_that("Benchmark scatter plots are correct", {
 test_that("Benchmark correlation plots are correct", {
   p <- plot_benchmark_correlation(
     gtruth_df = RefData,
-    estimate = deconv_list
+    deconv_list = deconv_list
   )
 
   expect_true(is(p, "list"))
@@ -27,14 +27,14 @@ test_that("Benchmark correlation plots are correct", {
   expect_error(
     plot_benchmark_correlation(
       gtruth_df = RefData,
-      estimate = deconv_example
+      deconv_list = deconv_example
     )
   )
 
   expect_error(
     plot_benchmark_correlation(
       gtruth_df = RefData,
-      estimate = deconv_list,
+      deconv_list = deconv_list,
       plot_method = "boxplot"
     )
   )
@@ -45,13 +45,13 @@ test_that("Benchmark correlation plots are correct", {
 test_that("Benchmark rmse are correct", {
   p_hm <- plot_benchmark_rmse(
     gtruth_df = RefData,
-    estimate = deconv_list,
+    deconv_list = deconv_list,
     plot_type = "heatmap"
   )
 
   p_box <- plot_benchmark_rmse(
     gtruth_df = RefData,
-    estimate = deconv_list,
+    deconv_list = deconv_list,
     plot_type = "boxplot"
   )
 
@@ -63,7 +63,7 @@ test_that("Benchmark rmse are correct", {
   expect_error(
     plot_benchmark_rmse(
       gtruth_df = RefData,
-      estimate = deconv_list,
+      deconv_list = deconv_list,
       plot_type = "pie"
     )
   )
