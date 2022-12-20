@@ -265,10 +265,11 @@ plot_signatureClustered <- function(signature,
 #' @param mode upSet Mode (distinct, intersect, union)
 #' @param minDegree minimal set degree to display in the plot
 #' @param maxDegree maximal set degree to display in the plot, NULL to display all sets
-#' @param order order Sets by Size or Degree (size, degree)
-#' @param invert invert the order of the Sets, standard = FALSE
-#' @param colorDegrees color sets according to their degree, standard = TRUE
-#' @param palette Name of a RColorBrewer palette, standard = Set1
+#' @param order order sets by Size or Degree (size, degree)
+#' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
+#' @param color_by_degrees Logical value. Whether to color sets according to their 
+#' degree, defaulting to TRUE
+#' @param palette Name of a RColorBrewer palette, standard Set1
 #'
 #' @returns UpSet Plot
 #' @export
