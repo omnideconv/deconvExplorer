@@ -265,7 +265,7 @@ plot_signatureClustered <- function(signature,
 #' @param upset_mode upSet Mode (distinct, intersect, union)
 #' @param min_degree minimal set degree to display in the plot
 #' @param max_degree maximal set degree to display in the plot, NULL to display all sets
-#' @param order order sets by Size or Degree (size, degree)
+#' @param order_sets order sets by Size or Degree (size, degree)
 #' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
 #' @param color_by_degrees Logical value. Whether to color sets according to their 
 #' degree, defaulting to TRUE
@@ -282,7 +282,7 @@ plot_signatureUpset <- function(signatures,
                                 upset_mode = "distinct",
                                 min_degree = 1,
                                 max_degree = NULL,
-                                order = "size",
+                                order_sets = "size",
                                 invert_sets = FALSE,
                                 color_by_degrees = TRUE,
                                 palette = "Set1") {
@@ -306,10 +306,10 @@ plot_signatureUpset <- function(signatures,
   mat <- mat[ComplexHeatmap::comb_degree(mat) <= max_degree] # upper
 
   # calculate order: size, degree
-  if (order == "size") {
+  if (order_sets == "size") {
     combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert_sets) # invert_sets = FALSE -> will sort decreasing
   } else {
-    # order=="degree"
+    # order_sets=="degree"
     combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert_sets)
   }
 
