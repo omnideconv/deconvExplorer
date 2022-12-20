@@ -15,26 +15,26 @@
 #'
 #' # rename "B" to "B.cells"
 #' signature <- renameCellType(signature, "B", "B.cells")
-renameCellType <- function(signature, cellType, newName) {
+renameCellType <- function(signature, cell_type, newName) {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
 
-  if (is.null(cellType) | is.null(newName)) {
-    stop("cellType or newName is NULL, cannot rename")
+  if (is.null(cell_type) | is.null(newName)) {
+    stop("cell_type or newName is NULL, cannot rename")
   }
 
-  if (cellType == "" | newName == "") {
-    stop("cellType or newName empty! Cannot rename")
+  if (cell_type == "" | newName == "") {
+    stop("cell_type or newName empty! Cannot rename")
   }
 
-  if (!(cellType %in% colnames(signature))) {
-    stop("Cannot rename celltype: cell type does not exist in signature")
+  if (!(cell_type %in% colnames(signature))) {
+    stop("Cannot rename cell type: cell type does not exist in signature")
   }
 
   newSignature <- as.data.frame(signature)
 
-  names(newSignature)[names(newSignature) == cellType] <- newName
+  names(newSignature)[names(newSignature) == cell_type] <- newName
 
   return(as.matrix(newSignature))
 }
@@ -45,7 +45,7 @@ renameCellType <- function(signature, cellType, newName) {
 #' the percentage threshold parameter. This function aims to reduce sequencing artifacts by
 #' removing genes that are only detected in a few cells/samples.
 #'
-#' @param baseSignature GenesXcelltype Matrix with expression values
+#' @param signature_mat GenesXcelltype Matrix with expression values
 #' @param percentage maximum percentage of row values allowed to be 0
 #' @returns A signature which matches the criteria above
 #'
@@ -56,8 +56,8 @@ renameCellType <- function(signature, cellType, newName) {
 #' dim(signature)
 #' signature <- removePercentZeros(signature, percentage = 0.5)
 #' dim(signature)
-removePercentZeros <- function(baseSignature, percentage = 0.5) {
-  if (is.null(baseSignature)) {
+removePercentZeros <- function(signature_mat, percentage = 0.5) {
+  if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
 
@@ -65,8 +65,8 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
     stop("Please provide a valid percentage between 0 and 1")
   }
 
-  threshold <- ncol(baseSignature) * percentage # max number of zeroes allowed
-  signature <- baseSignature[rowSums(baseSignature == 0) <= threshold, ]
+  threshold <- ncol(signature_mat) * percentage # max number of zeroes allowed
+  signature <- signature_mat[rowSums(signature_mat == 0) <= threshold, ]
 
   return(signature)
 }
@@ -75,14 +75,14 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #' Remove unspecific Genes of a Gene Expression Signature
 #'
 #' Remove genes expressed in an unspecific manner. The expression range is devided into
-#' a user selected number of bins. Only genes expressed high in <maxCount> celltypes are returned.
-#' Genes expressed high in more than <maxCount> cell types are discarded.
+#' a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
+#' Genes expressed high in more than <max_count> cell types are discarded.
 #'
 #' @param signature gene Expression Signature
-#' @param numberOfBins number of bins to categorize the data into
-#' @param maxCount number of Cell Types allowed to be in the highest bin,
+#' @param number_of_bins number of bins to categorize the data into
+#' @param max_count number of Cell Types allowed to be in the highest bin,
 #' all other cells are required to be in lower expressed bins
-#' @param labels vector of bin names, required if numberOfBins != 3
+#' @param labels vector of bin names, required if number_of_bins != 3
 #'
 #' @returns a gene expression signature containing only genes matching the passed requirements
 #'
@@ -92,26 +92,26 @@ removePercentZeros <- function(baseSignature, percentage = 0.5) {
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
 #'
-#' signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
+#' signature <- removeUnspecificGenes(signature, number_of_bins = 3, max_count = 1)
 #' dim(signature)
 removeUnspecificGenes <- function(signature,
-                                  numberOfBins = 3,
-                                  maxCount = 2,
+                                  number_of_bins = 3,
+                                  max_count = 2,
                                   labels = c("low", "medium", "high")) {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
 
-  if (numberOfBins < 2) {
-    stop("numberOfBins has to be >= 2!")
+  if (number_of_bins < 2) {
+    stop("number_of_bins has to be >= 2!")
   }
 
-  if (maxCount <= 0) {
-    stop("maxCount has to be a positive integer")
+  if (max_count <= 0) {
+    stop("max_count has to be a positive integer")
   }
 
-  if (length(labels) != numberOfBins) {
-    stop("numberOfBins does not match label length")
+  if (length(labels) != number_of_bins) {
+    stop("number_of_bins does not match label length")
   }
 
   signature <- as.matrix(signature)
@@ -122,7 +122,7 @@ removeUnspecificGenes <- function(signature,
     row <- signature[i, ] # has colnames! drop FALSE is mandatory !!!!!
 
     # calculate bins to prevent error
-    breaks <- seq(floor(min(row)), ceiling(max(row)), length.out = numberOfBins + 1)
+    breaks <- seq(floor(min(row)), ceiling(max(row)), length.out = number_of_bins + 1)
 
     # cut into bins, seperate for each gene
     bins <- cut(row, breaks = breaks, labels = labels, include.lowest = TRUE)
@@ -131,7 +131,7 @@ removeUnspecificGenes <- function(signature,
 
     # this value needs to be greater than one, depending of the step in the pipeline there arent
     # any rows producing zeros left but that is not the case for all  signatures
-    if (nHighBins <= maxCount & nHighBins > 0) {
+    if (nHighBins <= max_count & nHighBins > 0) {
       to_keep[i] <- TRUE
     }
   }
@@ -147,13 +147,13 @@ removeUnspecificGenes <- function(signature,
 
 #' Select a specified amount of genes for each cell type based on a score, discard all other
 #'
-#' Reduce the amount of signature genes by selecting the best-scored genes for each celltype.
+#' Reduce the amount of signature genes by selecting the best-scored genes for each cell type.
 #' As scoring methods "Entropy" and "Gini" can be applied.
 #'
 #' @param signature gene expression matrix
 #' @param method method to score the genes ("entropy", "gini")
 #' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
-#' @param genesPerCellType maximum of genes selected for each cell type
+#' @param genes_per_cell_type maximum of genes selected for each cell type
 #'
 #' @return A data frame with the compacted signatures
 #'
@@ -163,12 +163,12 @@ removeUnspecificGenes <- function(signature,
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' dim(signature)
 #'
-#' signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
+#' signature <- selectGenesByScore(signature, "gini", genes_per_cell_type = 50)
 #' dim(signature)
 selectGenesByScore <- function(signature,
                                method = "entropy",
                                selectCellType = "max",
-                               genesPerCellType = 20) {
+                               genes_per_cell_type = 20) {
   # TODO Checks #####
 
   # SCORE THE MATRIX
@@ -209,12 +209,12 @@ selectGenesByScore <- function(signature,
       sort()
 
     # check number of genes!!!
-    if (genesPerCellType > length(names(scores))) {
-      genesPerCellType <- length(names(scores))
+    if (genes_per_cell_type > length(names(scores))) {
+      genes_per_cell_type <- length(names(scores))
     }
 
     # iterate genes
-    for (gene in names(scores)[1:genesPerCellType]) {
+    for (gene in names(scores)[1:genes_per_cell_type]) {
       row <- signature[gene, , drop = FALSE]
 
       refinedSignature <- rbind(refinedSignature, row)
@@ -229,7 +229,7 @@ selectGenesByScore <- function(signature,
 #' Score Genes Expression of a single gene across celltypes. The function returns
 #' the calculated entropy of the expression value distribution.
 #'
-#' @param geneExpression row from Gene Expression Matrix = Expression Data for a single Gene
+#' @param expression_feature row from Gene Expression Matrix = Expression Data for a single Gene
 #' @returns Score for the given gene based on information entropy
 #' Here: The lower the better
 #'
@@ -239,16 +239,16 @@ selectGenesByScore <- function(signature,
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #'
 #' entropy <- scoreEntropy(signature[1, ]) # scoring the first gene
-scoreEntropy <- function(geneExpression) {
+scoreEntropy <- function(expression_feature) {
   # TODO add parameter checks ####
   probs <- list()
 
   # turn expression data to a list of probabilities
-  for (val in geneExpression) {
+  for (val in expression_feature) {
     if (val == 0) {
       next
     }
-    probs <- append(probs, val / sum(geneExpression)) # turn in to probabilities
+    probs <- append(probs, val / sum(expression_feature)) # turn in to probabilities
   }
 
   entropy <- -sum(unlist(lapply(probs, function(x) log(x) * x)))
