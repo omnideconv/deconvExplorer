@@ -4,7 +4,7 @@
 #' This function returns the requested deconvolution results as a list
 #'
 #' @param to_plot_list list of deconvolution result names which should be plotted
-#' @param all_deconvolutions List containing all available deconvolution results
+#' @param deconv_list List containing all available deconvolution results
 #'
 #' @return list of deconvolution results
 #'
@@ -17,11 +17,11 @@
 #' deconvList <- list("bisque" = deconv, "momf" = deconv)
 #'
 #' returnSelectedDeconvolutions(c("momf"), deconvList)
-returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions) {
+returnSelectedDeconvolutions <- function(to_plot_list, deconv_list) {
   deconvolutions <- list()
 
   for (deconvolution in to_plot_list) {
-    deconvolutions[deconvolution] <- all_deconvolutions[deconvolution]
+    deconvolutions[deconvolution] <- deconv_list[deconvolution]
   }
 
   return(deconvolutions)
@@ -48,8 +48,8 @@ returnSelectedDeconvolutions <- function(to_plot_list, all_deconvolutions) {
 #
 #   # deconvolution_list <- list()
 #   # for (deconvolution in to_plot_list) {
-#   #   # deconvolution_list[length(deconvolution_list) + 1] <- all_deconvolutions[[deconvolution]][1]
-#   #   deconvolution_list[deconvolution] <- all_deconvolutions[[deconvolution]][1]
+#   #   # deconvolution_list[length(deconvolution_list) + 1] <- deconv_list[[deconvolution]][1]
+#   #   deconvolution_list[deconvolution] <- deconv_list[[deconvolution]][1]
 #   # }
 #
 #   # add samples and deconvolution method

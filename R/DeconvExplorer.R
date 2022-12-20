@@ -594,7 +594,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
     ),
     column(
       width = 5,
-      numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)
+      numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
     ),
     column(
       width = 2,
@@ -1061,7 +1061,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
       updateSelectInput(session, "cellTypeToRename", choices = colnames(signatureRefined()))
     })
 
-    # rename celltype if button is clicked
+    # rename cell type if button is clicked
     observeEvent(input$renameCellTypeGo, {
       req(input$cellTypeNewName, signatureRefined(), input$cellTypeToRename)
 
@@ -1597,7 +1597,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         paste("signature_", input$signatureToTable, ".csv", sep = "")
       },
       content = function(file) {
-        # data <- all_deconvolutions[[input$signatureToTable]][[2]]
+        # data <- deconv_list[[input$signatureToTable]][[2]]
         data <- isolate(internal$signatures[[input$signatureToTable]])
         write.csv(data, file)
       }
@@ -1740,7 +1740,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
-      req(internal$signatures, input$signatureToHeatmap) # used to contain all_deconvolutions
+      req(internal$signatures, input$signatureToHeatmap) # used to contain deconv_list
 
       # ClusteredHeatmapSelectedGenes(Table)
 
