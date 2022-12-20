@@ -4,12 +4,12 @@
 \alias{plot_conditionNumberPerMethod}
 \title{Calculate Condition Number per Method}
 \usage{
-plot_conditionNumberPerMethod(signatures, palette = "Set1")
+plot_conditionNumberPerMethod(signature_list, color_palette = "Set1")
 }
 \arguments{
-\item{signatures}{Named List of signatures, names are the calculation methods}
+\item{signature_list}{Named List of signatures, names are the calculation methods}
 
-\item{palette}{RColorBrewer Palette name, standard = Set1}
+\item{color_palette}{RColorBrewer Palette name, standard = Set1}
 }
 \value{
 A Barplot

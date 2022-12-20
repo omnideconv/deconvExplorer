@@ -4,14 +4,18 @@
 \alias{download_signatureUpset}
 \title{Download a gene subset of multiple signature}
 \usage{
-download_signatureUpset(signatures, combination, mode = "distinct")
+download_signatureUpset(
+  signature_list,
+  combination_to_include,
+  upset_mode = "distinct"
+)
 }
 \arguments{
-\item{signatures}{list of named signatures}
+\item{signature_list}{list of named signatures}
 
-\item{combination}{vector of signaature names that should be intersected}
+\item{combination_to_include}{vector of signature names that should be intersected}
 
-\item{mode}{intersection type c("distinct", "intersect", "union")}
+\item{upset_mode}{intersection type c("distinct", "intersect", "union")}
 }
 \value{
 List of genes

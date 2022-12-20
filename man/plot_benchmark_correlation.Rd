@@ -5,21 +5,21 @@
 \title{Plot benchmark correlation}
 \usage{
 plot_benchmark_correlation(
-  gtruth,
-  estimate,
-  pValueType = "label_sig",
-  pValueColor = "black",
+  gtruth_df,
+  deconv_list,
+  pvalue_type = "label_sig",
+  pvalue_color = "black",
   plot_method = "number"
 )
 }
 \arguments{
-\item{gtruth}{dataframe of gtruth/simulation fractions}
+\item{gtruth_df}{dataframe of gtruth/simulation fractions}
 
-\item{estimate}{deconvolution result list (named)}
+\item{deconv_list}{deconvolution result list (named)}
 
-\item{pValueType}{one of the following c("p-value", "label_sig", "n"), see corrplot package for further info}
+\item{pvalue_type}{one of the following c("p-value", "label_sig", "n"), see corrplot package for further info}
 
-\item{pValueColor}{color of p value annotation, "white" or "black"}
+\item{pvalue_color}{color of p value annotation, "white" or "black"}
 
 \item{plot_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 }

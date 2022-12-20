@@ -5,32 +5,32 @@
 \title{Select a specified amount of genes for each cell type based on a score, discard all other}
 \usage{
 selectGenesByScore(
-  signature,
-  method = "entropy",
-  selectCellType = "max",
-  genesPerCellType = 20
+  signature_mat,
+  scoring_method = "entropy",
+  select_celltype = "max",
+  genes_per_cell_type = 20
 )
 }
 \arguments{
-\item{signature}{gene expression matrix}
+\item{signature_mat}{gene expression matrix}
 
-\item{method}{method to score the genes ("entropy", "gini")}
+\item{scoring_method}{method to score the genes ("entropy", "gini")}
 
-\item{selectCellType}{method to select the cell type the gene is contributing to, used to balance the number of genes between cell types}
+\item{select_celltype}{method to select the cell type the gene is contributing to, used to balance the number of genes between cell types}
 
-\item{genesPerCellType}{maximum of genes selected for each cell type}
+\item{genes_per_cell_type}{maximum of genes selected for each cell type}
 }
 \value{
 A data frame with the compacted signatures
 }
 \description{
-Reduce the amount of signature genes by selecting the best-scored genes for each celltype.
+Reduce the amount of signature genes by selecting the best-scored genes for each cell type.
 As scoring methods "Entropy" and "Gini" can be applied.
 }
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 dim(signature)
 
-signature <- selectGenesByScore(signature, "gini", genesPerCellType = 50)
+signature <- selectGenesByScore(signature, "gini", genes_per_cell_type = 50)
 dim(signature)
 }

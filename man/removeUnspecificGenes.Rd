@@ -5,34 +5,34 @@
 \title{Remove unspecific Genes of a Gene Expression Signature}
 \usage{
 removeUnspecificGenes(
-  signature,
-  numberOfBins = 3,
-  maxCount = 2,
+  signature_mat,
+  number_of_bins = 3,
+  max_count = 2,
   labels = c("low", "medium", "high")
 )
 }
 \arguments{
-\item{signature}{gene Expression Signature}
+\item{signature_mat}{gene Expression Signature}
 
-\item{numberOfBins}{number of bins to categorize the data into}
+\item{number_of_bins}{number of bins to categorize the data into}
 
-\item{maxCount}{number of Cell Types allowed to be in the highest bin,
+\item{max_count}{number of Cell Types allowed to be in the highest bin,
 all other cells are required to be in lower expressed bins}
 
-\item{labels}{vector of bin names, required if numberOfBins != 3}
+\item{labels}{vector of bin names, required if number_of_bins != 3}
 }
 \value{
 a gene expression signature containing only genes matching the passed requirements
 }
 \description{
 Remove genes expressed in an unspecific manner. The expression range is devided into
-a user selected number of bins. Only genes expressed high in <maxCount> celltypes are returned.
-Genes expressed high in more than <maxCount> cell types are discarded.
+a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
+Genes expressed high in more than <max_count> cell types are discarded.
 }
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 dim(signature)
 
-signature <- removeUnspecificGenes(signature, numberOfBins = 3, maxCount = 1)
+signature <- removeUnspecificGenes(signature, number_of_bins = 3, max_count = 1)
 dim(signature)
 }

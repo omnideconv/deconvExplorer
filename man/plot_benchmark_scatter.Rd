@@ -4,14 +4,14 @@
 \alias{plot_benchmark_scatter}
 \title{plot benchmarking scatterplot}
 \usage{
-plot_benchmark_scatter(gtruth, estimate, palette = "Spectral")
+plot_benchmark_scatter(gtruth_df, deconv_list, color_palette = "Spectral")
 }
 \arguments{
-\item{gtruth}{dataframe of gtruth/simulation fractions}
+\item{gtruth_df}{dataframe of gtruth/simulation fractions}
 
-\item{estimate}{deconvolution result list (named)}
+\item{deconv_list}{deconvolution result list (named)}
 
-\item{palette}{RColorBrewer Palette}
+\item{color_palette}{RColorBrewer Palette}
 }
 \value{
 A `ggplot` object
@@ -22,7 +22,8 @@ Plot a deconvolution results against it's corresponding ground truth.
 \examples{
 data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
-deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", 
+                              package = "DeconvExplorer"))
 deconvList <- list("momf" = deconv, "bisque" = deconv)
 plot_benchmark_scatter(RefData, deconvList)
 }

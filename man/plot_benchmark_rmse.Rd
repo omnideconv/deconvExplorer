@@ -5,23 +5,23 @@
 \title{plot benchmark RMSE}
 \usage{
 plot_benchmark_rmse(
-  gtruth,
-  estimate,
+  gtruth_df,
+  deconv_list,
   plot_type = "heatmap",
   hm_method = "color",
-  palette = "Spectral"
+  color_palette = "Spectral"
 )
 }
 \arguments{
-\item{gtruth}{dataframe of gtruth/simulation fractions}
+\item{gtruth_df}{dataframe of gtruth/simulation fractions}
 
-\item{estimate}{deconvolution result list (named)}
+\item{deconv_list}{deconvolution result list (named)}
 
 \item{plot_type}{"heatmap" or "boxplot"}
 
 \item{hm_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 
-\item{palette}{RColorBrewer Palette}
+\item{color_palette}{RColorBrewer Palette}
 }
 \value{
 A `ggplot` object, or a list as returned by `corrplot()`
