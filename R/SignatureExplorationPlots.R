@@ -262,7 +262,7 @@ plot_signatureClustered <- function(signature,
 #' UpSet Plots.
 #'
 #' @param signatures named list of deconvolution signatures
-#' @param mode upSet Mode (distinct, intersect, union)
+#' @param upset_mode upSet Mode (distinct, intersect, union)
 #' @param min_degree minimal set degree to display in the plot
 #' @param max_degree maximal set degree to display in the plot, NULL to display all sets
 #' @param order order sets by Size or Degree (size, degree)
@@ -277,9 +277,9 @@ plot_signatureClustered <- function(signature,
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
-#' plot_signatureUpset(signatures, mode = "union")
+#' plot_signatureUpset(signatures, upset_mode = "union")
 plot_signatureUpset <- function(signatures,
-                                mode = "distinct",
+                                upset_mode = "distinct",
                                 min_degree = 1,
                                 max_degree = NULL,
                                 order = "size",
@@ -294,7 +294,7 @@ plot_signatureUpset <- function(signatures,
   }
 
   # modes available: distinct, intersect and union
-  mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
+  mat <- ComplexHeatmap::make_comb_mat(sets, mode = upset_mode)
 
   # subset plot according to min_degree and max_degree
   # if max_degree is NULL, get max_degree from data
@@ -345,7 +345,7 @@ plot_signatureUpset <- function(signatures,
 #'
 #' @param signatures list of named signatures
 #' @param combination_to_include vector of signature names that should be intersected
-#' @param mode intersection type c("distinct", "intersect", "union")
+#' @param upset_mode intersection type c("distinct", "intersect", "union")
 #'
 #' @return List of genes
 #' @export
@@ -357,7 +357,7 @@ plot_signatureUpset <- function(signatures,
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
 download_signatureUpset <- function(signatures,
                                     combination_to_include,
-                                    mode = "distinct") {
+                                    upset_mode = "distinct") {
   # in case no set is selected return NULL
   if (is.null(combination_to_include)) {
     return(NULL)
@@ -379,7 +379,7 @@ download_signatureUpset <- function(signatures,
     }
 
     # modes available: distinct, intersect and union
-    mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
+    mat <- ComplexHeatmap::make_comb_mat(sets, mode = upset_mode)
 
     # construct subset string from given signatures, if "000" return NULL
     return(ComplexHeatmap::extract_comb(mat, token))
