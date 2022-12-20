@@ -2,7 +2,7 @@
 #'
 #' Rename columns of a gene expression signature matrix.
 #'
-#' @param signature gene expression signature
+#' @param signature_mat gene expression signature
 #' @param cell_type cell type to rename
 #' @param new_celltype_name new cell type name
 #'
@@ -15,9 +15,9 @@
 #'
 #' # rename "B" to "B.cells"
 #' signature <- renameCellType(signature, "B", "B.cells")
-renameCellType <- function(signature, cell_type, new_celltype_name) {
-  if (is.null(signature)) {
-    stop("Please provide a signature")
+renameCellType <- function(signature_mat, cell_type, new_celltype_name) {
+  if (is.null(signature_mat)) {
+    stop("Please provide a signature_mat")
   }
 
   if (is.null(cell_type) | is.null(new_celltype_name)) {
@@ -28,11 +28,11 @@ renameCellType <- function(signature, cell_type, new_celltype_name) {
     stop("cell_type or new_celltype_name empty! Cannot rename")
   }
 
-  if (!(cell_type %in% colnames(signature))) {
-    stop("Cannot rename cell type: cell type does not exist in signature")
+  if (!(cell_type %in% colnames(signature_mat))) {
+    stop("Cannot rename cell type: cell type does not exist in signature_mat")
   }
 
-  newSignature <- as.data.frame(signature)
+  newSignature <- as.data.frame(signature_mat)
 
   names(newSignature)[names(newSignature) == cell_type] <- new_celltype_name
 
@@ -78,7 +78,7 @@ removePercentZeros <- function(signature_mat, max_percentage_zeroes = 0.5) {
 #' a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
 #' Genes expressed high in more than <max_count> cell types are discarded.
 #'
-#' @param signature gene Expression Signature
+#' @param signature_mat gene Expression Signature
 #' @param number_of_bins number of bins to categorize the data into
 #' @param max_count number of Cell Types allowed to be in the highest bin,
 #' all other cells are required to be in lower expressed bins
@@ -94,12 +94,12 @@ removePercentZeros <- function(signature_mat, max_percentage_zeroes = 0.5) {
 #'
 #' signature <- removeUnspecificGenes(signature, number_of_bins = 3, max_count = 1)
 #' dim(signature)
-removeUnspecificGenes <- function(signature,
+removeUnspecificGenes <- function(signature_mat,
                                   number_of_bins = 3,
                                   max_count = 2,
                                   labels = c("low", "medium", "high")) {
-  if (is.null(signature)) {
-    stop("Please provide a signature")
+  if (is.null(signature_mat)) {
+    stop("Please provide a signature_mat")
   }
 
   if (number_of_bins < 2) {
@@ -114,12 +114,12 @@ removeUnspecificGenes <- function(signature,
     stop("number_of_bins does not match label length")
   }
 
-  signature <- as.matrix(signature)
+  signature_mat <- as.matrix(signature_mat)
 
-  to_keep <- vector(length = nrow(signature))
+  to_keep <- vector(length = nrow(signature_mat))
 
-  for (i in 1:nrow(signature)) {
-    row <- signature[i, ] # has colnames! drop FALSE is mandatory !!!!!
+  for (i in 1:nrow(signature_mat)) {
+    row <- signature_mat[i, ] # has colnames! drop FALSE is mandatory !!!!!
 
     # calculate bins to prevent error
     breaks <- seq(floor(min(row)), ceiling(max(row)), length.out = number_of_bins + 1)
@@ -136,7 +136,7 @@ removeUnspecificGenes <- function(signature,
     }
   }
 
-  refinedSignature <- signature[to_keep, ]
+  refinedSignature <- signature_mat[to_keep, ]
 
   # # turn back to a matrix
   # refinedSignature <- as.matrix(refinedSignature)
@@ -150,7 +150,7 @@ removeUnspecificGenes <- function(signature,
 #' Reduce the amount of signature genes by selecting the best-scored genes for each cell type.
 #' As scoring methods "Entropy" and "Gini" can be applied.
 #'
-#' @param signature gene expression matrix
+#' @param signature_mat gene expression matrix
 #' @param scoring_method method to score the genes ("entropy", "gini")
 #' @param select_celltype method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genes_per_cell_type maximum of genes selected for each cell type
@@ -165,7 +165,7 @@ removeUnspecificGenes <- function(signature,
 #'
 #' signature <- selectGenesByScore(signature, "gini", genes_per_cell_type = 50)
 #' dim(signature)
-selectGenesByScore <- function(signature,
+selectGenesByScore <- function(signature_mat,
                                scoring_method = "entropy",
                                select_celltype = "max",
                                genes_per_cell_type = 20) {
@@ -173,18 +173,18 @@ selectGenesByScore <- function(signature,
 
   # SCORE THE MATRIX
   scoresByCellType <- NULL
-  for (celltype in colnames(signature)) {
+  for (celltype in colnames(signature_mat)) {
     scoresByCellType[[celltype]] <- list()
   }
 
 
   # not using apply because i need the return values, did not work otherwise
   # scoring is happening here
-  for (i in 1:nrow(signature)) {
-    row <- signature[i, , drop = FALSE] # has colnames!
+  for (i in 1:nrow(signature_mat)) {
+    row <- signature_mat[i, , drop = FALSE] # has colnames!
     gene <- rownames(row)
 
-    maxCelltype <- colnames(signature)[max.col(row)] # this might be problematic
+    maxCelltype <- colnames(signature_mat)[max.col(row)] # this might be problematic
 
     score <- list()
     if (scoring_method == "entropy") {
@@ -198,7 +198,7 @@ selectGenesByScore <- function(signature,
   }
 
   # initialize new refined signature with colnames, rows stay empty
-  refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature)), dimnames = list(NULL, colnames(signature)))
+  refinedSignature <- matrix(nrow = 0, ncol = length(colnames(signature_mat)), dimnames = list(NULL, colnames(signature_mat)))
 
   # for each celltype get the lowest scores
   for (celltype in names(scoresByCellType)) {
@@ -215,7 +215,7 @@ selectGenesByScore <- function(signature,
 
     # iterate genes
     for (gene in names(scores)[1:genes_per_cell_type]) {
-      row <- signature[gene, , drop = FALSE]
+      row <- signature_mat[gene, , drop = FALSE]
 
       refinedSignature <- rbind(refinedSignature, row)
     }

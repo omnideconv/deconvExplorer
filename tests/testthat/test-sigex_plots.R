@@ -20,40 +20,40 @@ test_that("Signature exploration plots are correct", {
   )
 
   p_sig_clust <- plot_signatureClustered(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     score = "gini", annotation_type = "bar"
   )
 
   expect_s4_class(p_sig_clust, "HeatmapList")
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
+      signature_mat = signature_list,
       score = "gini", annotation_type = "bar"
     )
   )
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
+      signature_mat = signature_list,
       score = "gino", annotation_type = "bar"
     )
   )
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
+      signature_mat = signature_list,
       score = "gini", annotation_type = "bart"
     )
   )
   # some variations on that
   p_sig_clust2 <- plot_signatureClustered(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     score = "gini", annotation_type = "line"
   )
   p_sig_clust3 <- plot_signatureClustered(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     score = "entropy", annotation_type = "bar"
   )
   p_sig_clust4 <- plot_signatureClustered(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     score = "entropy", annotation_type = "bar"
   )
 

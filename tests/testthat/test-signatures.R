@@ -1,6 +1,6 @@
 test_that("Signature refinement operations are correct", {
   signature_renamed <- renameCellType(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     cell_type = "B",
     new_celltype_name = "B.cells"
   )
@@ -17,21 +17,21 @@ test_that("Signature refinement operations are correct", {
   expect_equal(nrow(signature_list$bisque) - nrow(signature_nozeros), 8)
 
   signature_nounspecific <- removeUnspecificGenes(
-    signature = signature_list$momf,
+    signature_mat = signature_list$momf,
     number_of_bins = 3,
     max_count = 1
   )
   expect_equal(nrow(signature_list$momf) - nrow(signature_nounspecific), 199)
 
   signature_selgenes <- selectGenesByScore(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     method = "gini",
     genes_per_cell_type = 50
   )
   expect_equal(nrow(signature_list$bisque) - nrow(signature_selgenes), 126)
 
   signature_selgenes_entropy <- selectGenesByScore(
-    signature = signature_list$bisque,
+    signature_mat = signature_list$bisque,
     method = "entropy",
     genes_per_cell_type = 50
   )
