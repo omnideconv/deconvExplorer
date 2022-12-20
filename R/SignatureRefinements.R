@@ -152,7 +152,7 @@ removeUnspecificGenes <- function(signature,
 #'
 #' @param signature gene expression matrix
 #' @param scoring_method method to score the genes ("entropy", "gini")
-#' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
+#' @param select_celltype method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genes_per_cell_type maximum of genes selected for each cell type
 #'
 #' @return A data frame with the compacted signatures
@@ -167,7 +167,7 @@ removeUnspecificGenes <- function(signature,
 #' dim(signature)
 selectGenesByScore <- function(signature,
                                scoring_method = "entropy",
-                               selectCellType = "max",
+                               select_celltype = "max",
                                genes_per_cell_type = 20) {
   # TODO Checks #####
 
