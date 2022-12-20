@@ -1368,8 +1368,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
         reference,
         estimates,
         plot_method = input$correlationPlotType,
-        pValueType = input$correlationAnnotationType,
-        pValueColor = input$correlationAnntotationColor
+        pvalue_type = input$correlationAnnotationType,
+        pvalue_color = input$correlationAnntotationColor
       )
     })
 

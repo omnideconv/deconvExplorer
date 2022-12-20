@@ -85,8 +85,8 @@ plot_benchmark_scatter <- function(gtruth_df,
 #' @param gtruth_df dataframe of gtruth/simulation fractions
 #' @param deconv_list deconvolution result list (named)
 #' @param plot_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
-#' @param pValueColor color of p value annotation, "white" or "black"
-#' @param pValueType one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
+#' @param pvalue_color color of p value annotation, "white" or "black"
+#' @param pvalue_type one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
 #'
 #' @return A list, as returned by the `corrplot` function
 #'
@@ -100,8 +100,8 @@ plot_benchmark_scatter <- function(gtruth_df,
 #' plot_benchmark_correlation(RefData, deconvList)
 plot_benchmark_correlation <- function(gtruth_df,
                                        deconv_list,
-                                       pValueType = "label_sig",
-                                       pValueColor = "black",
+                                       pvalue_type = "label_sig",
+                                       pvalue_color = "black",
                                        plot_method = "number") {
   stopifnot(is.data.frame(gtruth_df))
 
@@ -117,11 +117,11 @@ plot_benchmark_correlation <- function(gtruth_df,
     stop("correlation plot method not supported")
   }
 
-  if (!pValueType %in% c("p-value", "label_sig", "n")) {
+  if (!pvalue_type %in% c("p-value", "label_sig", "n")) {
     stop("P Value Method not supported")
   }
 
-  if (!pValueColor %in% c("black", "white")) {
+  if (!pvalue_color %in% c("black", "white")) {
     stop("P Value Annotation color must be white or black")
   }
 
@@ -192,8 +192,8 @@ plot_benchmark_correlation <- function(gtruth_df,
 
   # return plot
   return(corrplot::corrplot(cor.df,
-    p.mat = p.df, insig = pValueType, sig.level = c(0.05, 0.1, 0.2), pch.cex = 4,
-    pch.col = pValueColor, method = plot_method,
+    p.mat = p.df, insig = pvalue_type, sig.level = c(0.05, 0.1, 0.2), pch.cex = 4,
+    pch.col = pvalue_color, method = plot_method,
     na.label = "NA", tl.col = "black", tl.srt = 60,
     cl.pos = "r", cl.align.text = "r", tl.cex = 2, cl.cex = 1.5,
     number.cex = 1.5, na.label.col = "#7F7F7F"
