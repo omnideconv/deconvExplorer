@@ -263,8 +263,8 @@ plot_signatureClustered <- function(signature,
 #'
 #' @param signatures named list of deconvolution signatures
 #' @param mode upSet Mode (distinct, intersect, union)
-#' @param minDegree minimal set degree to display in the plot
-#' @param maxDegree maximal set degree to display in the plot, NULL to display all sets
+#' @param min_degree minimal set degree to display in the plot
+#' @param max_degree maximal set degree to display in the plot, NULL to display all sets
 #' @param order order sets by Size or Degree (size, degree)
 #' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
 #' @param color_by_degrees Logical value. Whether to color sets according to their 
@@ -280,8 +280,8 @@ plot_signatureClustered <- function(signature,
 #' plot_signatureUpset(signatures, mode = "union")
 plot_signatureUpset <- function(signatures,
                                 mode = "distinct",
-                                minDegree = 1,
-                                maxDegree = NULL,
+                                min_degree = 1,
+                                max_degree = NULL,
                                 order = "size",
                                 invert_sets = FALSE,
                                 color_by_degrees = TRUE,
@@ -296,14 +296,14 @@ plot_signatureUpset <- function(signatures,
   # modes available: distinct, intersect and union
   mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
 
-  # subset plot according to minDegree and maxDegree
-  # if maxDegree is NULL, get maxDegree from data
-  if (is.null(maxDegree)) {
-    maxDegree <- max(ComplexHeatmap::comb_degree(mat))
+  # subset plot according to min_degree and max_degree
+  # if max_degree is NULL, get max_degree from data
+  if (is.null(max_degree)) {
+    max_degree <- max(ComplexHeatmap::comb_degree(mat))
   }
 
-  mat <- mat[ComplexHeatmap::comb_degree(mat) >= minDegree] # lower
-  mat <- mat[ComplexHeatmap::comb_degree(mat) <= maxDegree] # upper
+  mat <- mat[ComplexHeatmap::comb_degree(mat) >= min_degree] # lower
+  mat <- mat[ComplexHeatmap::comb_degree(mat) <= max_degree] # upper
 
   # calculate order: size, degree
   if (order == "size") {
