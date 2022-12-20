@@ -1006,7 +1006,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       signatureRefined(
         selectGenesByScore(signatureRefined(),
-          method = ref_method,
+          scoring_method = ref_method,
           genes_per_cell_type = input$refineBestN
         )
       )
