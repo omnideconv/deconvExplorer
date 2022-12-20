@@ -161,23 +161,23 @@ plot_meanEntropyPerMethod <- function(signatures,
 #'
 #' @param signature One Signature to plot
 #' @param palette RColorBrewer Palette name, standard = Spectral
-#' @param score The score used to annotate the genes (entropy, gini)
+#' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
 #'
 #' @returns A Heatmap
 #' @export
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
+#' plot_signatureClustered(signature, scoring_method = "gini", annotation_type = "bar")
 plot_signatureClustered <- function(signature,
-                                    score = "entropy",
+                                    scoring_method = "entropy",
                                     annotation_type = "line",
                                     palette = "Spectral") {
   if (is.null(signature)) {
     stop("Please provide a signature")
   }
 
-  if (!(score %in% c("entropy", "gini"))) {
+  if (!(scoring_method %in% c("entropy", "gini"))) {
     stop("Score Method not supported")
   }
 
@@ -225,13 +225,13 @@ plot_signatureClustered <- function(signature,
 
   annotation <- NULL
 
-  if (score == "entropy") {
+  if (scoring_method == "entropy") {
     if (annotation_type == "line") {
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
     } else if (annotation_type == "bar") {
       annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
     }
-  } else if (score == "gini") {
+  } else if (scoring_method == "gini") {
     if (annotation_type == "line") {
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
     } else if (annotation_type == "bar") {

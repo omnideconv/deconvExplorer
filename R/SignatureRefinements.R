@@ -151,7 +151,7 @@ removeUnspecificGenes <- function(signature,
 #' As scoring methods "Entropy" and "Gini" can be applied.
 #'
 #' @param signature gene expression matrix
-#' @param method method to score the genes ("entropy", "gini")
+#' @param scoring_method method to score the genes ("entropy", "gini")
 #' @param selectCellType method to select the cell type the gene is contributing to, used to balance the number of genes between cell types
 #' @param genes_per_cell_type maximum of genes selected for each cell type
 #'
@@ -166,7 +166,7 @@ removeUnspecificGenes <- function(signature,
 #' signature <- selectGenesByScore(signature, "gini", genes_per_cell_type = 50)
 #' dim(signature)
 selectGenesByScore <- function(signature,
-                               method = "entropy",
+                               scoring_method = "entropy",
                                selectCellType = "max",
                                genes_per_cell_type = 20) {
   # TODO Checks #####
@@ -187,9 +187,9 @@ selectGenesByScore <- function(signature,
     maxCelltype <- colnames(signature)[max.col(row)] # this might be problematic
 
     score <- list()
-    if (method == "entropy") {
+    if (scoring_method == "entropy") {
       score[gene] <- scoreEntropy(row) # calculate score and save named result
-    } else if (method == "gini") {
+    } else if (scoring_method == "gini") {
       score[gene] <- 1 - BioQC::gini(row) # need to flip the value since lower scores schould be better (entropy!)
     }
 
