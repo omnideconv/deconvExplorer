@@ -74,7 +74,7 @@ removePercentZeros <- function(signature_mat, max_percentage_zeroes = 0.5) {
 
 #' Remove unspecific Genes of a Gene Expression Signature
 #'
-#' Remove genes expressed in an unspecific manner. The expression range is devided into
+#' Remove genes expressed in an unspecific manner. The expression range is divided into
 #' a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
 #' Genes expressed high in more than <max_count> cell types are discarded.
 #'

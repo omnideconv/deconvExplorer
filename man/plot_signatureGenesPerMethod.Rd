@@ -15,7 +15,7 @@ plot_signatureGenesPerMethod(signature_list, color_palette = "Set1")
 A Barplot
 }
 \description{
-This Barplot allows the comparison of the size of differnt signatures by plotting the
+This Barplot allows the comparison of the size of different signatures by plotting the
 number of genes for each signature as a barplot
 }
 \examples{

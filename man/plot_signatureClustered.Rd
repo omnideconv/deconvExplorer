@@ -24,7 +24,7 @@ plot_signatureClustered(
 A Heatmap
 }
 \description{
-This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
+This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 by a gene scores ranking the distinctness of a gene in the signature.
 }
 \examples{

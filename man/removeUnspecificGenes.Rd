@@ -25,7 +25,7 @@ all other cells are required to be in lower expressed bins}
 a gene expression signature containing only genes matching the passed requirements
 }
 \description{
-Remove genes expressed in an unspecific manner. The expression range is devided into
+Remove genes expressed in an unspecific manner. The expression range is divided into
 a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
 Genes expressed high in more than <max_count> cell types are discarded.
 }

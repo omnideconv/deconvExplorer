@@ -1,6 +1,6 @@
 #' Calculate Barplot of Signature Genes per Method
 #'
-#' This Barplot allows the comparison of the size of differnt signatures by plotting the
+#' This Barplot allows the comparison of the size of different signatures by plotting the
 #' number of genes for each signature as a barplot
 #'
 #' @param signature_list Named List of signatures, names are the calculation methods
@@ -156,7 +156,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 
 #' Calculate Clustered Heatmap of Signature Genes
 #'
-#' This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
+#' This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
 #' @param signature_mat One Signature to plot
