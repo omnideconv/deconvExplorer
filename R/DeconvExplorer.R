@@ -1,9 +1,9 @@
 #' Run DeconvExplorer
 #'
-#' @param usr_bulk Bulk Sequencing data which will be deconvoluted
-#' @param usr_singleCell Single Cell Data which is used to calculate the signature matrix
-#' @param usr_cellAnnotation Cell Type annotations for the single cell data
-#' @param usr_batch Batch IDs, only for some deconvolution methods
+#' @param deconvexp_bulk Bulk Sequencing data which will be deconvoluted
+#' @param deconvexp_singlecelldata Single Cell Data which is used to calculate the signature matrix
+#' @param deconvexp_cell_annotation Cell Type annotations for the single cell data
+#' @param deconvexp_batch Batch IDs, only for some deconvolution methods
 #'
 #' @return A Shiny app object is returned
 #'
@@ -15,21 +15,21 @@
 #' }
 #'
 #' # COSTODO: an example where the parameters are provided before starting the app
-#' # my_usr_bulk <- ...
-#' # usr_singleCell <- ...
-#' # use_cellAnnotation <- ...
-#' # my_usr_batch <- ...
+#' # my_deconvexp_bulk <- ...
+#' # my_deconvexp_singlecelldata <- ...
+#' # my_deconvexp_cell_annotation <- ...
+#' # my_deconvexp_batch <- ...
 #' # if (interactive()) {
-#' #   DeconvExplorer::DeconvExplorer(usr_bulk = ...,
-#' #                                  usr_singleCell = ...,
-#' #                                  usr_ecellAnnotation = ...,
-#' #                                  usr_batch = ...
+#' #   DeconvExplorer::DeconvExplorer(deconvexp_bulk = ...,
+#' #                                  deconvexp_singlecelldata = ...,
+#' #                                  deconvexp_cell_annotation = ...,
+#' #                                  deconvexp_batch = ...
 #' #   )
 #' # }
-DeconvExplorer <- function(usr_bulk = NULL,
-                           usr_singleCell = NULL,
-                           usr_cellAnnotation = NULL,
-                           usr_batch = NULL) {
+DeconvExplorer <- function(deconvexp_bulk = NULL,
+                           deconvexp_singlecelldata = NULL,
+                           deconvexp_cell_annotation = NULL,
+                           deconvexp_batch = NULL) {
   # methods that produce a signature
   produces_signature <- c(
     # "BSeq-sc" = "bseqsc", # markers!!!
