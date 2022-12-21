@@ -28,7 +28,7 @@ plot_signatureUpset(
 
 \item{invert_sets}{Logical value. Inverts the order of the sets, defaults to FALSE}
 
-\item{color_by_degrees}{Logical value. Whether to color sets according to their 
+\item{color_by_degrees}{Logical value. Whether to color sets according to their
 degree, defaulting to TRUE}
 
 \item{color_palette}{Name of a RColorBrewer palette, standard Set1}
