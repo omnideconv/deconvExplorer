@@ -4,10 +4,10 @@
 \alias{scoreEntropy}
 \title{Score Gene Expression of a single Gene based on information entropy}
 \usage{
-scoreEntropy(geneExpression)
+scoreEntropy(expression_feature)
 }
 \arguments{
-\item{geneExpression}{row from Gene Expression Matrix = Expression Data for a single Gene}
+\item{expression_feature}{row from Gene Expression Matrix = Expression Data for a single Gene}
 }
 \value{
 Score for the given gene based on information entropy

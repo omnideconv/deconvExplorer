@@ -5,32 +5,33 @@
 \title{Calculate UpSet Plot for Signature Gene Sets}
 \usage{
 plot_signatureUpset(
-  signatures,
-  mode = "distinct",
-  minDegree = 1,
-  maxDegree = NULL,
-  order = "size",
-  invert = FALSE,
-  colorDegrees = TRUE,
-  palette = "Set1"
+  signature_list,
+  upset_mode = "distinct",
+  min_degree = 1,
+  max_degree = NULL,
+  order_sets = "size",
+  invert_sets = FALSE,
+  color_by_degrees = TRUE,
+  color_palette = "Set1"
 )
 }
 \arguments{
-\item{signatures}{named list of deconvolution signatures}
+\item{signature_list}{named list of deconvolution signatures}
 
-\item{mode}{upSet Mode (distinct, intersect, union)}
+\item{upset_mode}{upSet Mode (distinct, intersect, union)}
 
-\item{minDegree}{minimal set degree to display in the plot}
+\item{min_degree}{minimal set degree to display in the plot}
 
-\item{maxDegree}{maximal set degree to display in the plot, NULL to display all sets}
+\item{max_degree}{maximal set degree to display in the plot, NULL to display all sets}
 
-\item{order}{order Sets by Size or Degree (size, degree)}
+\item{order_sets}{order sets by Size or Degree (size, degree)}
 
-\item{invert}{invert the order of the Sets, standard = FALSE}
+\item{invert_sets}{Logical value. Inverts the order of the sets, defaults to FALSE}
 
-\item{colorDegrees}{color sets according to their degree, standard = TRUE}
+\item{color_by_degrees}{Logical value. Whether to color sets according to their 
+degree, defaulting to TRUE}
 
-\item{palette}{Name of a RColorBrewer palette, standard = Set1}
+\item{color_palette}{Name of a RColorBrewer palette, standard Set1}
 }
 \value{
 UpSet Plot
@@ -42,5 +43,5 @@ UpSet Plots.
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
-plot_signatureUpset(signatures, mode = "union")
+plot_signatureUpset(signatures, upset_mode = "union")
 }

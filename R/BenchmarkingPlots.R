@@ -2,9 +2,9 @@
 #'
 #' Plot a deconvolution results against it's corresponding ground truth.
 #'
-#' @param gtruth dataframe of gtruth/simulation fractions
-#' @param estimate deconvolution result list (named)
-#' @param palette RColorBrewer Palette
+#' @param gtruth_df dataframe of gtruth/simulation fractions
+#' @param deconv_list deconvolution result list (named)
+#' @param color_palette RColorBrewer Palette
 #'
 #' @return A `ggplot` object
 #'
@@ -13,30 +13,32 @@
 #' @examples
 #' data("RefData", package = "omnideconv")
 #' RefData <- as.data.frame(RefData)
-#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+#' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds",
+#'   package = "DeconvExplorer"
+#' ))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_scatter(RefData, deconvList)
-plot_benchmark_scatter <- function(gtruth,
-                                   estimate,
-                                   palette = "Spectral") {
-  stopifnot(is.data.frame(gtruth))
+plot_benchmark_scatter <- function(gtruth_df,
+                                   deconv_list,
+                                   color_palette = "Spectral") {
+  stopifnot(is.data.frame(gtruth_df))
 
   # is a list AND not a data frame
-  stopifnot(is.list(estimate))
-  if (is.data.frame(estimate)) {
+  stopifnot(is.list(deconv_list))
+  if (is.data.frame(deconv_list)) {
     stop("You should provide the set of estimates as a list, not as a single data frame")
   }
   # and contains data frames as expected
-  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  stopifnot(all(unlist(lapply(deconv_list, is.data.frame))))
 
-  ref <- gtruth %>% as.data.frame()
+  ref <- gtruth_df %>% as.data.frame()
   ref$sample <- rownames(ref)
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
 
   df <- NULL
   # prepare data and add method and rownames as column
-  for (method in names(estimate)) {
-    deconvolution <- as.data.frame(estimate[[method]])
+  for (method in names(deconv_list)) {
+    deconvolution <- as.data.frame(deconv_list[[method]])
     deconvolution$sample <- rownames(deconvolution)
     deconvolution$method <- rep(method, nrow(deconvolution))
 
@@ -66,9 +68,9 @@ plot_benchmark_scatter <- function(gtruth,
 
 
   # get palette
-  max_colors <- RColorBrewer::brewer.pal.info[palette, ]$maxcolors # for brewer.pal()
+  max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
   n_cell_types <- length(unique(merged.df$cell_type)) # number of needed colors
-  getPalette <- colorRampPalette(brewer.pal(max_colors, palette)) # function to return custom interpolated palettes
+  getPalette <- colorRampPalette(brewer.pal(max_colors, color_palette)) # function to return custom interpolated palettes
 
   # color
   plot <- plot + ggplot2::scale_color_manual(values = getPalette(n_cell_types + 1))
@@ -81,11 +83,11 @@ plot_benchmark_scatter <- function(gtruth,
 #'
 #' Plot the correlation of a deconvolution results and it's corresponding ground truth
 #'
-#' @param gtruth dataframe of gtruth/simulation fractions
-#' @param estimate deconvolution result list (named)
+#' @param gtruth_df dataframe of gtruth/simulation fractions
+#' @param deconv_list deconvolution result list (named)
 #' @param plot_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
-#' @param pValueColor color of p value annotation, "white" or "black"
-#' @param pValueType one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
+#' @param pvalue_color color of p value annotation, "white" or "black"
+#' @param pvalue_type one of the following c("p-value", "label_sig", "n"), see corrplot package for further info
 #'
 #' @return A list, as returned by the `corrplot` function
 #'
@@ -97,34 +99,34 @@ plot_benchmark_scatter <- function(gtruth,
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_correlation(RefData, deconvList)
-plot_benchmark_correlation <- function(gtruth,
-                                       estimate,
-                                       pValueType = "label_sig",
-                                       pValueColor = "black",
+plot_benchmark_correlation <- function(gtruth_df,
+                                       deconv_list,
+                                       pvalue_type = "label_sig",
+                                       pvalue_color = "black",
                                        plot_method = "number") {
-  stopifnot(is.data.frame(gtruth))
+  stopifnot(is.data.frame(gtruth_df))
 
   # is a list AND not a data frame
-  stopifnot(is.list(estimate))
-  if (is.data.frame(estimate)) {
+  stopifnot(is.list(deconv_list))
+  if (is.data.frame(deconv_list)) {
     stop("You should provide the set of estimates as a list, not as a single data frame")
   }
   # and contains data frames as expected
-  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  stopifnot(all(unlist(lapply(deconv_list, is.data.frame))))
 
   if (!plot_method %in% c("circle", "square", "ellipse", "number", "shade", "color", "pie")) {
     stop("correlation plot method not supported")
   }
 
-  if (!pValueType %in% c("p-value", "label_sig", "n")) {
+  if (!pvalue_type %in% c("p-value", "label_sig", "n")) {
     stop("P Value Method not supported")
   }
 
-  if (!pValueColor %in% c("black", "white")) {
+  if (!pvalue_color %in% c("black", "white")) {
     stop("P Value Annotation color must be white or black")
   }
 
-  ref <- gtruth %>% as.data.frame()
+  ref <- gtruth_df %>% as.data.frame()
   ref$sample <- rownames(ref)
 
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
@@ -132,8 +134,8 @@ plot_benchmark_correlation <- function(gtruth,
   df <- NULL
 
   # prepare data and add method and rownames as column
-  for (method in names(estimate)) {
-    deconvolution <- as.data.frame(estimate[[method]])
+  for (method in names(deconv_list)) {
+    deconvolution <- as.data.frame(deconv_list[[method]])
     deconvolution$sample <- rownames(deconvolution)
     deconvolution$method <- rep(method, nrow(deconvolution))
 
@@ -147,7 +149,7 @@ plot_benchmark_correlation <- function(gtruth,
   p.df <- data.frame("method" = character(), "cell_type" = character(), "p" = numeric())
 
   # for each cell type and each method calculate correlation
-  for (method in names(estimate)) {
+  for (method in names(deconv_list)) {
     subset <- merged.df[merged.df$method == method, ]
     for (cellType in unique(subset$cell_type)) {
       subsubset <- subset[subset$cell_type == cellType, ]
@@ -191,8 +193,8 @@ plot_benchmark_correlation <- function(gtruth,
 
   # return plot
   return(corrplot::corrplot(cor.df,
-    p.mat = p.df, insig = pValueType, sig.level = c(0.05, 0.1, 0.2), pch.cex = 4,
-    pch.col = pValueColor, method = plot_method,
+    p.mat = p.df, insig = pvalue_type, sig.level = c(0.05, 0.1, 0.2), pch.cex = 4,
+    pch.col = pvalue_color, method = plot_method,
     na.label = "NA", tl.col = "black", tl.srt = 60,
     cl.pos = "r", cl.align.text = "r", tl.cex = 2, cl.cex = 1.5,
     number.cex = 1.5, na.label.col = "#7F7F7F"
@@ -204,11 +206,11 @@ plot_benchmark_correlation <- function(gtruth,
 #' Plot RMSE (root mean squared error) for a list of deconvolution results and the
 #' corresponding ground truth
 #'
-#' @param gtruth dataframe of gtruth/simulation fractions
-#' @param estimate deconvolution result list (named)
+#' @param gtruth_df dataframe of gtruth/simulation fractions
+#' @param deconv_list deconvolution result list (named)
 #' @param hm_method method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")
 #' @param plot_type "heatmap" or "boxplot"
-#' @param palette RColorBrewer Palette
+#' @param color_palette RColorBrewer Palette
 #'
 #' @return A `ggplot` object, or a list as returned by `corrplot()`
 #'
@@ -220,20 +222,20 @@ plot_benchmark_correlation <- function(gtruth,
 #' deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
 #' deconvList <- list("momf" = deconv, "bisque" = deconv)
 #' plot_benchmark_rmse(RefData, deconvList)
-plot_benchmark_rmse <- function(gtruth,
-                                estimate,
+plot_benchmark_rmse <- function(gtruth_df,
+                                deconv_list,
                                 plot_type = "heatmap",
                                 hm_method = "color",
-                                palette = "Spectral") {
-  stopifnot(is.data.frame(gtruth))
+                                color_palette = "Spectral") {
+  stopifnot(is.data.frame(gtruth_df))
 
   # is a list AND not a data frame
-  stopifnot(is.list(estimate))
-  if (is.data.frame(estimate)) {
+  stopifnot(is.list(deconv_list))
+  if (is.data.frame(deconv_list)) {
     stop("You should provide the set of estimates as a list, not as a single data frame")
   }
   # and contains data frames as expected
-  stopifnot(all(unlist(lapply(estimate, is.data.frame))))
+  stopifnot(all(unlist(lapply(deconv_list, is.data.frame))))
 
   if (!(plot_type %in% c("heatmap", "boxplot"))) {
     stop("plot_type not supported")
@@ -243,11 +245,11 @@ plot_benchmark_rmse <- function(gtruth,
     stop("hm_method not supported")
   }
 
-  if (is.null(gtruth) | is.null(estimate)) {
-    stop("gtruth or estimate not provided")
+  if (is.null(gtruth_df) | is.null(deconv_list)) {
+    stop("gtruth_df or deconv_list not provided")
   }
 
-  ref <- gtruth %>% as.data.frame()
+  ref <- gtruth_df %>% as.data.frame()
   ref$sample <- rownames(ref)
 
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
@@ -255,8 +257,8 @@ plot_benchmark_rmse <- function(gtruth,
   df <- NULL
 
   # prepare data and add method and rownames as column
-  for (method in names(estimate)) {
-    deconvolution <- as.data.frame(estimate[[method]])
+  for (method in names(deconv_list)) {
+    deconvolution <- as.data.frame(deconv_list[[method]])
     deconvolution$sample <- rownames(deconvolution)
     deconvolution$method <- rep(method, nrow(deconvolution))
 
@@ -269,7 +271,7 @@ plot_benchmark_rmse <- function(gtruth,
   rmse.df <- data.frame("method" = character(), "cell_type" = character(), "rmse" = numeric())
 
   # for each cell type and each method calculate correlation
-  for (method in names(estimate)) {
+  for (method in names(deconv_list)) {
     subset <- merged.df[merged.df$method == method, ]
     for (cellType in unique(subset$cell_type)) {
       subsubset <- subset[subset$cell_type == cellType, ]
@@ -300,9 +302,9 @@ plot_benchmark_rmse <- function(gtruth,
     ))
   } else if (plot_type == "boxplot") {
     # get color first
-    max_colors <- RColorBrewer::brewer.pal.info[palette, ]$maxcolors # for brewer.pal()
+    max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
     n_methods <- length(unique(merged.df$method)) # number of needed colors
-    getPalette <- colorRampPalette(brewer.pal(max_colors, palette)) # function to return custom interpolated palettes
+    getPalette <- colorRampPalette(brewer.pal(max_colors, color_palette)) # function to return custom interpolated palettes
 
 
     plot <- ggplot(rmse.df, aes(x = method, y = rmse, fill = method)) +

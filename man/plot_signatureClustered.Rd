@@ -5,20 +5,20 @@
 \title{Calculate Clustered Heatmap of Signature Genes}
 \usage{
 plot_signatureClustered(
-  signature,
-  score = "entropy",
+  signature_mat,
+  scoring_method = "entropy",
   annotation_type = "line",
-  palette = "Spectral"
+  color_palette = "Spectral"
 )
 }
 \arguments{
-\item{signature}{One Signature to plot}
+\item{signature_mat}{One Signature to plot}
 
-\item{score}{The score used to annotate the genes (entropy, gini)}
+\item{scoring_method}{The score used to annotate the genes (entropy, gini)}
 
 \item{annotation_type}{How the score is rendered (line, bar)}
 
-\item{palette}{RColorBrewer Palette name, standard = Spectral}
+\item{color_palette}{RColorBrewer Palette name, standard = Spectral}
 }
 \value{
 A Heatmap
@@ -29,5 +29,5 @@ by a gene scores ranking the distinctness of a gene in the signature.
 }
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
+plot_signatureClustered(signature, scoring_method = "gini", annotation_type = "bar")
 }

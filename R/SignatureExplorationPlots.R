@@ -3,8 +3,8 @@
 #' This Barplot allows the comparison of the size of differnt signatures by plotting the
 #' number of genes for each signature as a barplot
 #'
-#' @param signatures Named List of signatures, names are the calculation methods
-#' @param palette RColorBrewer palette name, standard = Set1
+#' @param signature_list Named List of signatures, names are the calculation methods
+#' @param color_palette RColorBrewer palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
@@ -17,13 +17,13 @@
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_signatureGenesPerMethod(signatureList)
-plot_signatureGenesPerMethod <- function(signatures,
-                                         palette = "Set1") {
+plot_signatureGenesPerMethod <- function(signature_list,
+                                         color_palette = "Set1") {
   df <- data.frame(method = character(), number_of_genes = numeric())
 
   # calculate number of genes per method
-  for (name in names(signatures)) {
-    number_of_genes <- dim(signatures[[name]])[1]
+  for (name in names(signature_list)) {
+    number_of_genes <- dim(signature_list[[name]])[1]
     df[nrow(df) + 1, ] <- list(name, number_of_genes)
   }
 
@@ -47,7 +47,7 @@ plot_signatureGenesPerMethod <- function(signatures,
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
     bbc_style() +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -58,8 +58,8 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' This plot focuses on the condition number for each signature and simplifies
 #' the comparison by providion a barplot
 #'
-#' @param signatures Named List of signatures, names are the calculation methods
-#' @param palette RColorBrewer Palette name, standard = Set1
+#' @param signature_list Named List of signatures, names are the calculation methods
+#' @param color_palette RColorBrewer Palette name, standard = Set1
 #'
 #' @returns A Barplot
 #'
@@ -72,13 +72,13 @@ plot_signatureGenesPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_conditionNumberPerMethod(signatureList)
-plot_conditionNumberPerMethod <- function(signatures,
-                                          palette = "Set1") {
+plot_conditionNumberPerMethod <- function(signature_list,
+                                          color_palette = "Set1") {
   df <- data.frame(method = character(), kappa = numeric())
 
   # calculate condition number for each method
-  for (name in names(signatures)) {
-    kappa <- kappa(signatures[[name]][, -1], exact = TRUE)
+  for (name in names(signature_list)) {
+    kappa <- kappa(signature_list[[name]][, -1], exact = TRUE)
     df[nrow(df) + 1, ] <- list(name, kappa)
   }
 
@@ -97,7 +97,7 @@ plot_conditionNumberPerMethod <- function(signatures,
     bbc_style() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(df$kappa) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -108,8 +108,8 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' This plot focuses on the mean entropy of a signature and simplifies the comparison
 #' to other signature with a barplot
 #'
-#' @param signatures named List of Signatures
-#' @param palette RColorBrewerPalette
+#' @param signature_list named List of Signatures
+#' @param color_palette RColorBrewerPalette
 #'
 #' @returns a barplot
 #'
@@ -122,13 +122,13 @@ plot_conditionNumberPerMethod <- function(signatures,
 #' signatureList <- list("bisque" = signature, "momf" = signature)
 #'
 #' plot_meanEntropyPerMethod(signatureList)
-plot_meanEntropyPerMethod <- function(signatures,
-                                      palette = "Set1") {
+plot_meanEntropyPerMethod <- function(signature_list,
+                                      color_palette = "Set1") {
   entropies <- data.frame(method = character(), meanEntropy = numeric())
 
   # calculate Mean Entropy for each signature
-  for (name in names(signatures)) {
-    meanEntropy <- mean(apply(signatures[[name]], 1, scoreEntropy))
+  for (name in names(signature_list)) {
+    meanEntropy <- mean(apply(signature_list[[name]], 1, scoreEntropy))
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
 
@@ -147,7 +147,7 @@ plot_meanEntropyPerMethod <- function(signatures,
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
-    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, palette)[1:length(names(signatures))]) +
+    ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(entropies$meanEntropy) * 1.1) # scale y axis to contain bar label
 
   return(p)
@@ -159,25 +159,25 @@ plot_meanEntropyPerMethod <- function(signatures,
 #' This Heatmap displayes a z-scored signature in heatmap form. The plot is annotated
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
-#' @param signature One Signature to plot
-#' @param palette RColorBrewer Palette name, standard = Spectral
-#' @param score The score used to annotate the genes (entropy, gini)
+#' @param signature_mat One Signature to plot
+#' @param color_palette RColorBrewer Palette name, standard = Spectral
+#' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
 #'
 #' @returns A Heatmap
 #' @export
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#' plot_signatureClustered(signature, score = "gini", annotation_type = "bar")
-plot_signatureClustered <- function(signature,
-                                    score = "entropy",
+#' plot_signatureClustered(signature, scoring_method = "gini", annotation_type = "bar")
+plot_signatureClustered <- function(signature_mat,
+                                    scoring_method = "entropy",
                                     annotation_type = "line",
-                                    palette = "Spectral") {
-  if (is.null(signature)) {
+                                    color_palette = "Spectral") {
+  if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
 
-  if (!(score %in% c("entropy", "gini"))) {
+  if (!(scoring_method %in% c("entropy", "gini"))) {
     stop("Score Method not supported")
   }
 
@@ -185,7 +185,7 @@ plot_signatureClustered <- function(signature,
     stop("annotation_type not supported")
   }
 
-  df <- data.frame(signature)
+  df <- data.frame(signature_mat)
 
   df <- cbind("X" = rownames(df), df) # add gene names as column
 
@@ -214,9 +214,9 @@ plot_signatureClustered <- function(signature,
 
   # calculate color palette
   col_fun <- circlize::colorRamp2(c(-2, 0, 2), c(
-    RColorBrewer::brewer.pal(8, palette)[8:8], # first color of palette
+    RColorBrewer::brewer.pal(8, color_palette)[8:8], # first color of palette
     "white", # middle color
-    RColorBrewer::brewer.pal(8, palette)[1:1] # last color of palette
+    RColorBrewer::brewer.pal(8, color_palette)[1:1] # last color of palette
   ))
 
 
@@ -225,17 +225,17 @@ plot_signatureClustered <- function(signature,
 
   annotation <- NULL
 
-  if (score == "entropy") {
+  if (scoring_method == "entropy") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature_mat, 1, scoreEntropy), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, scoreEntropy), which = "row"))
     }
-  } else if (score == "gini") {
+  } else if (scoring_method == "gini") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_lines(apply(signature_mat, 1, BioQC::gini), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature, 1, BioQC::gini), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, BioQC::gini), which = "row"))
     }
   }
 
@@ -261,14 +261,15 @@ plot_signatureClustered <- function(signature,
 #' This plot allows the comparison of multiple signature gene sets by utilizing
 #' UpSet Plots.
 #'
-#' @param signatures named list of deconvolution signatures
-#' @param mode upSet Mode (distinct, intersect, union)
-#' @param minDegree minimal set degree to display in the plot
-#' @param maxDegree maximal set degree to display in the plot, NULL to display all sets
-#' @param order order Sets by Size or Degree (size, degree)
-#' @param invert invert the order of the Sets, standard = FALSE
-#' @param colorDegrees color sets according to their degree, standard = TRUE
-#' @param palette Name of a RColorBrewer palette, standard = Set1
+#' @param signature_list named list of deconvolution signatures
+#' @param upset_mode upSet Mode (distinct, intersect, union)
+#' @param min_degree minimal set degree to display in the plot
+#' @param max_degree maximal set degree to display in the plot, NULL to display all sets
+#' @param order_sets order sets by Size or Degree (size, degree)
+#' @param invert_sets Logical value. Inverts the order of the sets, defaults to FALSE
+#' @param color_by_degrees Logical value. Whether to color sets according to their
+#' degree, defaulting to TRUE
+#' @param color_palette Name of a RColorBrewer palette, standard Set1
 #'
 #' @returns UpSet Plot
 #' @export
@@ -276,45 +277,45 @@ plot_signatureClustered <- function(signature,
 #' @examples
 #' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
-#' plot_signatureUpset(signatures, mode = "union")
-plot_signatureUpset <- function(signatures,
-                                mode = "distinct",
-                                minDegree = 1,
-                                maxDegree = NULL,
-                                order = "size",
-                                invert = FALSE,
-                                colorDegrees = TRUE,
-                                palette = "Set1") {
+#' plot_signatureUpset(signatures, upset_mode = "union")
+plot_signatureUpset <- function(signature_list,
+                                upset_mode = "distinct",
+                                min_degree = 1,
+                                max_degree = NULL,
+                                order_sets = "size",
+                                invert_sets = FALSE,
+                                color_by_degrees = TRUE,
+                                color_palette = "Set1") {
   # takes list of signatures
   sets <- list()
 
-  for (name in names(signatures)) {
-    sets[[name]] <- rownames(signatures[[name]])
+  for (name in names(signature_list)) {
+    sets[[name]] <- rownames(signature_list[[name]])
   }
 
   # modes available: distinct, intersect and union
-  mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
+  mat <- ComplexHeatmap::make_comb_mat(sets, mode = upset_mode)
 
-  # subset plot according to minDegree and maxDegree
-  # if maxDegree is NULL, get maxDegree from data
-  if (is.null(maxDegree)) {
-    maxDegree <- max(ComplexHeatmap::comb_degree(mat))
+  # subset plot according to min_degree and max_degree
+  # if max_degree is NULL, get max_degree from data
+  if (is.null(max_degree)) {
+    max_degree <- max(ComplexHeatmap::comb_degree(mat))
   }
 
-  mat <- mat[ComplexHeatmap::comb_degree(mat) >= minDegree] # lower
-  mat <- mat[ComplexHeatmap::comb_degree(mat) <= maxDegree] # upper
+  mat <- mat[ComplexHeatmap::comb_degree(mat) >= min_degree] # lower
+  mat <- mat[ComplexHeatmap::comb_degree(mat) <= max_degree] # upper
 
   # calculate order: size, degree
-  if (order == "size") {
-    combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert) # invert = FALSE -> will sort decreasing
+  if (order_sets == "size") {
+    combOrder <- order(ComplexHeatmap::comb_size(mat), decreasing = !invert_sets) # invert_sets = FALSE -> will sort decreasing
   } else {
-    # order=="degree"
-    combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert)
+    # order_sets=="degree"
+    combOrder <- order(ComplexHeatmap::comb_degree(mat), decreasing = !invert_sets)
   }
 
   # calculate colors
-  if (colorDegrees == TRUE) {
-    upSetColors <- RColorBrewer::brewer.pal(8, palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
+  if (color_by_degrees == TRUE) {
+    upSetColors <- RColorBrewer::brewer.pal(8, color_palette)[ComplexHeatmap::comb_degree(mat)] # max five different right now
   } else {
     # =FALSE
     upSetColors <- c("black")
@@ -342,9 +343,9 @@ plot_signatureUpset <- function(signatures,
 #' Returns gene sets of signatures according to the selected combination. As
 #' intersection mode "distinct", "intersect" and "union" are available.
 #'
-#' @param signatures list of named signatures
-#' @param combination vector of signaature names that should be intersected
-#' @param mode intersection type c("distinct", "intersect", "union")
+#' @param signature_list list of named signatures
+#' @param combination_to_include vector of signature names that should be intersected
+#' @param upset_mode intersection type c("distinct", "intersect", "union")
 #'
 #' @return List of genes
 #' @export
@@ -354,23 +355,23 @@ plot_signatureUpset <- function(signatures,
 #'
 #' signatures <- list("dwls" = signature, "momf" = signature, "bisque" = signature)
 #' download_signatureUpset(signatures, c("dwls", "bisque"), "intersect")
-download_signatureUpset <- function(signatures,
-                                    combination,
-                                    mode = "distinct") {
+download_signatureUpset <- function(signature_list,
+                                    combination_to_include,
+                                    upset_mode = "distinct") {
   # in case no set is selected return NULL
-  if (is.null(combination)) {
+  if (is.null(combination_to_include)) {
     return(NULL)
   } else {
     # case: minimum of 1 Set selected
     sets <- list()
     token <- ""
 
-    for (name in names(signatures)) {
+    for (name in names(signature_list)) {
       # add genes to set list
-      sets[[name]] <- rownames(signatures[[name]])
+      sets[[name]] <- rownames(signature_list[[name]])
 
       # check if name in combination and construct token
-      if (name %in% combination) {
+      if (name %in% combination_to_include) {
         token <- paste0(token, "1")
       } else {
         token <- paste0(token, "0")
@@ -378,7 +379,7 @@ download_signatureUpset <- function(signatures,
     }
 
     # modes available: distinct, intersect and union
-    mat <- ComplexHeatmap::make_comb_mat(sets, mode = mode)
+    mat <- ComplexHeatmap::make_comb_mat(sets, mode = upset_mode)
 
     # construct subset string from given signatures, if "000" return NULL
     return(ComplexHeatmap::extract_comb(mat, token))

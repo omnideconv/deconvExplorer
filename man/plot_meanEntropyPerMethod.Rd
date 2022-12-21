@@ -4,12 +4,12 @@
 \alias{plot_meanEntropyPerMethod}
 \title{Plot Mean Entropy for multiple signatures}
 \usage{
-plot_meanEntropyPerMethod(signatures, palette = "Set1")
+plot_meanEntropyPerMethod(signature_list, color_palette = "Set1")
 }
 \arguments{
-\item{signatures}{named List of Signatures}
+\item{signature_list}{named List of Signatures}
 
-\item{palette}{RColorBrewerPalette}
+\item{color_palette}{RColorBrewerPalette}
 }
 \value{
 a barplot

@@ -594,7 +594,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
     ),
     column(
       width = 5,
-      numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)
+      numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
     ),
     column(
       width = 2,
@@ -982,8 +982,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       signatureRefined(
         removeUnspecificGenes(signatureRefined(),
-          numberOfBins = 3,
-          maxCount = input$refineUnspecific
+          number_of_bins = 3,
+          max_count = input$refineUnspecific
         )
       )
 
@@ -1006,8 +1006,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       signatureRefined(
         selectGenesByScore(signatureRefined(),
-          method = ref_method,
-          genesPerCellType = input$refineBestN
+          scoring_method = ref_method,
+          genes_per_cell_type = input$refineBestN
         )
       )
 
@@ -1061,7 +1061,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
       updateSelectInput(session, "cellTypeToRename", choices = colnames(signatureRefined()))
     })
 
-    # rename celltype if button is clicked
+    # rename cell type if button is clicked
     observeEvent(input$renameCellTypeGo, {
       req(input$cellTypeNewName, signatureRefined(), input$cellTypeToRename)
 
@@ -1302,9 +1302,9 @@ DeconvExplorer <- function(usr_bulk = NULL,
         output,
         session,
         plot_signatureClustered(signature,
-          score = input$signatureAnnotationScore,
+          scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
-          palette = input$globalColor
+          color_palette = input$globalColor
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action
@@ -1325,13 +1325,13 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
       # calculate the plot
       result <- plot_signatureUpset(shiny::isolate(internal$signatures),
-        mode = input$upsetMode,
-        minDegree = minDegree,
-        maxDegree = maxDegree,
-        order = input$upSetOrder,
-        invert = input$upSetInvert,
-        colorDegrees = input$upSetColorDegrees,
-        palette = input$globalColor
+        upset_mode = input$upsetMode,
+        min_degree = minDegree,
+        max_degree = maxDegree,
+        order_sets = input$upSetOrder,
+        invert_sets = input$upSetInvert,
+        color_by_degrees = input$upSetColorDegrees,
+        color_palette = input$globalColor
       )
 
       # update settings
@@ -1347,9 +1347,9 @@ DeconvExplorer <- function(usr_bulk = NULL,
       req(input$refinementHeatmapScore, input$refinementHeatmapScorePlotType, signatureRefined()) # und die signature
 
       plot_signatureClustered(signatureRefined(),
-        score = input$refinementHeatmapScore,
+        scoring_method = input$refinementHeatmapScore,
         annotation_type = input$refinementHeatmapScorePlotType,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
     })
 
@@ -1368,8 +1368,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
         reference,
         estimates,
         plot_method = input$correlationPlotType,
-        pValueType = input$correlationAnnotationType,
-        pValueColor = input$correlationAnntotationColor
+        pvalue_type = input$correlationAnnotationType,
+        pvalue_color = input$correlationAnntotationColor
       )
     })
 
@@ -1383,7 +1383,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         estimates,
         plot_type = input$rmsePlotType,
         hm_method = input$rmseHeatmapMethod,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
     })
 
@@ -1597,7 +1597,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
         paste("signature_", input$signatureToTable, ".csv", sep = "")
       },
       content = function(file) {
-        # data <- all_deconvolutions[[input$signatureToTable]][[2]]
+        # data <- deconv_list[[input$signatureToTable]][[2]]
         data <- isolate(internal$signatures[[input$signatureToTable]])
         write.csv(data, file)
       }
@@ -1641,8 +1641,8 @@ DeconvExplorer <- function(usr_bulk = NULL,
         signatures <- shiny::isolate(internal$signatures)
 
         data <- download_signatureUpset(signatures,
-          combination = input$upSetDownloadSelection,
-          mode = input$upsetMode
+          combination_to_include = input$upSetDownloadSelection,
+          upset_mode = input$upsetMode
         )
 
         # get genes from function
@@ -1740,7 +1740,7 @@ DeconvExplorer <- function(usr_bulk = NULL,
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
-      req(internal$signatures, input$signatureToHeatmap) # used to contain all_deconvolutions
+      req(internal$signatures, input$signatureToHeatmap) # used to contain deconv_list
 
       # ClusteredHeatmapSelectedGenes(Table)
 

@@ -4,12 +4,12 @@
 \alias{returnSelectedDeconvolutions}
 \title{Get subset of deconvolution results}
 \usage{
-returnSelectedDeconvolutions(to_plot_list, all_deconvolutions)
+returnSelectedDeconvolutions(deconv_select, deconv_list)
 }
 \arguments{
-\item{to_plot_list}{list of deconvolution result names which should be plotted}
+\item{deconv_select}{list of deconvolution result names which should be plotted}
 
-\item{all_deconvolutions}{List containing all available deconvolution results}
+\item{deconv_list}{List containing all available deconvolution results}
 }
 \value{
 list of deconvolution results

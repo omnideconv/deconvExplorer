@@ -1,60 +1,60 @@
 test_that("Signature exploration plots are correct", {
-  p_sig_met <- plot_signatureGenesPerMethod(signatures = signature_list)
+  p_sig_met <- plot_signatureGenesPerMethod(signature_list = signature_list)
 
   expect_s3_class(p_sig_met, "gg")
 
   expect_error(
-    plot_signatureGenesPerMethod(signatures = signature_list[[1]])
+    plot_signatureGenesPerMethod(signature_list = signature_list[[1]])
   )
 
   p_cond_nr_met <- plot_conditionNumberPerMethod(signature_list)
   expect_s3_class(p_cond_nr_met, "gg")
   expect_error(
-    plot_conditionNumberPerMethod(signatures = signature_list[[1]])
+    plot_conditionNumberPerMethod(signature_list = signature_list[[1]])
   )
 
   p_meanentropy <- plot_meanEntropyPerMethod(signature_list)
   expect_s3_class(p_meanentropy, "gg")
   expect_error(
-    plot_meanEntropyPerMethod(signatures = signature_list[[1]])
+    plot_meanEntropyPerMethod(signature_list = signature_list[[1]])
   )
 
   p_sig_clust <- plot_signatureClustered(
-    signature = signature_list$bisque,
-    score = "gini", annotation_type = "bar"
+    signature_mat = signature_list$bisque,
+    scoring_method = "gini", annotation_type = "bar"
   )
 
   expect_s4_class(p_sig_clust, "HeatmapList")
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
-      score = "gini", annotation_type = "bar"
+      signature_mat = signature_list,
+      scoring_method = "gini", annotation_type = "bar"
     )
   )
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
-      score = "gino", annotation_type = "bar"
+      signature_mat = signature_list,
+      scoring_method = "gino", annotation_type = "bar"
     )
   )
   expect_error(
     plot_signatureClustered(
-      signature = signature_list,
-      score = "gini", annotation_type = "bart"
+      signature_mat = signature_list,
+      scoring_method = "gini", annotation_type = "bart"
     )
   )
   # some variations on that
   p_sig_clust2 <- plot_signatureClustered(
-    signature = signature_list$bisque,
-    score = "gini", annotation_type = "line"
+    signature_mat = signature_list$bisque,
+    scoring_method = "gini", annotation_type = "line"
   )
   p_sig_clust3 <- plot_signatureClustered(
-    signature = signature_list$bisque,
-    score = "entropy", annotation_type = "bar"
+    signature_mat = signature_list$bisque,
+    scoring_method = "entropy", annotation_type = "bar"
   )
   p_sig_clust4 <- plot_signatureClustered(
-    signature = signature_list$bisque,
-    score = "entropy", annotation_type = "bar"
+    signature_mat = signature_list$bisque,
+    scoring_method = "entropy", annotation_type = "bar"
   )
 
   expect_s4_class(p_sig_clust2, "HeatmapList")
@@ -67,27 +67,27 @@ test_that("Signature exploration plots are correct", {
     "momf" = signature_example,
     "bisque" = signature_example
   )
-  p_sig_upset <- plot_signatureUpset(siglist2, mode = "union")
+  p_sig_upset <- plot_signatureUpset(siglist2, upset_mode = "union")
   expect_true(is(p_sig_upset, "list"))
 
   # some variations on that
-  p_sig_upset2 <- plot_signatureUpset(siglist2, mode = "union", order = "degree")
+  p_sig_upset2 <- plot_signatureUpset(siglist2, upset_mode = "union", order_sets = "degree")
   expect_true(is(p_sig_upset2, "list"))
-  p_sig_upset3 <- plot_signatureUpset(siglist2, mode = "union", colorDegrees = FALSE)
+  p_sig_upset3 <- plot_signatureUpset(siglist2, upset_mode = "union", color_by_degrees = FALSE)
   expect_true(is(p_sig_upset3, "list"))
 
 
   sig_vec <- download_signatureUpset(
-    signatures = siglist2,
-    combination = c("dwls", "bisque"),
-    mode = "intersect"
+    signature_list = siglist2,
+    combination_to_include = c("dwls", "bisque"),
+    upset_mode = "intersect"
   )
   expect_true(is(sig_vec, "vector"))
 
   sig_vec_null <- download_signatureUpset(
-    signatures = siglist2,
-    combination = NULL,
-    mode = "intersect"
+    signature_list = siglist2,
+    combination_to_include = NULL,
+    upset_mode = "intersect"
   )
   expect_null(sig_vec_null)
 })
