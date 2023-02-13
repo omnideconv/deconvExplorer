@@ -57,11 +57,14 @@ options(width = 100)
 
 This vignette describes how to use the `DeconvExplorer` package for...
 
-
+COSTODO
 
 In order to use `DeconvExplorer` in your workflow, the following inputs are required: 
 
-- 
+- COSTODO
+- COSTODO
+- COSTODO
+
 
 
 
@@ -90,6 +93,7 @@ library("DeconvExplorer")
 If you have all four input elements ready, you can launch the `DeconvExplorer()` app by running:
 
 ```{r launchapp, eval=FALSE}
+# COSTODO
 DeconvExplorer(...)
 ```
 
