@@ -8,7 +8,7 @@ ARG GITHUB_PAT
 RUN apt-get update && apt-get install -y \
     sudo \
     pandoc \
-    pandoc-citeproc \
+    #pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev \
     libxt-dev \
@@ -17,15 +17,22 @@ RUN apt-get update && apt-get install -y \
     libgdal-dev \
     libgeos-dev \
     libproj-dev \
-    cmake 
+    cmake \
+    libharfbuzz-dev \
+    libfribidi-dev
 
 # last three are for scBio/CPM
 
 # omnideconv and DeconvExplorer
+#RUN install2.r --error textshaping
 
-RUN install2.r --error remotes car matlib
-RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
-RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
+RUN install2.r --error pak car matlib 
+#RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
+RUN R -e "pak::pkg_install('omnideconv/omnideconv', dependencies=TRUE)"
+#RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
+RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
+
+RUN R -e "reticulate::install_miniconda()" # will not install automatically
 
 RUN R -e "omnideconv::install_all_python()"
 
@@ -54,4 +61,3 @@ EXPOSE 3838
 
 CMD ["R", "-e", "shiny::runApp('/srv/shiny-server/', host = '0.0.0.0', port = 3838)"]
 #CMD ["/usr/bin/shiny-server.sh"]
-

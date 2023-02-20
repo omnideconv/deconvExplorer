@@ -1,2 +1,0 @@
-library(DeconvExplorer) 
-DeconvExplorer::deconvExplorer()

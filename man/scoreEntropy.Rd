@@ -4,15 +4,21 @@
 \alias{scoreEntropy}
 \title{Score Gene Expression of a single Gene based on information entropy}
 \usage{
-scoreEntropy(geneExpression)
+scoreEntropy(expression_feature)
 }
 \arguments{
-\item{geneExpression}{row from Gene Expression Matrix = Expression Data for a single Gene}
+\item{expression_feature}{row from Gene Expression Matrix = Expression Data for a single Gene}
 }
 \value{
 Score for the given gene based on information entropy
 Here: The lower the better
 }
 \description{
-Score Gene Expression of a single Gene based on information entropy
+Score Genes Expression of a single gene across celltypes. The function returns
+the calculated entropy of the expression value distribution.
+}
+\examples{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+
+entropy <- scoreEntropy(signature[1, ]) # scoring the first gene
 }

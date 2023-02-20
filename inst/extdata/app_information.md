@@ -5,27 +5,27 @@ uploaded as txt as well.**
 
 #### Deconvolution Data
 
--   Bulk RNA-seq data
-    -   *Genes* x *Samples* matrix
-    -   Rownames (gene names) are provided in the same format as in the
-        sc RNA-seq data, for instance HGNC symbols
--   Single cell RNA-seq data
-    -   *Genes* x *Cells* matrix
-    -   Counts are *not log-transformed*
-    -   Rownames (gene names) are provided in the same format as in the
-        bulk RNA-seq data, for instance HGNC symbols
--   Cell type annotations
-    -   Vector containing cell type annotations
-    -   Annotations are in the same order as the columns of the single
-        cell matrix
--   Batch ids
-    -   Vector containing batch ids, so sample or patient ids
-    -   Ids are in the same order as the columns of the single cell
-        matrix
-    -   This is only necessary for Bisque, MuSiC and SCDC
--   (Marker genes)
-    -   Vector containing gene names
-    -   This is only necessary for BSeq-sc
+- Bulk RNA-seq data
+  - _Genes_ x _Samples_ matrix
+  - Rownames (gene names) are provided in the same format as in the
+    sc RNA-seq data, for instance HGNC symbols
+- Single cell RNA-seq data
+  - _Genes_ x _Cells_ matrix
+  - Counts are _not log-transformed_
+  - Rownames (gene names) are provided in the same format as in the
+    bulk RNA-seq data, for instance HGNC symbols
+- Cell type annotations
+  - Vector containing cell type annotations
+  - Annotations are in the same order as the columns of the single
+    cell matrix
+- Batch ids
+  - Vector containing batch ids, so sample or patient ids
+  - Ids are in the same order as the columns of the single cell
+    matrix
+  - This is only necessary for Bisque, MuSiC and SCDC
+- (Marker genes)
+  - Vector containing gene names
+  - This is only necessary for BSeq-sc
 
 #### SimBu Simulation
 

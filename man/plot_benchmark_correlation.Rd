@@ -2,27 +2,37 @@
 % Please edit documentation in R/BenchmarkingPlots.R
 \name{plot_benchmark_correlation}
 \alias{plot_benchmark_correlation}
-\title{plot benchmark correlation}
+\title{Plot benchmark correlation}
 \usage{
 plot_benchmark_correlation(
-  gtruth,
-  estimate,
-  pValueType = "label_sig",
-  pValueColor = "black",
+  gtruth_df,
+  deconv_list,
+  pvalue_type = "label_sig",
+  pvalue_color = "black",
   plot_method = "number"
 )
 }
 \arguments{
-\item{gtruth}{dataframe of gtruth/simulation fractions}
+\item{gtruth_df}{dataframe of gtruth/simulation fractions}
 
-\item{estimate}{deconvolution result list (named)}
+\item{deconv_list}{deconvolution result list (named)}
 
-\item{pValueType}{one of the following c("p-value", "label_sig", "n"), see corrplot package for further info}
+\item{pvalue_type}{one of the following c("p-value", "label_sig", "n"), see corrplot package for further info}
 
-\item{pValueColor}{color of p value annotation, "white" or "black"}
+\item{pvalue_color}{color of p value annotation, "white" or "black"}
 
 \item{plot_method}{method to plot, one of c("circle", "square", "ellipse", "number", "shade", "color", "pie")}
 }
+\value{
+A list, as returned by the `corrplot` function
+}
 \description{
-plot benchmark correlation
+Plot the correlation of a deconvolution results and it's corresponding ground truth
+}
+\examples{
+data("RefData", package = "omnideconv")
+RefData <- as.data.frame(RefData)
+deconv <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
+deconvList <- list("momf" = deconv, "bisque" = deconv)
+plot_benchmark_correlation(RefData, deconvList)
 }

@@ -4,18 +4,24 @@
 \alias{renameCellType}
 \title{Rename Cell Types of Gene Expression Signature}
 \usage{
-renameCellType(signature, cellType, newName)
+renameCellType(signature_mat, cell_type, new_celltype_name)
 }
 \arguments{
-\item{signature}{gene expression signature}
+\item{signature_mat}{gene expression signature}
 
-\item{cellType}{cell type to rename}
+\item{cell_type}{cell type to rename}
 
-\item{newName}{new cell type name}
+\item{new_celltype_name}{new cell type name}
 }
 \value{
 gene expression signature with updated cell type names
 }
 \description{
-Rename Cell Types of Gene Expression Signature
+Rename columns of a gene expression signature matrix.
+}
+\examples{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+
+# rename "B" to "B.cells"
+signature <- renameCellType(signature, "B", "B.cells")
 }

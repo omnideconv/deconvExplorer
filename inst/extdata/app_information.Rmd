@@ -33,7 +33,7 @@ a pseudo-bulk sample with known cell type fraction using SimBu. To transfer your
 
 ```{r eval=FALSE}
 simulation <- SimBu::simulate_bulk(...)
-saveRDS(simulation, 'filepath.rds') # upload this file
+saveRDS(simulation, "filepath.rds") # upload this file
 ```
 
 

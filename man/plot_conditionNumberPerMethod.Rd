@@ -2,18 +2,27 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{plot_conditionNumberPerMethod}
 \alias{plot_conditionNumberPerMethod}
-\title{Calculate Barplot of Signature Genes per Method}
+\title{Calculate Condition Number per Method}
 \usage{
-plot_conditionNumberPerMethod(signatures, palette = "Set1")
+plot_conditionNumberPerMethod(signature_list, color_palette = "Set1")
 }
 \arguments{
-\item{signatures}{Named List of sigantures, names are the calculation methods}
+\item{signature_list}{Named List of signatures, names are the calculation methods}
 
-\item{palette}{RColorBrewer Palette name, standard = Set1}
+\item{color_palette}{RColorBrewer Palette name, standard = Set1}
 }
 \value{
 A Barplot
 }
 \description{
-Calculate Barplot of Signature Genes per Method
+This plot focuses on the condition number for each signature and simplifies
+the comparison by providion a barplot
+}
+\examples{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+
+# list containting deconvolution results
+signatureList <- list("bisque" = signature, "momf" = signature)
+
+plot_conditionNumberPerMethod(signatureList)
 }

@@ -1,38 +1,38 @@
-version: '3.5'
+version: "3.5"
 
 services:
   deconvexplorer:
-    build: 
-      context: ./app          
+    build:
+      context: ./app
       args:
-        GITHUB_PAT: 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 
+        GITHUB_PAT: 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
     image: deconv_explorer:latest
     expose:
       - 3838
     networks:
-      - sp-net
+      - sp-net-deconvexplorer
   shinyproxy:
     build: ./shinyproxy
-    depends_on: 
+    depends_on:
       - deconvexplorer
     expose:
       - 8080
     networks:
-      - sp-net
+      - sp-net-deconvexplorer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./logs/:/opt/shinyproxy/container-logs/
-  nginx: 
+  nginx:
     image: nginx:1.17.5
     restart: unless-stopped
     ports:
-      - 3858:80
+      - 3828:80
     networks:
-      - sp-net
+      - sp-net-deconvexplorer
     depends_on:
       - shinyproxy
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
 networks:
-  sp-net:
+  sp-net-deconvexplorer:

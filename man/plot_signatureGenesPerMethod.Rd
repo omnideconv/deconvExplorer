@@ -4,16 +4,25 @@
 \alias{plot_signatureGenesPerMethod}
 \title{Calculate Barplot of Signature Genes per Method}
 \usage{
-plot_signatureGenesPerMethod(signatures, palette = "Set1")
+plot_signatureGenesPerMethod(signature_list, color_palette = "Set1")
 }
 \arguments{
-\item{signatures}{Named List of sigantures, names are the calculation methods}
+\item{signature_list}{Named List of signatures, names are the calculation methods}
 
-\item{palette}{RColorBrewer palette name, standard = Set1}
+\item{color_palette}{RColorBrewer palette name, standard = Set1}
 }
 \value{
 A Barplot
 }
 \description{
-Calculate Barplot of Signature Genes per Method
+This Barplot allows the comparison of the size of different signatures by plotting the
+number of genes for each signature as a barplot
+}
+\examples{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+
+# list containing deconvolution results
+signatureList <- list("bisque" = signature, "momf" = signature)
+
+plot_signatureGenesPerMethod(signatureList)
 }

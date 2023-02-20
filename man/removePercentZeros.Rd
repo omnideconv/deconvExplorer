@@ -4,16 +4,24 @@
 \alias{removePercentZeros}
 \title{Remove Rows from base expression matrix with a specified amount of zeros in a row}
 \usage{
-removePercentZeros(baseSignature, percentage = 0.5)
+removePercentZeros(signature_mat, max_percentage_zeroes = 0.5)
 }
 \arguments{
-\item{baseSignature}{GenesXcelltype Matrix with expression values}
+\item{signature_mat}{GenesXcelltype Matrix with expression values}
 
-\item{percentage}{maximum percentage of row values allowed to be 0}
+\item{max_percentage_zeroes}{maximum percentage of row values allowed to be 0}
 }
 \value{
 A signature which matches the criteria above
 }
 \description{
-Remove Rows from base expression matrix with a specified amount of zeros in a row
+Remove Rows (Genes) from an expression matrix with more zeros than specified by
+the percentage threshold parameter. This function aims to reduce sequencing artifacts by
+removing genes that are only detected in a few cells/samples.
+}
+\examples{
+signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+dim(signature)
+signature <- removePercentZeros(signature, max_percentage_zeroes = 0.5)
+dim(signature)
 }

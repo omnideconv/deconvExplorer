@@ -1,151 +1,118 @@
-
-# library(shiny)
-# library(shinydashboard)
-# library(shinycssloaders)
-# library(dplyr)
-# library(ggplot2)
-# library(omnideconv)
-# library(RColorBrewer)
-# library(waiter)
-# library(rintrojs)
-#
-# source("Global.R")
-
 #' Run DeconvExplorer
 #'
-#' @param usr_bulk Bulk Sequencing data which will be deconvoluted
-#' @param usr_singleCell Single Cell Data which is used to calculate the signature matrix
-#' @param usr_cellAnnotation Cell Type annotations for the single cell data
-#' @param usr_batch Batch IDs, only for some deconvolution methods
+#' @param deconvexp_bulk Bulk Sequencing data which will be deconvoluted
+#' @param deconvexp_singlecelldata Single Cell Data which is used to calculate the signature matrix
+#' @param deconvexp_cell_annotation Cell Type annotations for the single cell data
+#' @param deconvexp_batch Batch IDs, only for some deconvolution methods
+#'
+#' @return A Shiny app object is returned
 #'
 #' @export
-
-
-
-deconvExplorer <- function(usr_bulk = NULL,
-                           usr_singleCell = NULL,
-                           usr_cellAnnotation = NULL,
-                           usr_batch = NULL) {
-  # library(Biobase) # as long as music isn't fixed
-
+#'
+#' @examples
+#' if (interactive()) {
+#'   DeconvExplorer::DeconvExplorer()
+#' }
+#'
+#' # COSTODO: an example where the parameters are provided before starting the app
+#' # my_deconvexp_bulk <- ...
+#' # my_deconvexp_singlecelldata <- ...
+#' # my_deconvexp_cell_annotation <- ...
+#' # my_deconvexp_batch <- ...
+#' # if (interactive()) {
+#' #   DeconvExplorer::DeconvExplorer(deconvexp_bulk = ...,
+#' #                                  deconvexp_singlecelldata = ...,
+#' #                                  deconvexp_cell_annotation = ...,
+#' #                                  deconvexp_batch = ...
+#' #   )
+#' # }
+DeconvExplorer <- function(deconvexp_bulk = NULL,
+                           deconvexp_singlecelldata = NULL,
+                           deconvexp_cell_annotation = NULL,
+                           deconvexp_batch = NULL) {
   # methods that produce a signature
   produces_signature <- c(
     # "BSeq-sc" = "bseqsc", # markers!!!
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", "MOMF" = "momf",
+    "DWLS" = "dwls",
+    "MOMF" = "momf",
     "MuSiC" = "music" # basicly a one step method but allow calculating a signature
   )
 
   # methods that allow the input of a custom signature
   two_step_methods <- c(
     "CIBERSORTx" = "cibersortx",
-    "DWLS" = "dwls", "MOMF" = "momf"
+    "DWLS" = "dwls",
+    "MOMF" = "momf"
   )
-  
-  
 
   # Data Upload Boxes -------------------------------------------------------
 
-  data_simbu_box <- shinydashboard::box(id="tour_simbu",
+  data_simbu_box <- shinydashboard::box(
+    id = "tour_simbu",
     title = "SimBu", solidHeader = TRUE, status = "primary", width = 12,
-    column(8, 
-    fileInput("data_simbu_simulation", "SimBu Simulation", accept = c(".rds"))), 
-    column(4, helpText("Upload a SimBu simulation result as .rds to load a bulk sample with corresponding cell fractions"))
+    column(
+      width = 8,
+      fileInput("data_simbu_simulation", "SimBu Simulation", accept = c(".rds"))
+    ),
+    column(
+      width = 4,
+      helpText("Upload a SimBu simulation result as .rds to load a bulk sample with corresponding cell fractions")
+    )
   )
-  
-  data_deconvolution <- shinydashboard::box(id="tour_upload",
-    title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 6, 
+
+  data_deconvolution <- shinydashboard::box(
+    id = "tour_upload",
+    title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 12,
     fileInput("userBulkUpload", "Upload Bulk Data"),
     div(style = "margin-top: -20px"),
-    fileInput("userSingleCellUpload", "Upload Single Cell Data"), 
+    fileInput("userSingleCellUpload", "Upload Single Cell Data"),
     div(style = "margin-top: -20px"),
-    fileInput("userAnnotationUpload", "Upload Cell Type Annotations"), 
+    fileInput("userAnnotationUpload", "Upload Cell Type Annotations"),
     div(style = "margin-top: -20px"),
-    fileInput("userBatchUpload", "Upload Batch IDs"), 
+    fileInput("userBatchUpload", "Upload Batch IDs"),
     div(style = "margin-top: -20px"),
     fileInput("userMarkerUpload", "Upload Marker Genes"),
     div(style = "margin-top: -20px"),
   )
-  
-  data_load_sample <- shinydashboard::box(id="tour_sample",
-    title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12, 
-    column(4, div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style="margin-top:0.5em;")),
-    column(3, div(actionButton("loadSample", "Load Sample Files"), style="margin-top:0.5em")), 
-    column(5, helpText("Ground truth data will be loaded as 'SampleReference'"))
+
+  data_load_sample <- shinydashboard::box(
+    id = "tour_sample",
+    title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12,
+    column(
+      width = 4,
+      div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style = "margin-top:0.5em;")
+    ),
+    column(
+      width = 3,
+      div(actionButton("loadSample", "Load Sample Files"), style = "margin-top:0.5em")
+    ),
+    column(
+      width = 5,
+      helpText("Ground truth data will be loaded as 'SampleReference'")
+    )
   )
-  
-  data_load_signature <- shinydashboard::box(id="tour_signatureUpload",
-    title= "Upload Signature", solidHeader = TRUE, status = "primary", width= 12, 
-    fileInput("userSignatureUpload", "Upload Siganture"),
+
+  data_load_signature <- shinydashboard::box(
+    id = "tour_signatureUpload",
+    title = "Upload Signature", solidHeader = TRUE, status = "primary",
+    width = 12,
+    fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px")
   )
-  
+
   data_load_reference <- shinydashboard::box(
-    title="Upload a custom reference file", solidHeader = TRUE, status="primary", width=12, 
+    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary",
+    width = 12,
     fileInput("userReferenceUpload", "Upload Reference")
   )
-  
+
   data_info <- shinydashboard::box(
-    title=NULL, solidHeader = FALSE, width=6, 
-     h3("Supported Datatypes:", style="margin-top:0.2em"), 
-     tags$ul(
-       tags$li("rds"), 
-       tags$li("csv"), 
-       tags$li("tsv"),
-       tags$li("txt")
-     ), 
-     h3("Data requirements:"),
-     tags$ol(
-       tags$li("Single cell RNA-seq data"),
-          tags$ul(
-            tags$li(strong("Genes"), "x", strong("Cells"), "matrix"),
-            tags$li("Counts are", strong("not log-transformed")),
-            tags$li("Rownames (gene names) are provided in the same format as in the bulk RNA-seq data, for instance HGNC symbols")
-          ),
-       tags$li("Cell type annotations"), 
-          tags$ul(
-            tags$li("Vector containing cell type annotations"),
-            tags$li("Annotations are in the same order as the columns of the single cell matrix")
-          ),
-       tags$li("Batch ids"), 
-          tags$ul(
-            tags$li("Vector containing batch ids, so sample or patient ids"),
-            tags$li("Ids are in the same order as the columns of the single cell matrix"),
-            tags$li("This is only necessary for Bisque, MuSiC and SCDC")
-          ),
-       tags$li("(Marker genes)"),
-          tags$ul(
-            tags$li("Vector containing gene names"),
-            tags$li("This is only necessary for BSeq-sc")
-          ),
-       tags$li("Bulk RNA-seq data"), 
-          tags$ul(
-            tags$li(strong("Genes"), "x", strong("Samples"), "matrix"),
-            tags$li("Rownames (gene names) are provided in the same format as in the sc RNA-seq data, for instance HGNC symbols")
-          )
-     )
-    
+    title = span(icon("info-circle"), "Input data formats and requirements"),
+    solidHeader = FALSE, width = 12,
+    collapsible = TRUE, collapsed = FALSE,
+    includeMarkdown(system.file("extdata", "data_info.md", package = "DeconvExplorer"))
   )
-  
-  data_info_simbu <- shinydashboard::box(
-    title="SimBu Data", solidHeader = FALSE, width=12, 
-    h3("Upload your SimBu simulation as .rds file:", style="margin-top:0em"), 
-    tags$pre("simulation <- SimBu::simulate_bulk(...)
-saveRDS(simulation, 'filepath.rds') # upload this file"),
-    helpText("For further Information see the SimBu Documentation")
-  )
-  
-  data_info_signature <- shinydashboard::box(
-    title="Signature", solidHeader = FALSE, width=12,
-    h3("Supported Datatypes:", style="margin-top:0em"),
-    tags$ul(
-      tags$li("csv"), 
-      tags$li("tsv"), 
-      tags$li("rds")
-    ),
-    helpText("For csv and tsv files the first column", strong("must"), "contain gene identifiers")
-  )
-  
 
   # Deconvolution Boxes -------------------------------------------------------
   data_upload_box <- shinydashboard::box(
@@ -153,28 +120,32 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
     selectInput("bulkSelection", "Select a bulk dataset", choices = NULL),
     div(style = "margin-top: -10px"),
-    selectInput("singleCellSelection", "Select a single cell dataset", choices = NULL), 
+    selectInput("singleCellSelection", "Select a single cell dataset", choices = NULL),
     div(style = "margin-top: -10px"),
-    selectInput("annotationSelection", "Select Cell Type annotations", choices = NULL), 
+    selectInput("annotationSelection", "Select Cell Type annotations", choices = NULL),
     div(style = "margin-top: -10px"),
     selectInput("batchSelection", "Select Batch IDs", choices = NULL),
     div(style = "margin-top: -10px"),
     selectInput("markerSelection", "Select Marker Genes", choices = NULL)
   )
 
-  settings_box <- shinydashboard::box(id = "tour_deconvSettings",
+  settings_box <- shinydashboard::box(
+    id = "tour_deconvSettings",
     title = "Deconvolution Settings", status = "primary",
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
-    imageOutput("logo", height = "auto"), 
-    column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C; margin-top: 0.5em; margin-bottom: 0.5em")),
+    imageOutput("logo", height = "auto"),
     column(
-      4,
+      width = 12,
+      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C; margin-top: 0.5em; margin-bottom: 0.5em")
+    ),
+    column(
+      width = 4,
       selectInput("deconvMethod", "Deconvolution Method",
         choices = omnideconv::deconvolution_methods
       )
     ),
     column(
-      5,
+      width = 5,
       conditionalPanel(
 
         # all methods that take another signature as input
@@ -185,22 +156,24 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           choices = produces_signature
         )
       )
-    ), 
+    ),
     column(
-      3,
+      width = 3,
       div(
-      actionButton("deconvolute", "Deconvolute"), style="margin-top:1.7em"),
-      #actionButton("deconvoluteAll", "Deconvolute All")
+        actionButton("deconvolute", "Deconvolute"),
+        style = "margin-top:1.7em"
+      ),
+      # actionButton("deconvoluteAll", "Deconvolute All")
     ),
     waiter::useWaitress()
-    
   )
 
-  deconv_plot_box <- shinydashboard::box(id = "tour_deconvPlot",
+  deconv_plot_box <- shinydashboard::box(
+    id = "tour_deconvPlot",
     title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
     column(
-      3,
+      width = 3,
       selectInput("plotMethod", "Plot as: ",
         choices = c(
           "Bar Plot" = "bar", "Scatter" = "scatter",
@@ -210,7 +183,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )
     ),
     column(
-      3,
+      width = 3,
       selectInput("facets", "Group Plots By",
         choices = c(
           "Deconvolution Method" = "method",
@@ -219,9 +192,9 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )
     ),
     column(
-      12,
-      shinycssloaders::withSpinner(
-        plotly::plotlyOutput("plotBox", height = "500px") # standard is 400
+      width = 12,
+      withSpinner(
+        plotly::plotlyOutput("plotBox", height = "500px")
       )
     )
   )
@@ -230,15 +203,19 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     title = span("Deconvolution Table ", icon("th", lib = "glyphicon")),
     status = "warning", solidHeader = TRUE, width = 12,
     column(
-      3,
+      width = 3,
       selectInput("deconvolutionToTable", "Deconvolution Result", choices = NULL)
     ),
-    column(3, div(downloadButton("deconvolutionDownload", "Download Deconvolution"),
-                  actionButton("deconvolutionToTableDelete", icon("trash")),
-                  style = "margin-top:1.9em")),
     column(
-      12,
-      shinycssloaders::withSpinner(
+      width = 3,
+      div(downloadButton("deconvolutionDownload", "Download Deconvolution"),
+        actionButton("deconvolutionToTableDelete", icon("trash")),
+        style = "margin-top:1.9em"
+      )
+    ),
+    column(
+      width = 12,
+      withSpinner(
         DT::dataTableOutput("tableBox")
       )
     )
@@ -248,38 +225,44 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     title = span("Deconvolution Signature ", icon("fingerprint")),
     status = "info", solidHeader = TRUE, width = 12,
     column(
-      3,
+      width = 3,
       selectInput("signatureToTable", "Signature", choices = NULL)
     ),
     column(
-      2,
+      width = 2,
       div(downloadButton("signatureDownload", "Download Signature"),
-          actionButton("signatureToTableDelete", icon("trash")),
-          style = "margin-top:1.9em")
+        actionButton("signatureToTableDelete", icon("trash")),
+        style = "margin-top:1.9em"
+      )
     ),
     column(
-      12,
-      shinycssloaders::withSpinner(
+      width = 12,
+      withSpinner(
         DT::dataTableOutput("signatureBox")
       )
     )
   )
-  
+
   deconv_all_results <- shinydashboard::box(
     id = "tour_deconvPlotSettings",
     title = NULL, status = NULL, solidHeader = FALSE, width = 12,
     column(
-      5,
-      selectInput("deconvolutionToPlot", "Select Deconvolution results", choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE)
+      width = 5,
+      selectInput("deconvolutionToPlot", "Select Deconvolution results",
+        choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE
+      )
     ),
-    column(4, helpText("Select the deconvolution results to be plotted on the left side."),
-              helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))),
     column(
-      2,
+      width = 4,
+      helpText("Select the deconvolution results to be plotted on the left side."),
+      helpText("Deconvolution results get identified by the selected method and signature: ", shiny::tags$b("DeconvolutionMethod_Signature"))
+    ),
+    column(
+      width = 2,
       selectInput("deconvolutionToDelete", "Delete a deconvolution result", choices = NULL)
     ),
     column(
-      1,
+      width = 1,
       div(
         actionButton("deconvolutionToDeleteButton", icon("trash")),
         style = "margin-top:1.7em"
@@ -287,87 +270,151 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     )
   )
 
-
   # Benchmarking Boxes ------------------------------------------------------
   benchmark_deconvolutionSelection <- shinydashboard::box(
-    title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width=12,
-    selectInput("benchmark_reference", "Reference", choices=NULL),
-    selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices=NULL, multiple = TRUE)
+    title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width = 12,
+    selectInput("benchmark_reference", "Reference", choices = NULL),
+    selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices = NULL, multiple = TRUE)
   )
-  
-  
+
   benchmark_plot_box <- shinydashboard::tabBox(
-    title = "Benchmark", width = 12,
-    tabPanel("Scatter Plot", shiny::plotOutput("benchmark_scatter") %>% withSpinner()),
+    title = "Benchmark",
+    width = 12,
+    tabPanel(
+      "Scatter Plot",
+      withSpinner(
+        shiny::plotOutput("benchmark_scatter")
+      )
+    ),
     tabPanel(
       "Correlation",
       column(
-        2,
-        selectInput("correlationPlotType", "Plot Type", choices = c("Circle" = "circle", "Square" = "square", "Ellipse" = "ellipse", "Number" = "number", "Shade" = "shade", "Color" = "color", "Pie" = "pie"), selected = "color"),
+        width = 2,
+        selectInput("correlationPlotType", "Plot Type",
+          choices = c(
+            "Circle" = "circle",
+            "Square" = "square",
+            "Ellipse" = "ellipse",
+            "Number" = "number",
+            "Shade" = "shade",
+            "Color" = "color",
+            "Pie" = "pie"
+          ),
+          selected = "color"
+        ),
       ),
       column(
-        2,
-        selectInput("correlationAnnotationType", "P Value Annotation Type", choices = c("None" = "n", "Value" = "p-value", "Significance" = "label_sig"), selected = "label_sig"),
+        width = 2,
+        selectInput("correlationAnnotationType", "P Value Annotation Type",
+          choices = c(
+            "None" = "n",
+            "Value" = "p-value",
+            "Significance" = "label_sig"
+          ),
+          selected = "label_sig"
+        ),
       ),
       column(
-        2,
-        selectInput("correlationAnntotationColor", "Annotation Color", choices = c("Black" = "black", "White" = "white"), selected = "white"),
+        width = 2,
+        selectInput("correlationAnntotationColor", "Annotation Color",
+          choices = c(
+            "Black" = "black",
+            "White" = "white"
+          ),
+          selected = "white"
+        ),
       ),
-      shiny::plotOutput("benchmark_correlation") %>% withSpinner()
+      withSpinner(
+        shiny::plotOutput("benchmark_correlation")
+      )
     ),
     tabPanel(
       "RMSE",
       column(
-        2,
-        selectInput("rmsePlotType", "RMSE Plot Type", choices = c("Heatmap" = "heatmap", "Boxplot" = "boxplot"), selected = "heatmap")
+        width = 2,
+        selectInput("rmsePlotType", "RMSE Plot Type",
+          choices = c(
+            "Heatmap" = "heatmap",
+            "Boxplot" = "boxplot"
+          ),
+          selected = "heatmap"
+        )
       ),
       column(
-        2,
+        width = 2,
         conditionalPanel(
           condition = "input.rmsePlotType == 'heatmap'",
-          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method", choices = c("circle", "square", "ellipse", "number", "shade", "color", "pie"), selected = "color")
+          selectInput("rmseHeatmapMethod", "RMSE Heatmap Method",
+            choices = c(
+              "circle",
+              "square",
+              "ellipse",
+              "number",
+              "shade",
+              "color",
+              "pie"
+            ),
+            selected = "color"
+          )
         ),
       ),
-      shiny::plotOutput("benchmark_rmse") %>% withSpinner()
+      withSpinner(
+        shiny::plotOutput("benchmark_rmse")
+      )
     )
   )
 
-
   # Signature Exploration Boxes ---------------------------------------------
-
-  signature_genesPerMethod <- shinydashboard::box(id="tour_genesPlot",
-    title = "Genes per Method", status = "info", solidHeader = TRUE, width = 4,
-    shinycssloaders::withSpinner(plotOutput("signatureGenesPerMethod"))
+  signature_genesPerMethod <- shinydashboard::box(
+    id = "tour_genesPlot",
+    title = "Genes per Method", status = "info", solidHeader = TRUE,
+    width = 4,
+    withSpinner(
+      plotOutput("signatureGenesPerMethod")
+    )
   )
 
   signature_kappaPerMethod <- shinydashboard::box(
-    title = "Condition Number per Method", status = "info", solidHeader = TRUE, width = 4,
-    shinycssloaders::withSpinner(plotOutput("kappaPerMethod"))
+    title = "Condition Number per Method", status = "info", solidHeader = TRUE,
+    width = 4,
+    withSpinner(
+      plotOutput("kappaPerMethod")
+    )
   )
 
   signature_entropyPerMethod <- shinydashboard::box(
-    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE, width = 4,
-    shinycssloaders::withSpinner(plotOutput("signatureEntropyPerMethod"))
+    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE,
+    width = 4,
+    withSpinner(
+      plotOutput("signatureEntropyPerMethod")
+    )
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
-    title = "Clustered Signature", status = "info", solidHeader = TRUE, width = 12,
+    title = "Clustered Signature", status = "info", solidHeader = TRUE,
+    width = 12,
     column(
-      4,
+      width = 4,
       selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
     ),
-    column(2, selectInput("signatureAnnotationScore", "Select an annotation score",
-      choices = c("Entropy" = "entropy", "Gini Index" = "gini")
-    )),
-    column(2, selectInput("signatureAnnotationPlotType", "Annotation Type",
-      choices = c("Bars" = "bar", "Lines" = "line")
-    )),
     column(
-      4,
+      width = 2,
+      selectInput("signatureAnnotationScore", "Select an annotation score",
+        choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+      )
+    ),
+    column(
+      width = 2,
+      selectInput("signatureAnnotationPlotType", "Annotation Type",
+        choices = c("Bars" = "bar", "Lines" = "line")
+      )
+    ),
+    column(
+      width = 4,
       div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
     ),
     column(
-      12,
+      width = 12,
       InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
         width = "1250px", height = "450px", containment = TRUE
       )
@@ -387,24 +434,30 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
   signature_clusteredHeatmapSubTable <- shinydashboard::box(
     title = "Sub Selection Table", status = "info", solidHeader = TRUE,
     width = 12, collapsible = TRUE, collapsed = TRUE,
-    shinycssloaders::withSpinner(DT::dataTableOutput("signatureHeatmap_SelectedGenesTable"))
+    withSpinner(
+      DT::dataTableOutput("signatureHeatmap_SelectedGenesTable")
+    )
   )
 
   signature_upsetPlot <- shinydashboard::box(
     title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height = "33em",
-    shinycssloaders::withSpinner(plotOutput("signatureUpset"))
+    withSpinner(
+      plotOutput("signatureUpset")
+    )
   )
   signature_upsetPlotSettings <- shinydashboard::box(
-    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE, width = 4, height = "33em",
+    title = "UpSet Plot Settings", status = "info", solidHeader = TRUE,
+    width = 4, height = "33em",
     column(
-      11,
+      width = 11,
       selectInput("upsetMode", "Upset Plot Mode", choices = c(
         "Distinct" = "distinct",
         "Intersect" = "intersect",
         "Union" = "union"
       ))
     ),
-    column(1,
+    column(
+      width = 1,
       # link to help
       tags$a(
         href = "https://jokergoo.github.io/ComplexHeatmap-reference/book/08-upset_files/figure-html/unnamed-chunk-7-1.png",
@@ -419,18 +472,18 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       value = c(1, 5), round = TRUE, step = 1, ticks = FALSE
     ),
     column(
-      5,
+      width = 5,
       selectInput("upSetOrder", label = "Order Sets by", choices = c(
         "Set Size" = "size",
         "Set Degree" = "degree"
       ))
     ),
     column(
-      3,
+      width = 3,
       div(checkboxInput("upSetInvert", label = "Invert Order", value = FALSE), style = "margin-top:2em")
     ),
     column(
-      4,
+      width = 4,
       div(checkboxInput("upSetColorDegrees", label = "Color Degrees", value = TRUE), style = "margin-top:2em")
     ),
 
@@ -441,115 +494,184 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     downloadButton("upSetDownloadButton", label = "Download Subset Genes")
   )
 
-
   # Signature Refinement Boxes ----------------------------------------------
-
-  refinementHeatmapBox <- shinydashboard::box(id="tour_refinementHeatmap",
+  refinementHeatmapBox <- shinydashboard::box(
+    id = "tour_refinementHeatmap",
     title = "Signature", solidHeader = TRUE, width = 12, status = "info",
-    column(2, selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
-    column(2, selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))),
+    column(
+      width = 2,
+      selectInput("refinementHeatmapScore", "Gene Score", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+    ),
+    column(
+      width = 2,
+      selectInput("refinementHeatmapScorePlotType", "Score Plot Type", choices = c("Bars" = "bar", "Line" = "line"))
+    ),
     shinydashboard::valueBoxOutput("refinementGenes", width = 2),
     shinydashboard::valueBoxOutput("refinementCellTypes", width = 2),
     shinydashboard::valueBoxOutput("refinementKappa", width = 2),
     shinydashboard::valueBoxOutput("refinementMeanEntropy", width = 2),
-    column(12, shinycssloaders::withSpinner(plotOutput("refinementHeatmapPlot")))
+    column(
+      width = 12,
+      withSpinner(
+        plotOutput("refinementHeatmapPlot")
+      )
+    )
   )
 
   refinementSettingsBox <- shinydashboard::box(
     title = "Settings", solidHeader = TRUE, width = 4, status = "info",
-    column(8, selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)),
-    column(4, actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")),
-    column(8, textInput("refinementNewName", "New Signature Name")),
-    column(4, actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")),
     column(
-      12,
-      helpText(icon("arrow-up"), "  Load a signature to run refinements and choose a new name when saving"),
-      div(helpText(icon("arrow-down"), "  If required rename specific cell types"), style="margin-top:2.5em")
+      width = 8,
+      selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)
     ),
     column(
-      8, 
+      width = 4,
+      actionButton("loadRefinementSignature", "Load", style = "margin-top: 1.7em")
+    ),
+    column(
+      width = 8,
+      textInput("refinementNewName", "New Signature Name")
+    ),
+    column(
+      width = 4,
+      actionButton("saveRefinedSignature", "Save", style = "margin-top: 1.7em")
+    ),
+    column(
+      width = 12,
+      helpText(icon("arrow-up"), "  Load a signature to run refinements and choose a new name when saving"),
+      div(helpText(icon("arrow-down"), "  If required rename specific cell types"), style = "margin-top:2.5em")
+    ),
+    column(
+      width = 8,
       selectInput("cellTypeToRename", "Cell Type to Rename", choices = NULL),
       textInput("cellTypeNewName", "New cell type name")
     ),
-    column(4, div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em"))
+    column(
+      width = 4,
+      div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em")
+    )
   )
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
-    column(4, h1("Unzero")),
-    column(7, sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
-      min = 0, max = 100, value = 90, step = 1, post = "%"
-    )),
-    column(1, actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em"))
+    column(
+      width = 4,
+      h1("Unzero")
+    ),
+    column(
+      width = 7,
+      sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
+        min = 0, max = 100, value = 90, step = 1, post = "%"
+      )
+    ),
+    column(
+      width = 1,
+      actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "yellow",
-    column(4, h1("Remove Unspecific")),
-    column(7, numericInput("refineUnspecific", "Remove unspecific genes", 1)),
-    column(1, actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em"))
+    column(
+      width = 4,
+      h1("Remove Unspecific")
+    ),
+    column(
+      width = 7,
+      numericInput("refineUnspecific", "Remove unspecific genes", 1)
+    ),
+    column(
+      width = 1,
+      actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
-    column(4, h1("Best n genes")),
-    column(5, numericInput("refineBestN", "Number of genes to select for each celltype", 20, 1)),
-    column(2, selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))),
-    column(1, actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em"))
+    column(
+      width = 4,
+      h1("Best n genes")
+    ),
+    column(
+      width = 5,
+      numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
+    ),
+    column(
+      width = 2,
+      selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+    ),
+    column(
+      width = 1,
+      actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+    )
   )
 
   refinementManualBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "purple",
-    column(4, h1("Remove manually")),
-    column(7, textInput("refinementManualGene", "Type in a Gene Identifier to remove")),
-    column(1, actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em"))
+    column(
+      width = 4,
+      h1("Remove manually")
+    ),
+    column(
+      width = 7,
+      textInput("refinementManualGene", "Type in a Gene Identifier to remove")
+    ),
+    column(
+      width = 1,
+      actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+    )
   )
-  
 
   # Info Boxes --------------------------------------------------------------
-
-  info_overview <- shinydashboard::box(id="tour_infoOverview",
-    title = "Overview", solidHeader = TRUE, 
+  info_overview <- shinydashboard::box(
+    id = "tour_infoOverview",
+    title = "Overview", solidHeader = TRUE,
     h3("DeconvExplorer is an interactive web interface to perform, evaluate and enhance cell type deconvolution
-      from trancsriptome data with the omnideconv framework.", style="margin-top:-10px;"), br(),
+      from trancsriptome data with the omnideconv framework.", style = "margin-top:-10px;"), br(),
     p("The app contains multiple modules further explained below."), br(),
-    column(12, 
-           div(
-             h3(icon("github"), style="display:inline; margin-right:1em"),
-             a("Omnideconv", href="https://github.com/omnideconv", target="_blank", style="margin-right:1em"),
-             h3(icon("link"), style="display: inline; margin-right:1em"),
-             a("omnideconv.org", href="https://www.omnideconv.org", target="_blank"), 
-             style="display:inline; font-size: 1.4em;"),
+    column(
+      width = 12,
+      div(
+        h3(icon("github"), style = "display:inline; margin-right:1em"),
+        a("Omnideconv", href = "https://github.com/omnideconv", target = "_blank", style = "margin-right:1em"),
+        h3(icon("link"), style = "display: inline; margin-right:1em"),
+        a("omnideconv.org", href = "https://www.omnideconv.org", target = "_blank"),
+        style = "display:inline; font-size: 1.4em;"
+      ),
     ),
-    column(12, 
-           div(
-             h3(icon("envelope"), style="display: inline; margin-right:1em"),
-             a("Francesca Finotello", href="mailto:francesca.finotello@uibk.ac.at", style="margin-right:1em"),
-             a("Markus List", href="mailto:markus.list@wzw.tum.de", style="margin-right:1em"),
-             a("Gregor Sturm", href="mailto:gregor.stum@i-med.ac.at", style="margin-right:1em"),
-             style="display:block; font-size:1.4em; margin-top:0.7em; "
-           )
+    column(
+      width = 12,
+      div(
+        h3(icon("envelope"), style = "display: inline; margin-right:1em"),
+        a("Francesca Finotello", href = "mailto:francesca.finotello@uibk.ac.at", style = "margin-right:1em"),
+        a("Markus List", href = "mailto:markus.list@wzw.tum.de", style = "margin-right:1em"),
+        a("Gregor Sturm", href = "mailto:gregor.stum@i-med.ac.at", style = "margin-right:1em"),
+        style = "display:block; font-size:1.4em; margin-top:0.7em; "
+      )
     ), br()
   )
-  
+
   info_link <- shinydashboard::box(
-    title = NULL, solidHeader = TRUE, 
-    column(12, imageOutput("logoInfo", width= "100%", height = "auto")), 
-    column(12, h2("Robust deconvolution of cell types from any tissue", style="text-align: center; font-weight: bold; color:#003F5C;")),
+    title = NULL, solidHeader = TRUE,
+    column(
+      width = 12,
+      imageOutput("logoInfo", width = "100%", height = "auto")
+    ),
+    column(
+      width = 12,
+      h2("Robust deconvolution of cell types from any tissue", style = "text-align: center; font-weight: bold; color:#003F5C;")
+    ),
   )
-  
+
   info_modules <- shinydashboard::box(
-    title="Information about each module", solidHeader = TRUE, width=12, status="primary",
-    div(includeMarkdown(system.file("extdata", "app_information.md", package="DeconvExplorer")),style="padding:1em; padding-top:0em")
+    title = "Information about each module", solidHeader = TRUE,
+    width = 12,
+    status = "primary",
+    div(includeMarkdown(system.file("extdata", "app_information.md", package = "DeconvExplorer")), style = "padding:1em; padding-top:0em")
   )
-  
-
-
 
   # ui definition  ----------------------------------------------------------
-
-
-  de_ui <- dashboardPage(
+  deconvexplorer_ui <- dashboardPage(
     dashboardHeader(
       title = "DeconvExplorer",
       dropdownMenu(
@@ -621,27 +743,69 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
              position:relative; overflow-x:hidden; overflow-y:hidden}")
       )),
       tabItems(
-        tabItem(tabName="data", fluidPage(
-          fluidRow(data_deconvolution, column(6, data_simbu_box, data_load_sample, data_load_signature)),
-          fluidRow(data_info, column(6, data_load_reference, data_info_simbu, data_info_signature))
-        )),
-        tabItem(tabName = "deconv", fluidPage(
-          fluidRow(data_upload_box, settings_box),
-          fluidRow(deconv_all_results),
-          fluidRow(deconv_plot_box, deconv_table_box, deconv_signature_box)
-        )),
-        tabItem(tabName = "signatureExploration", fluidPage(
-          fluidRow(signature_genesPerMethod, signature_kappaPerMethod, signature_entropyPerMethod),
-          fluidRow(signature_clusteredHeatmap),
-          fluidRow(signature_clusteredHeatmapSubPlot),
-          fluidRow(signature_clusteredHeatmapSubTable),
-          fluidRow(signature_upsetPlot, signature_upsetPlotSettings)
-        )),
-        tabItem(tabName = "signatureRefinement", fluidPage(
-          fluidRow(refinementHeatmapBox),
+        tabItem(tabName = "data", fluidPage(
           fluidRow(
             column(
-              8,
+              width = 6,
+              data_deconvolution
+            ),
+            column(
+              width = 6,
+              data_simbu_box,
+              data_load_sample,
+              data_load_signature,
+              data_load_reference
+            )
+          ),
+          fluidRow(
+            column(
+              width = 8,
+              offset = 2,
+              data_info
+            )
+          )
+        )),
+        tabItem(tabName = "deconv", fluidPage(
+          fluidRow(
+            data_upload_box,
+            settings_box
+          ),
+          fluidRow(
+            deconv_all_results
+          ),
+          fluidRow(
+            deconv_plot_box,
+            deconv_table_box,
+            deconv_signature_box
+          )
+        )),
+        tabItem(tabName = "signatureExploration", fluidPage(
+          fluidRow(
+            signature_genesPerMethod,
+            signature_kappaPerMethod,
+            signature_entropyPerMethod
+          ),
+          fluidRow(
+            signature_clusteredHeatmap
+          ),
+          fluidRow(
+            signature_clusteredHeatmapSubPlot
+          ),
+          fluidRow(
+            signature_clusteredHeatmapSubTable
+          ),
+          fluidRow(
+            signature_upsetPlot,
+            signature_upsetPlotSettings
+          )
+        )),
+        tabItem(tabName = "signatureRefinement", fluidPage(
+          fluidRow(
+            refinementHeatmapBox
+          ),
+          fluidRow(
+            column(
+              width = 8,
               refinementUnzeroBox,
               refinementRemoveUnspecificBox,
               refinementBestNBox,
@@ -651,12 +815,21 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           )
         )),
         tabItem(tabName = "benchmark", fluidPage(
-          fluidRow(benchmark_deconvolutionSelection),
-          fluidRow(benchmark_plot_box)
+          fluidRow(
+            benchmark_deconvolutionSelection
+          ),
+          fluidRow(
+            benchmark_plot_box
+          )
         )),
         tabItem(tabName = "fInfo", fluidPage(
-          fluidRow(info_overview, info_link), 
-          fluidRow(info_modules)
+          fluidRow(
+            info_overview,
+            info_link
+          ),
+          fluidRow(
+            info_modules
+          )
         ))
       )
     )
@@ -664,30 +837,26 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
   # server definition  ------------------------------------------------------
 
-  de_server <- shinyServer(function(input, output, session) {
+  deconvexplorer_server <- shinyServer(function(input, output, session) {
+    # nocov start
+
     # General Setup -----------------------------------------------------------
-
-
-    
-    internal <- shiny::reactiveValues(signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
-                                      deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))),
-                                      bulk = list(),
-                                      singleCell = list(),
-                                      annotation = list(), 
-                                      batch = list(),
-                                      markers = list()) # this is new
-
+    internal <- shiny::reactiveValues(
+      signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
+      deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))),
+      bulk = list(),
+      singleCell = list(),
+      annotation = list(),
+      batch = list(),
+      markers = list()
+    ) # this is new
 
     # options
     options(shiny.maxRequestSize = 10 * 1024^2 * 100) # 1GB
 
-   
     waitress <- waiter::Waitress$new("#deconvolute", infinite = TRUE)
 
-  
-
     # Reactives ---------------------------------------------------------------
-
     # collect all available signature option (Calculate new one and already available)
     allSignatureOptions <- reactive({
       # collect all available precalculated signatures
@@ -709,7 +878,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       )
     })
 
-
     # reactiveVal of refinable signature, separated from the rest of signatures
     signatureRefined <- reactiveVal("")
 
@@ -720,49 +888,55 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
     # start the tour
     observeEvent(input$startTour, {
+      tour_steps <- read.delim(system.file("extdata", "tour_intro.txt",
+        package = "DeconvExplorer"
+      ),
+      sep = ";", stringsAsFactors = FALSE,
+      row.names = NULL, quote = ""
+      )
       introjs(session, options = list(
-        steps=getTour(),
+        steps = tour_steps,
         "nextLabel" = ">",
         "prevLabel" = "<",
         "skipLabel" = "X"
       ), events = list(onbeforechange = rintrojs::readCallback("switchTabs")))
     })
-    
+
     observe({
       updateSelectInput(session, "bulkSelection", choices = names(internal$bulk))
-      updateSelectInput(session, "singleCellSelection", choices=names(internal$singleCell))
-      updateSelectInput(session, "annotationSelection", choices=names(internal$annotation))
-      updateSelectInput(session, "batchSelection", choices=names(internal$batch))
-      updateSelectInput(session, "markerSelection", choices=names(internal$markers))
+      updateSelectInput(session, "singleCellSelection", choices = names(internal$singleCell))
+      updateSelectInput(session, "annotationSelection", choices = names(internal$annotation))
+      updateSelectInput(session, "batchSelection", choices = names(internal$batch))
+      updateSelectInput(session, "markerSelection", choices = names(internal$markers))
     })
-    
+
     observe({
-      updateSelectInput(session, "benchmark_reference", choices=names(internal$deconvolutions))
-      updateSelectInput(session, "benchmark_ToPlot", choices=names(internal$deconvolutions))
+      updateSelectInput(session, "benchmark_reference", choices = names(internal$deconvolutions))
+      updateSelectInput(session, "benchmark_ToPlot", choices = names(internal$deconvolutions))
     })
-    
+
     observeEvent(input$loadSample, {
       req(input$sampleNumber)
-      if (input$sampleNumber==1){
+      if (input$sampleNumber == 1) {
         internal$bulk[["BulkSample"]] <- omnideconv::bulk
         internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
         internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
         internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
         internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      } else if (input$sampleNumber==2){
+      } else if (input$sampleNumber == 2) {
         internal$bulk[["BulkSample"]] <- omnideconv::bulk
         internal$singleCell[["SingleCellSample2"]] <- omnideconv::single_cell_data_2
         internal$annotation[["CellTypeAnnotation2"]] <- omnideconv::cell_type_annotations_2
         internal$batch[["BatchIDs2"]] <- omnideconv::batch_ids_2
         internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      } else if (input$sampleNumber == 3){
+      } else if (input$sampleNumber == 3) {
         internal$bulk[["BulkSample"]] <- omnideconv::bulk
         internal$singleCell[["SingleCellSample3"]] <- omnideconv::single_cell_data_3
         internal$annotation[["CellTypeAnnotation3"]] <- omnideconv::cell_type_annotations_3
         internal$batch[["BatchIDs3"]] <- omnideconv::batch_ids_3
         internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
       }
-      
+
       showNotification("Loaded Sample Data")
     })
 
@@ -771,12 +945,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       updateSelectInput(session, "signatureMethod", choices = allSignatureOptions())
     })
 
-    # for selecting a siganture to refine, users should be able to select from all already available signatures
+    # for selecting a signature to refine, users should be able to select from all already available signatures
     observe({
       updateSelectInput(session, "signatureToRefine", choices = names(internal$signatures))
     })
 
-    # when "load Refinement" is clicked, load siganture in reactive Value
+    # when "load Refinement" is clicked, load signature in reactive Value
     observeEvent(input$loadRefinementSignature, {
       req(input$signatureToRefine)
       showNotification(paste0("Loading Signature for Refinement: ", input$signatureToRefine))
@@ -786,19 +960,61 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     # run signature refinement "unzero"
     observeEvent(input$refinePercentZeroGo, {
       req(signatureRefined(), input$refinePercentZero)
+
+      sig_pre <- signatureRefined()
+      percentage <- input$refinePercentZero / 100
+      shiny::showNotification(paste0("Removing genes with more than ", percentage * 100, "% zeroes in a row"))
+
       signatureRefined(removePercentZeros(signatureRefined(), input$refinePercentZero / 100)) # update reactive Value with result
+      sig_post <- signatureRefined()
+
+      shiny::showNotification(
+        paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes")
+      )
     })
 
     # run signature refinement "unspecific"
     observeEvent(input$refineUnspecificGo, {
       req(signatureRefined(), input$refineUnspecific)
-      signatureRefined(removeUnspecificGenes(signatureRefined(), numberOfBins = 3, maxCount = input$refineUnspecific))
+
+      sig_pre <- signatureRefined()
+      shiny::showNotification("removing unspecific genes from signature")
+
+      signatureRefined(
+        removeUnspecificGenes(signatureRefined(),
+          number_of_bins = 3,
+          max_count = input$refineUnspecific
+        )
+      )
+
+      sig_post <- signatureRefined()
+      shiny::showNotification(
+        paste(
+          "Removed", nrow(sig_pre) - nrow(sig_post),
+          "unspecific genes from the signature."
+        )
+      )
     })
 
     # run signature refinement "bestN"
     observeEvent(input$refineBestNGo, {
       req(signatureRefined(), input$refineBestN)
-      signatureRefined(selectGenesByScore(signatureRefined(), genesPerCellType = input$refineBestN))
+
+      sig_pre <- signatureRefined()
+      ref_method <- "entropy" ## hard coded for now, could be a widget itself?
+      shiny::showNotification(paste0("Refining Signature by score: ", ref_method))
+
+      signatureRefined(
+        selectGenesByScore(signatureRefined(),
+          scoring_method = ref_method,
+          genes_per_cell_type = input$refineBestN
+        )
+      )
+
+      sig_post <- signatureRefined()
+      shiny::showNotification(
+        paste0("Removed a total of ", nrow(sig_pre) - nrow(sig_post), " genes")
+      )
     })
 
     # run signature refinement "manual"
@@ -820,7 +1036,10 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         # subselect Signature and save to reactiveVal
         signatureRefined(signatureRefined()[genes, ])
 
-        showNotification(paste0("Removed Gene ", input$refinementManualGene, " from the signature"), type = "message")
+        showNotification(
+          paste0("Removed Gene ", input$refinementManualGene, " from the signature"),
+          type = "message"
+        )
       }
     })
 
@@ -836,42 +1055,41 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
       showNotification(paste0("Successfully saved signature ", input$refinementNewName), type = "message")
     })
-    
+
     # load cell types of currently loaded signature
     observe({
       updateSelectInput(session, "cellTypeToRename", choices = colnames(signatureRefined()))
     })
-    
-    # rename celltype if button is clicked
+
+    # rename cell type if button is clicked
     observeEvent(input$renameCellTypeGo, {
       req(input$cellTypeNewName, signatureRefined(), input$cellTypeToRename)
-      
-      if (input$cellTypeToRename %in% colnames(signatureRefined())){
+
+      if (input$cellTypeToRename %in% colnames(signatureRefined())) {
         signatureRefined(renameCellType(isolate(signatureRefined()), input$cellTypeToRename, input$cellTypeNewName))
         showNotification("Renamed cell type", type = "message")
       } else {
-        showNotification("Cell Type does not exist in signature", type="error")
+        showNotification("Cell Type does not exist in signature", type = "error")
       }
     })
-    
+
     # delete signatures
     observeEvent(input$signatureToTableDelete, {
       req(input$signatureToTable)
       internal$signatures[[input$signatureToTable]] <- NULL
       showNotification("Deleted Signature")
     })
-    
+
     # delete deconvolution results
     observeEvent(input$deconvolutionToTableDelete, {
       req(input$deconvolutionToTable)
       internal$deconvolutions[[input$deconvolutionToTable]] <- NULL
-      
+
       # check if plot currently loaded, if yes, update variable
-      #userData$deconvolution_result = userData$deconvolution_result[!userData$deconvolution_result %in% input$deconvolutionToTable]
-      
+      # userData$deconvolution_result = userData$deconvolution_result[!userData$deconvolution_result %in% input$deconvolutionToTable]
+
       showNotification("Deleted Deconvolution Result")
     })
-
 
     # set CIBERSORTx Credentials from User Input
     observeEvent(input$setCSX, {
@@ -906,52 +1124,61 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       # reqs
-      
+
       bulkData <- NULL
       singleCellData <- NULL
       cellTypeAnnotations <- NULL
       batchIDs <- NULL
       markers <- NULL
-      
+
       # check signature method interchangeability
       # when not interchangeable set signatureMethod = DeconvMethod
       signature_Method <- input$signatureMethod
       if (!(input$deconvMethod %in% two_step_methods)) {
         signature_Method <- input$deconvMethod
       }
-      
+
       # input$deconvMethod, signature_Method#
-      if (is.null(input$bulkSelection)| input$bulkSelection ==""){showNotification("Bulk Data Missing", type="error")}
+      if (is.null(input$bulkSelection) | input$bulkSelection == "") {
+        showNotification("Bulk Data Missing", type = "error")
+      }
       req(input$bulkSelection)
       bulkData <- internal$bulk[[input$bulkSelection]]
-    
-      
+
       # check if Single Cell Data Necessary
-      if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")){
-        if (is.null(input$singleCellSelection)|input$singleCellSelection==""){showNotification("Single Cell Data Missing", type="error")}
+      if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
+        if (is.null(input$singleCellSelection) | input$singleCellSelection == "") {
+          showNotification("Single Cell Data Missing", type = "error")
+        }
         req(input$singleCellSelection)
         singleCellData <- internal$singleCell[[input$singleCellSelection]]
       }
       # check if annotation necessary
-      if (input$deconvMethod %in% c("music", "bisque", "autogenes", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")){
-        if (is.null(input$annotationSelection)|input$annotationSelection==""){showNotification("Cell type annotation missing", type="error")}
+      if (input$deconvMethod %in% c("music", "bisque", "autogenes", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
+        if (is.null(input$annotationSelection) | input$annotationSelection == "") {
+          showNotification("Cell type annotation missing", type = "error")
+        }
         req(input$annotationSelection)
         cellTypeAnnotations <- internal$annotation[[input$annotationSelection]]
       }
-      
+
       # check if batch ids necessary
-      if (input$deconvMethod %in% c("music", "bisque", "bseqsc", "cdseq", "scdc")){
-        if (is.null(input$batchSelection)|input$batchSelection==""){showNotification("BatchIDs Missing", type="error")}
+      if (input$deconvMethod %in% c("music", "bisque", "bseqsc", "cdseq", "scdc")) {
+        if (is.null(input$batchSelection) | input$batchSelection == "") {
+          showNotification("BatchIDs Missing", type = "error")
+        }
         req(input$batchSelection)
         batchIDs <- internal$batch[[input$batchSelection]]
       }
-      
-      if (input$deconvMethod %in% c("bseqsc")){
-        if (is.null(input$markerSelection)|input$markerSelection==""){showNotification("Markers Missing", type="error")}
+
+      if (input$deconvMethod %in% c("bseqsc")) {
+        if (is.null(input$markerSelection) | input$markerSelection == "") {
+          showNotification("Markers Missing", type = "error")
+        }
         req(input$markerSelection)
         markers <- internal$markers[[input$markerSelection]]
       }
-      
+
       waitress$start()
 
       # check if signature needs to be calculated or loaded
@@ -975,7 +1202,6 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           verbose = TRUE
         )
       }
-      
 
       # deconvolute
       showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
@@ -1000,24 +1226,24 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
       waitress$close()
       showNotification("Deconvolution finished", type = "message")
-      print("Finished Deconvolution") # debug reasons
+      message("Finished Deconvolution") # debug reasons
     })
-    
-    # update avaible deconvolutions for plotting 
+
+    # update avaible deconvolutions for plotting
     observe({
       selection <- input$deconvolutionToPlot
-      #selection <- intersect(selection, names(internal$deconvolutions)) # remove deleted ones
+      # selection <- intersect(selection, names(internal$deconvolutions)) # remove deleted ones
       updateSelectInput(session, inputId = "deconvolutionToPlot", choices = names(internal$deconvolutions), selected = selection)
     })
-    
+
     observe({
       updateSelectInput(session, "deconvolutionToDelete", "Choose a deconvolution to delete", choices = names(internal$deconvolutions))
     })
-    
+
     observeEvent(input$deconvolutionToDeleteButton, {
       req(input$deconvolutionToDelete)
       internal$deconvolutions[[input$deconvolutionToDelete]] <- NULL
-      
+
       showNotification("Deleted Deconvolution", type = "message")
     })
 
@@ -1033,9 +1259,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
     })
 
     # Plots -------------------------------------------------------------------
-
     output$plotBox <- plotly::renderPlotly({
-      #req(userData$deconvolution_result)
+      # req(userData$deconvolution_result)
       req(input$deconvolutionToPlot)
       omnideconv::plot_deconvolution(
         returnSelectedDeconvolutions(input$deconvolutionToPlot, isolate(internal$deconvolutions)),
@@ -1047,20 +1272,20 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
     # Number Of Genes Barplot
     output$signatureGenesPerMethod <- renderPlot({
-      req(length(internal$signatures)>0)
+      req(length(internal$signatures) > 0)
       signatures <- shiny::isolate(internal$signatures)
       plot_signatureGenesPerMethod(signatures, input$globalColor)
     })
 
     # Condition Number Plot
     output$kappaPerMethod <- renderPlot({
-      req(length(internal$signatures)>0)
+      req(length(internal$signatures) > 0)
       signatures <- shiny::isolate(internal$signatures)
       plot_conditionNumberPerMethod(signatures, input$globalColor)
     })
 
     output$signatureEntropyPerMethod <- renderPlot({
-      req(length(internal$signatures)>0)
+      req(length(internal$signatures) > 0)
       signatures <- shiny::isolate(internal$signatures)
       plot_meanEntropyPerMethod(signatures, input$globalColor)
     })
@@ -1077,9 +1302,9 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         output,
         session,
         plot_signatureClustered(signature,
-          score = input$signatureAnnotationScore,
+          scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
-          palette = input$globalColor
+          color_palette = input$globalColor
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action
@@ -1088,7 +1313,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
     # UpSet Plot
     output$signatureUpset <- renderPlot({
-      req(length(internal$signatures)>0, input$upSetDegree, input$upSetOrder)
+      req(length(internal$signatures) > 0, input$upSetDegree, input$upSetOrder)
 
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
@@ -1100,13 +1325,13 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
       # calculate the plot
       result <- plot_signatureUpset(shiny::isolate(internal$signatures),
-        mode = input$upsetMode,
-        minDegree = minDegree,
-        maxDegree = maxDegree,
-        order = input$upSetOrder,
-        invert = input$upSetInvert,
-        colorDegrees = input$upSetColorDegrees,
-        palette = input$globalColor
+        upset_mode = input$upsetMode,
+        min_degree = minDegree,
+        max_degree = maxDegree,
+        order_sets = input$upSetOrder,
+        invert_sets = input$upSetInvert,
+        color_by_degrees = input$upSetColorDegrees,
+        color_palette = input$globalColor
       )
 
       # update settings
@@ -1122,12 +1347,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       req(input$refinementHeatmapScore, input$refinementHeatmapScorePlotType, signatureRefined()) # und die signature
 
       plot_signatureClustered(signatureRefined(),
-        score = input$refinementHeatmapScore,
+        scoring_method = input$refinementHeatmapScore,
         annotation_type = input$refinementHeatmapScorePlotType,
-        palette = input$globalColor
+        color_palette = input$globalColor
       )
     })
-    
+
     output$benchmark_scatter <- renderPlot({
       req(input$benchmark_reference, input$benchmark_ToPlot)
       reference <- internal$deconvolutions[[input$benchmark_reference]]
@@ -1143,27 +1368,26 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         reference,
         estimates,
         plot_method = input$correlationPlotType,
-        pValueType = input$correlationAnnotationType,
-        pValueColor = input$correlationAnntotationColor
+        pvalue_type = input$correlationAnnotationType,
+        pvalue_color = input$correlationAnntotationColor
       )
     })
-    
+
     output$benchmark_rmse <- renderPlot({
       req(input$benchmark_reference, input$benchmark_ToPlot, input$rmsePlotType, input$globalColor)
       reference <- internal$deconvolutions[[input$benchmark_reference]]
       estimates <- returnSelectedDeconvolutions(input$benchmark_ToPlot, isolate(internal$deconvolutions))
-      
-      
+
+
       plot_benchmark_rmse(reference,
-                          estimates,
-                          plot_type = input$rmsePlotType,
-                          hm_method = input$rmseHeatmapMethod,
-                          palette = input$globalColor
+        estimates,
+        plot_type = input$rmsePlotType,
+        hm_method = input$rmseHeatmapMethod,
+        color_palette = input$globalColor
       )
     })
 
     # ValueBoxes --------------------------------------------------------------
-
     output$refinementGenes <- shinydashboard::renderValueBox({
       req(signatureRefined())
 
@@ -1207,96 +1431,117 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         color = "light-blue"
       )
     })
-    
+
 
     # Uploads -----------------------------------------------------------------
-    
-    # load simbu simulation from user and extract bulk and ground truth 
+    # load simbu simulation from user and extract bulk and ground truth
     observeEvent(input$data_simbu_simulation, {
       # read rds
       file <- input$data_simbu_simulation$datapath
       name <- input$data_simbu_simulation$name
-      
-      simulation <- readRDS(file)
-      
-      tryCatch({
-        bulk <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]] %>% as.matrix()
-        reference <- simulation$cell_fractions %>% as.matrix()
 
-        internal$deconvolutions[[paste0("simbu_reference_",name)]] <- reference
-        internal$bulk[[paste0("simbu_bulk_", name)]] <- bulk
-        showNotification("Successfully loaded Simulation", type="message")
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      simulation <- readRDS(file)
+
+      tryCatch(
+        {
+          bulk <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]] %>% as.matrix()
+          reference <- simulation$cell_fractions %>% as.matrix()
+
+          internal$deconvolutions[[paste0("simbu_reference_", name)]] <- reference
+          internal$bulk[[paste0("simbu_bulk_", name)]] <- bulk
+          showNotification("Successfully loaded Simulation", type = "message")
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userBulkUpload, {
       name <- input$userBulkUpload$name
-      tryCatch({
-        internal$bulk[[paste0("bulk_", name)]] <- loadFile(input$userBulkUpload)
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$bulk[[paste0("bulk_", name)]] <- loadFile(input$userBulkUpload)
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userSingleCellUpload, {
       name <- input$userSingleCellUpload$name
-      tryCatch({
-        internal$singleCell[[paste0("singleCell_", name)]] <- loadFile(input$userSingleCellUpload)
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$singleCell[[paste0("singleCell_", name)]] <- loadFile(input$userSingleCellUpload)
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userAnnotationUpload, {
       name <- input$userAnnotationUpload$name
-      tryCatch({
-        internal$annotation[[paste0("annotation_", name)]] <- loadFile(input$userAnnotationUpload, type = "vector")
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$annotation[[paste0("annotation_", name)]] <- loadFile(input$userAnnotationUpload, type = "vector")
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userBatchUpload, {
       name <- input$userAnnotationUpload$name
-      tryCatch({
-        internal$batch[[paste0("batchID_", name)]] <- loadFile(input$userBatchUpload, type = "vector")
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$batch[[paste0("batchID_", name)]] <- loadFile(input$userBatchUpload, type = "vector")
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userMarkerUpload, {
       name <- input$userMarkerUpload$name
-      tryCatch({
-        internal$markers[[paste0("batchID_", name)]] <- loadFile(input$userMarkerUpload, type = "vector")
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$markers[[paste0("batchID_", name)]] <- loadFile(input$userMarkerUpload, type = "vector")
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userSignatureUpload, {
       name <- input$userSignatureUpload$name
-      tryCatch({
-        internal$signatures[[paste0("Signature.", name)]] <- loadFile(input$userSignatureUpload)
-      }, error = function (e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$signatures[[paste0("Signature.", name)]] <- loadFile(input$userSignatureUpload)
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
-    
+
     observeEvent(input$userReferenceUpload, {
       name <- input$userReferenceUpload$name
-      tryCatch({
-        internal$deconvolutions[[paste0("Reference", name)]] <- loadFile(input$userReferenceUpload)
-      }, error = function(e){
-        showNotification("There was an error with your upload", type="error")
-      })
+      tryCatch(
+        {
+          internal$deconvolutions[[paste0("Reference", name)]] <- loadFile(input$userReferenceUpload)
+        },
+        error = function(e) {
+          showNotification("There was an error with your upload", type = "error")
+        }
+      )
     })
 
     # Tables ------------------------------------------------------------------
-
-
     output$tableBox <- DT::renderDataTable({
       req(
         input$deconvolutionToTable != "",
@@ -1347,13 +1592,12 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
 
     # Downloads ---------------------------------------------------------------
-
     output$signatureDownload <- downloadHandler(
       filename = function() {
         paste("signature_", input$signatureToTable, ".csv", sep = "")
       },
       content = function(file) {
-        # data <- all_deconvolutions[[input$signatureToTable]][[2]]
+        # data <- deconv_list[[input$signatureToTable]][[2]]
         data <- isolate(internal$signatures[[input$signatureToTable]])
         write.csv(data, file)
       }
@@ -1397,8 +1641,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         signatures <- shiny::isolate(internal$signatures)
 
         data <- download_signatureUpset(signatures,
-          combination = input$upSetDownloadSelection,
-          mode = input$upsetMode
+          combination_to_include = input$upSetDownloadSelection,
+          upset_mode = input$upsetMode
         )
 
         # get genes from function
@@ -1447,9 +1691,9 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
         # convert to dataframe and set colnames
         content <- as.data.frame(content)
         # content <- as.matrix(content)
-        
+
         # if first column is a character column use as rownames
-        if (typeof(content[,1])=="character" && dim(content)[2] > 1){
+        if (typeof(content[, 1]) == "character" && dim(content)[2] > 1) {
           rownames(content) <- content[, 1] # first column
           content[, 1] <- NULL # remove first column
         }
@@ -1461,7 +1705,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
           }
           # turn into vector
           content <- as.vector(t(content))
-        } else { # all other cases: matrix?
+        } else {
+          # all other cases: matrix?
           content <- as.matrix(content)
         }
 
@@ -1481,7 +1726,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       },
       deleteFile = TRUE
     )
-    
+
     output$logoInfo <- renderImage(
       {
         list(
@@ -1495,7 +1740,7 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
-      req(internal$signatures, input$signatureToHeatmap) # used to contain all_deconvolutions
+      req(internal$signatures, input$signatureToHeatmap) # used to contain deconv_list
 
       # ClusteredHeatmapSelectedGenes(Table)
 
@@ -1515,9 +1760,8 @@ saveRDS(simulation, 'filepath.rds') # upload this file"),
       # Output List of Gene Names for Download
       signatureSelectedGenesDownloadContent(paste(rownames(selected), sep = "\n"))
     }
+    # nocov end
   })
 
-  shiny::shinyApp(ui = de_ui, server = de_server)
+  shiny::shinyApp(ui = deconvexplorer_ui, server = deconvexplorer_server)
 }
-
-# deconvExplorer()
