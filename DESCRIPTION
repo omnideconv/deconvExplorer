@@ -53,11 +53,7 @@ Imports:
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Remotes: 
-    github::accio/BioQC,
-    github::omnideconv/omnideconv,
-    github::bbc/bbplot, 
-    github::jokergoo/ComplexHeatmap,
-    github::jokergoo/InteractiveComplexHeatmap
+    github::omnideconv/omnideconv
 Suggests: 
     knitr,
     rmarkdown,
