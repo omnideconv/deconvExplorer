@@ -184,7 +184,7 @@ plot_benchmark_correlation <- function(gtruth_df,
   cor.df$method <- NULL
 
 
-  p.df <- tidyr::pivot_wider(p.df, names_from = "cell_type", values_from = "p") |> 
+  p.df <- tidyr::pivot_wider(p.df, names_from = "cell_type", values_from = "p") |>
     as.data.frame()
   rownames(p.df) <- p.df$method
   p.df$method <- NULL
@@ -289,7 +289,7 @@ plot_benchmark_rmse <- function(gtruth_df,
   # return plot
   if (plot_type == "heatmap") {
     # pivot wider for corrplot
-    rmse.df <- tidyr::pivot_wider(rmse.df, names_from = "cell_type", values_from = "rmse") |> 
+    rmse.df <- tidyr::pivot_wider(rmse.df, names_from = "cell_type", values_from = "rmse") |>
       as.data.frame()
     rownames(rmse.df) <- rmse.df$method
     rmse.df$method <- NULL

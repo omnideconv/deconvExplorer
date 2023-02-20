@@ -1444,7 +1444,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       tryCatch(
         {
-          bulk <- as.matrix(SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]]) 
+          bulk <- as.matrix(SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]])
           reference <- as.matrix(simulation$cell_fractions)
 
           internal$deconvolutions[[paste0("simbu_reference_", name)]] <- reference
@@ -1563,7 +1563,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         options = list(
           dom = "tip"
         )
-      ) |> 
+      ) |>
         DT::formatPercentage(columns, 2)
     })
 
@@ -1586,7 +1586,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       columns <- colnames(signature)[-1]
 
       # render table
-      DT::datatable(signature, filter = "top", options = list(dom = "tip")) |> 
+      DT::datatable(signature, filter = "top", options = list(dom = "tip")) |>
         DT::formatRound(columns, 2)
     })
 

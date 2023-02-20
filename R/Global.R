@@ -94,7 +94,7 @@ returnSelectedDeconvolutions <- function(deconv_select, deconv_list) {
 #     coord_cartesian(xlim = c(0, max_value), ylim = c(0, max_value))
 #
 #   # render
-#   plotly::ggplotly(plot, tooltip = c("text")) |> 
+#   plotly::ggplotly(plot, tooltip = c("text")) |>
 #     plotly::config(
 #       displaylogo = FALSE, showTips = FALSE, toImageButtonOptions = list(filename = paste0("plotMethod", "_plot")),
 #       modeBarButtonsToRemove = list(
@@ -104,6 +104,6 @@ returnSelectedDeconvolutions <- function(deconv_select, deconv_list) {
 #         "lasso2d", "zoom2d",
 #         "pan2d", "autoScale2d", "select2d"
 #       )
-#     ) |> 
+#     ) |>
 #     plotly::layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
 # }
