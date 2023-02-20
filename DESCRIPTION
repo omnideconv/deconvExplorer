@@ -35,7 +35,6 @@ Imports:
     rintrojs, 
     DT, 
     shinyjs, 
-    magrittr,
     stringr, 
     tidyr, 
     rlang,
