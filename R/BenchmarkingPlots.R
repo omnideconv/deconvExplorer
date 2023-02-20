@@ -56,7 +56,7 @@ plot_benchmark_scatter <- function(gtruth_df,
       margins = c("cell_type"), scales = "free"
     ) +
     ggplot2::theme_bw() +
-    ggpubr::rotate_x_text(angle = 60) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     labs(x = "true cellular fractions", y = "cell type estimates", title = "") +
     theme(legend.position = "none", text = element_text(size = 15))
 
@@ -64,8 +64,7 @@ plot_benchmark_scatter <- function(gtruth_df,
     ggforce::facet_grid_paginate(method ~ .data$cell_type,
       margins = c("cell_type"), scales = "free"
     ) +
-    ggpubr::rotate_x_text(angle = 60)
-
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
   # get palette
   max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
