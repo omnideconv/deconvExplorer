@@ -42,7 +42,6 @@ Imports:
     utils,
     tools, 
     vroom,
-    bbplot,
     ComplexHeatmap,
     grid,
     InteractiveComplexHeatmap, 

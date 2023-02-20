@@ -23,7 +23,6 @@
 #' @importFrom stringr str_subset
 #' @importFrom tidyr pivot_longer
 #' @importFrom stats sd cor.test
-#' @importFrom bbplot bbc_style
 #' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size upset_top_annotation extract_comb
 #' @importFrom grid gpar unit
 #' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput makeInteractiveComplexHeatmap
