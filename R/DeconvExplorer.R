@@ -1412,7 +1412,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     output$refinementKappa <- shinydashboard::renderValueBox({
       req(signatureRefined())
-      kappa <- kappa(signatureRefined(), exact = TRUE) %>% round(2)
+      kappa <- round(kappa(signatureRefined(), exact = TRUE), 2)
       shinydashboard::valueBox(
         value = kappa,
         subtitle = "Condition Number",
@@ -1423,7 +1423,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     output$refinementMeanEntropy <- shinydashboard::renderValueBox({
       req(signatureRefined())
-      meanEntropy <- mean(apply(signatureRefined(), 1, scoreEntropy)) %>% round(2)
+      meanEntropy <- round(mean(apply(signatureRefined(), 1, scoreEntropy)), 2)
       shinydashboard::valueBox(
         value = meanEntropy,
         subtitle = "Mean Entropy",
@@ -1444,8 +1444,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       tryCatch(
         {
-          bulk <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]] %>% as.matrix()
-          reference <- simulation$cell_fractions %>% as.matrix()
+          bulk <- as.matrix(SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]]) 
+          reference <- as.matrix(simulation$cell_fractions)
 
           internal$deconvolutions[[paste0("simbu_reference_", name)]] <- reference
           internal$bulk[[paste0("simbu_bulk_", name)]] <- bulk
@@ -1563,7 +1563,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         options = list(
           dom = "tip"
         )
-      ) %>%
+      ) |> 
         DT::formatPercentage(columns, 2)
     })
 
@@ -1586,7 +1586,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       columns <- colnames(signature)[-1]
 
       # render table
-      DT::datatable(signature, filter = "top", options = list(dom = "tip")) %>%
+      DT::datatable(signature, filter = "top", options = list(dom = "tip")) |> 
         DT::formatRound(columns, 2)
     })
 

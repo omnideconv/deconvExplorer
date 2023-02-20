@@ -18,7 +18,6 @@
 #' @importFrom rintrojs introBox introjs introjsUI readCallback
 #' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
-#' @importFrom magrittr "%>%"
 #' @importFrom utils write.csv write.table read.delim
 #' @importFrom stringr str_to_title str_split
 #' @importFrom tidyr pivot_longer
