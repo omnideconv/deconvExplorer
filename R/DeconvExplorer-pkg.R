@@ -29,7 +29,7 @@
 #' @importFrom circlize colorRamp2
 #' @importFrom ggforce facet_grid_paginate
 #' @importFrom grDevices colorRampPalette
-#' @importFrom ggpubr rotate_x_text stat_cor
+#' @importFrom ggpubr stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
 #'
