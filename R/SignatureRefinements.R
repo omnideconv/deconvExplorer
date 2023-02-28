@@ -204,9 +204,7 @@ selectGenesByScore <- function(signature_mat,
   for (celltype in names(scoresByCellType)) {
     # get best genes for each score, sorted ascending
     # reminder: the lower the score the better in entropy case, might need a change to fit all
-    scores <- scoresByCellType[[celltype]] %>%
-      unlist() %>%
-      sort()
+    scores <- sort(unlist(scoresByCellType[[celltype]]))
 
     # check number of genes!!!
     if (genes_per_cell_type > length(names(scores))) {

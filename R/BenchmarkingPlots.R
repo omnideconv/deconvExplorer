@@ -31,7 +31,7 @@ plot_benchmark_scatter <- function(gtruth_df,
   # and contains data frames as expected
   stopifnot(all(unlist(lapply(deconv_list, is.data.frame))))
 
-  ref <- gtruth_df %>% as.data.frame()
+  ref <- as.data.frame(gtruth_df)
   ref$sample <- rownames(ref)
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
 
@@ -56,7 +56,7 @@ plot_benchmark_scatter <- function(gtruth_df,
       margins = c("cell_type"), scales = "free"
     ) +
     ggplot2::theme_bw() +
-    ggpubr::rotate_x_text(angle = 60) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     labs(x = "true cellular fractions", y = "cell type estimates", title = "") +
     theme(legend.position = "none", text = element_text(size = 15))
 
@@ -64,8 +64,7 @@ plot_benchmark_scatter <- function(gtruth_df,
     ggforce::facet_grid_paginate(method ~ .data$cell_type,
       margins = c("cell_type"), scales = "free"
     ) +
-    ggpubr::rotate_x_text(angle = 60)
-
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
   # get palette
   max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
@@ -126,7 +125,7 @@ plot_benchmark_correlation <- function(gtruth_df,
     stop("P Value Annotation color must be white or black")
   }
 
-  ref <- gtruth_df %>% as.data.frame()
+  ref <- as.data.frame(gtruth_df)
   ref$sample <- rownames(ref)
 
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
@@ -179,12 +178,14 @@ plot_benchmark_correlation <- function(gtruth_df,
 
   # pivot longer and turn to matrix for corrplot
 
-  cor.df <- tidyr::pivot_wider(cor.df, names_from = "cell_type", values_from = "correlation") %>% as.data.frame()
+  cor.df <- tidyr::pivot_wider(cor.df, names_from = "cell_type", values_from = "correlation") |>
+    as.data.frame()
   rownames(cor.df) <- cor.df$method
   cor.df$method <- NULL
 
 
-  p.df <- tidyr::pivot_wider(p.df, names_from = "cell_type", values_from = "p") %>% as.data.frame()
+  p.df <- tidyr::pivot_wider(p.df, names_from = "cell_type", values_from = "p") |>
+    as.data.frame()
   rownames(p.df) <- p.df$method
   p.df$method <- NULL
 
@@ -249,7 +250,7 @@ plot_benchmark_rmse <- function(gtruth_df,
     stop("gtruth_df or deconv_list not provided")
   }
 
-  ref <- gtruth_df %>% as.data.frame()
+  ref <- as.data.frame(gtruth_df)
   ref$sample <- rownames(ref)
 
   ref <- tidyr::pivot_longer(ref, !sample, names_to = "cell_type", values_to = "truth")
@@ -288,7 +289,8 @@ plot_benchmark_rmse <- function(gtruth_df,
   # return plot
   if (plot_type == "heatmap") {
     # pivot wider for corrplot
-    rmse.df <- tidyr::pivot_wider(rmse.df, names_from = "cell_type", values_from = "rmse") %>% as.data.frame()
+    rmse.df <- tidyr::pivot_wider(rmse.df, names_from = "cell_type", values_from = "rmse") |>
+      as.data.frame()
     rownames(rmse.df) <- rmse.df$method
     rmse.df$method <- NULL
     rmse.df <- as.matrix(rmse.df)

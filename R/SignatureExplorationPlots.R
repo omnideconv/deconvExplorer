@@ -45,7 +45,7 @@ plot_signatureGenesPerMethod <- function(signature_list,
       color = "black"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
-    bbc_style() +
+    theme_minimal() +
     theme(legend.position = "none") +
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
     ggplot2::ylim(0, max(df$number_of_genes) * 1.1) # scale y axis to contain bar label
@@ -94,7 +94,7 @@ plot_conditionNumberPerMethod <- function(signature_list,
       color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
-    bbc_style() +
+    theme_minimal() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
@@ -143,7 +143,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
       color = "black", size = 7, family = "Helvetica"
     ) +
     geom_hline(yintercept = 0, size = 1, colour = "#333333") +
-    bbc_style() +
+    theme_minimal() +
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
     # ggplot2::ylim(0, 5)+ # could be changed
