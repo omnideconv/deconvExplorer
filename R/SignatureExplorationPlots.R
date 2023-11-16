@@ -194,7 +194,7 @@ plot_signatureClustered <- function(signature_mat,
 
   # calc mean and sd
   df$mean <- rowMeans(df[, -1])
-  df$sd <- apply(df[, 2:(ncol(df) - 1)], 1, sd)
+  df$sd <- apply(df[, 2:(ncol(df) - 1)], 1, sd) + 0.0001 # add pseudocount to not divide by 0 in case of SD=0
 
   # pivot for z-score calc
   df <- tidyr::pivot_longer(df, !c("X", "mean", "sd"), names_to = "cell_type", values_to = "value")
