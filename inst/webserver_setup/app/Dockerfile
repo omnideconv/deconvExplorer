@@ -8,6 +8,7 @@ ARG GITHUB_PAT
 RUN apt-get update && apt-get install -y \
     sudo \
     pandoc \
+    apt-utils \
     #pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev \
