@@ -8,6 +8,7 @@ ARG GITHUB_PAT
 RUN apt-get update && apt-get install -y \
     sudo \
     pandoc \
+    apt-utils \
     #pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev \
@@ -32,7 +33,7 @@ RUN R -e "pak::pkg_install('omnideconv/omnideconv', dependencies=TRUE)"
 #RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
 RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
-RUN R -e "reticulate::install_miniconda()" # will not install automatically
+RUN R -e "reticulate::install_miniconda(force=TRUE)" # will not install automatically
 
 RUN R -e "omnideconv::install_all_python()"
 
