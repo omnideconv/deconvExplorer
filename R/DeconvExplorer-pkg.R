@@ -35,4 +35,4 @@
 #'
 #' @name DeconvExplorer-pkg
 #' @docType package
-NULL
+"_PACKAGE"
