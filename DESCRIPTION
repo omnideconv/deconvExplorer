@@ -59,5 +59,10 @@ Suggests:
     bookdown,
     testthat (>= 3.0.0), 
     markdown
+biocViews:
+    Software, GeneExpression, ImmunoOncology, Sequencing, Transcription, 
+    Classification, Transcriptomics, Visualization
+URL: https://github.com/omnideconv/DeconvExplorer/
+BugReports: https://github.com/omnideconv/DeconvExplorer/issues
 VignetteBuilder: knitr
 Config/testthat/edition: 3
