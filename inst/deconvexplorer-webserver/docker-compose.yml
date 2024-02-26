@@ -6,11 +6,12 @@ services:
       context: ./app
       args:
         GITHUB_PAT: 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
-    image: deconv_explorer:latest
+    image: bigdatainbiomedicine/deconv_explorer:latest
     expose:
       - 3838
     networks:
-      - sp-net
+      - sp-net:
+        ipv4_address: 172.16.199.2
   shinyproxy:
     build: ./shinyproxy
     depends_on:
@@ -18,7 +19,8 @@ services:
     expose:
       - 8080
     networks:
-      - sp-net
+      - sp-net:
+        ipv4_address: 172.16.199.3
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./logs/:/opt/shinyproxy/container-logs/
@@ -28,7 +30,8 @@ services:
     ports:
       - 3828:80
     networks:
-      - sp-net
+      - sp-net:
+        ipv4_address: 172.16.199.4
     depends_on:
       - shinyproxy
     volumes:
@@ -36,3 +39,8 @@ services:
 
 networks:
   sp-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.16.199.0/24
