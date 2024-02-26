@@ -110,7 +110,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   data_info <- shinydashboard::box(
     title = span(icon("info-circle"), "Input data formats and requirements"),
     solidHeader = FALSE, width = 12,
-    collapsible = TRUE, collapsed = FALSE,
+    collapsible = TRUE, collapsed = TRUE,
     includeMarkdown(system.file("extdata", "data_info.md", package = "DeconvExplorer"))
   )
 
