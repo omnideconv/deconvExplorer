@@ -26,7 +26,7 @@ proxy:
           "shiny::runApp('/srv/shiny-server/', host = '0.0.0.0', port = 3838)",
         ]
       container-network: deconvexplorer-webserver_sp-net
-      container-image: bigdatainbiomedicine/deconv_explorer:latest
+      container-image: alexd13/deconv_explorer:latest
       #container-cpu-limit: 2
 
 logging:
