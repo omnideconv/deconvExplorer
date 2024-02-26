@@ -683,12 +683,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           text = actionButton("startTour", "Start Tour",
             icon = icon("directions")
           ),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon(NULL, verify_fa = FALSE)
         ),
         notificationItem(text = actionButton("githubLink", "View the Code",
           onclick = "window.open('https://github.com/omnideconv', '_blank')",
           icon = icon("github")
-        ), icon = icon("", verify_fa = FALSE))
+        ), icon = icon(NULL, verify_fa = FALSE))
       ),
       dropdownMenu(
         type = "task",
@@ -697,15 +697,15 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         badgeStatus = NULL,
         notificationItem(
           text = textInput("csxEmail", "Email Adress"),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon(NULL, verify_fa = FALSE)
         ),
         notificationItem(
           text = textInput("csxToken", "Token"),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon(NULL, verify_fa = FALSE)
         ),
         notificationItem(
           text = actionButton("setCSX", "Set CIBERSORTx Credentials"),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon(NULL, verify_fa = FALSE)
         )
       ),
       dropdownMenu(
@@ -715,11 +715,11 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         badgeStatus = NULL,
         notificationItem(
           text = downloadButton("downloadSession", "Download Session"),
-          icon = icon("", verify_fa = FALSE)
+          icon = icon(NULL, verify_fa = FALSE)
         ),
         notificationItem(
           text = fileInput("uploadSession", "Upload Session File", accept = c(".rds")),
-          icon = icon("", verify_fa = FALSE), status = "primary"
+          icon = icon(NULL, verify_fa = FALSE), status = "primary"
         )
       )
     ),
