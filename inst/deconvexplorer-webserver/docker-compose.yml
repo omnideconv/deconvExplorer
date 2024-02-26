@@ -1,21 +1,8 @@
 version: "3.5"
 
 services:
-  deconvexplorer:
-    build:
-      context: ./app
-      args:
-        GITHUB_PAT: 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
-    image: alexd13/deconv_explorer:latest
-    expose:
-      - 3838
-    networks:
-      sp-net:
-        ipv4_address: 172.16.199.2
   shinyproxy:
     build: ./shinyproxy
-    depends_on:
-      - deconvexplorer
     expose:
       - 8080
     networks:
@@ -28,7 +15,7 @@ services:
     image: nginx:1.17.5
     restart: unless-stopped
     ports:
-      - 3828:80
+      - 3868:80
     networks:
       sp-net:
         ipv4_address: 172.16.199.4
