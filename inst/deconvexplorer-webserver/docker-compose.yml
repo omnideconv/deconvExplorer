@@ -29,5 +29,5 @@ networks:
     driver: bridge
     ipam:
       driver: default
-      config: 
+      config:
         - subnet: 172.16.199.0/24
