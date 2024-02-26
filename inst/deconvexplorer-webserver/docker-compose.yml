@@ -10,7 +10,7 @@ services:
     expose:
       - 3838
     networks:
-      - sp-net-deconvexplorer
+      - sp-net
   shinyproxy:
     build: ./shinyproxy
     depends_on:
@@ -18,7 +18,7 @@ services:
     expose:
       - 8080
     networks:
-      - sp-net-deconvexplorer
+      - sp-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./logs/:/opt/shinyproxy/container-logs/
@@ -28,11 +28,11 @@ services:
     ports:
       - 3828:80
     networks:
-      - sp-net-deconvexplorer
+      - sp-net
     depends_on:
       - shinyproxy
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
 networks:
-  sp-net-deconvexplorer:
+  sp-net:
