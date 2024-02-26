@@ -4,6 +4,9 @@
 #' @param deconvexp_singlecelldata Single Cell Data which is used to calculate the signature matrix
 #' @param deconvexp_cell_annotation Cell Type annotations for the single cell data
 #' @param deconvexp_batch Batch IDs, only for some deconvolution methods
+#' @param maxsize_upload Numeric value, specifying the maximal size in MB for the
+#' accepted input object. This one applies only when uploading objects at runtime - 
+#' if the objects are loaded via the parameters, this can be bypassed.
 #'
 #' @return A Shiny app object is returned
 #'
@@ -29,7 +32,16 @@
 DeconvExplorer <- function(deconvexp_bulk = NULL,
                            deconvexp_singlecelldata = NULL,
                            deconvexp_cell_annotation = NULL,
-                           deconvexp_batch = NULL) {
+                           deconvexp_batch = NULL,
+                           maxsize_upload = 50) {
+  # options management
+  oopt <- options(
+    spinner.type = 6, 
+    spinner.color = "#0092AC",
+    shiny.maxRequestSize = maxsize_upload * 1024^2)
+  # play nice with other previously chosen options
+  on.exit(options(oopt))
+  
   # methods that produce a signature
   produces_signature <- c(
     # "BSeq-sc" = "bseqsc", # markers!!!
@@ -669,6 +681,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     status = "primary",
     div(includeMarkdown(system.file("extdata", "app_information.md", package = "DeconvExplorer")), style = "padding:1em; padding-top:0em")
   )
+  
 
   # ui definition  ----------------------------------------------------------
   deconvexplorer_ui <- dashboardPage(

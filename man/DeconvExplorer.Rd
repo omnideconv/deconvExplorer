@@ -8,7 +8,8 @@ DeconvExplorer(
   deconvexp_bulk = NULL,
   deconvexp_singlecelldata = NULL,
   deconvexp_cell_annotation = NULL,
-  deconvexp_batch = NULL
+  deconvexp_batch = NULL,
+  maxsize_upload = 50
 )
 }
 \arguments{
@@ -19,6 +20,10 @@ DeconvExplorer(
 \item{deconvexp_cell_annotation}{Cell Type annotations for the single cell data}
 
 \item{deconvexp_batch}{Batch IDs, only for some deconvolution methods}
+
+\item{maxsize_upload}{Numeric value, specifying the maximal size in MB for the
+accepted input object. This one applies only when uploading objects at runtime - 
+if the objects are loaded via the parameters, this can be bypassed.}
 }
 \value{
 A Shiny app object is returned
