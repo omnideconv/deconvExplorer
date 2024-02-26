@@ -44,7 +44,7 @@ plot_signatureGenesPerMethod <- function(signature_list,
       vjust = -1, family = "Helvetica",
       color = "black"
     ) +
-    geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+    geom_hline(yintercept = 0, linewidth = 1, colour = "#333333") +
     theme_minimal() +
     theme(legend.position = "none") +
     ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(8, color_palette)[1:length(names(signature_list))]) +
@@ -93,7 +93,7 @@ plot_conditionNumberPerMethod <- function(signature_list,
       fontface = "bold", vjust = -1,
       color = "black", size = 7, family = "Helvetica"
     ) +
-    geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+    geom_hline(yintercept = 0, linewidth = 1, colour = "#333333") +
     theme_minimal() +
     labs(x = "Method", y = "Kappa") +
     theme(legend.position = "none") +
@@ -142,7 +142,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
       fontface = "bold", vjust = -1,
       color = "black", size = 7, family = "Helvetica"
     ) +
-    geom_hline(yintercept = 0, size = 1, colour = "#333333") +
+    geom_hline(yintercept = 0, linewidth = 1, colour = "#333333") +
     theme_minimal() +
     labs(x = "Method", y = "Entropy") +
     theme(legend.position = "none") +
