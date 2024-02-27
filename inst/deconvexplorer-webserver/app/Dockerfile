@@ -6,10 +6,10 @@ FROM rocker/r-base
 ARG GITHUB_PAT
 
 RUN apt-get update && apt-get install -y \
+    binutils \
     sudo \
     pandoc \
     apt-utils \
-    #pandoc-citeproc \
     libcurl4-gnutls-dev \
     libcairo2-dev \
     libxt-dev \
@@ -27,13 +27,12 @@ RUN apt-get update && apt-get install -y \
 # omnideconv and DeconvExplorer
 #RUN install2.r --error textshaping
 
-RUN install2.r --error pak car matlib 
-#RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
-RUN R -e "pak::pkg_install('omnideconv/omnideconv', dependencies=TRUE)"
-#RUN R -e "remotes::install_github('omnideconv/DeconvExplorer', dependencies=TRUE)"
+RUN install2.r --error pak car matlib remotes
+RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
 RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
-RUN R -e "reticulate::install_miniconda(force=TRUE)" # will not install automatically
+#RUN R -e "reticulate::install_miniconda()" # will not install automatically
+
 
 RUN R -e "omnideconv::install_all_python()"
 
@@ -56,9 +55,7 @@ COPY /*.R /srv/shiny-server/
 #RUN chmod -R +r /srv/shiny-server
 RUN chown -R shiny:shiny /srv/shiny-server
 
-
 EXPOSE 3838
-
 
 CMD ["R", "-e", "shiny::runApp('/srv/shiny-server/', host = '0.0.0.0', port = 3838)"]
 #CMD ["/usr/bin/shiny-server.sh"]
