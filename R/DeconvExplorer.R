@@ -383,7 +383,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 4,
     withSpinner(
       plotOutput("signatureGenesPerMethod")
-    )
+    ),
+    downloadButton("downloadSignatureGenesPerMethod", label = "Download as PDF")
   )
 
   signature_kappaPerMethod <- shinydashboard::box(
@@ -391,7 +392,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 4,
     withSpinner(
       plotOutput("kappaPerMethod")
-    )
+    ),
+    downloadButton("downloadKappaPerMethod", label = "Download as PDF")
   )
 
   signature_entropyPerMethod <- shinydashboard::box(
@@ -399,7 +401,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 4,
     withSpinner(
       plotOutput("signatureEntropyPerMethod")
-    )
+    ),
+    downloadButton("downloadSignatureEntropyPerMethod", label = "Download as PDF")
   )
 
   signature_clusteredHeatmap <- shinydashboard::box(
@@ -422,7 +425,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     ),
     column(
-      width = 4,
+      width = 2,
+      selectInput("clusterCelltypes", "Order rows", 
+                  choices = c('.. by cell-type similarity' = 'cluster', '.. alphabetically' = 'no_cluster'))
+    ),
+    column(
+      width = 2,
       div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
     ),
     column(
@@ -738,7 +746,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     dashboardSidebar(sidebarMenu(
       shinyjs::useShinyjs(),
-      introjsUI(),
+      rintrojs::introjsUI(),
       menuItem("Data Upload", tabName = "data"),
       menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Signature Exploration", tabName = "signatureExploration"),
@@ -764,7 +772,6 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
             ),
             column(
               width = 6,
-              data_simbu_box,
               data_load_sample,
               data_load_signature,
               data_load_reference
@@ -851,6 +858,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   # server definition  ------------------------------------------------------
 
   deconvexplorer_server <- shinyServer(function(input, output, session) {
+    
     # nocov start
 
     # General Setup -----------------------------------------------------------
@@ -1283,32 +1291,75 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     })
 
-    # Number Of Genes Barplot
-    output$signatureGenesPerMethod <- renderPlot({
+    # barplots
+    barplotReactive <- reactive({
       req(length(internal$signatures) > 0)
       signatures <- shiny::isolate(internal$signatures)
-      plot_signatureGenesPerMethod(signatures, input$globalColor)
+      nGenesPlot <- plot_signatureGenesPerMethod(signatures, input$globalColor)
+      conditionNumberPlot <- plot_conditionNumberPerMethod(signatures, input$globalColor)
+      entropyPlot <- plot_meanEntropyPerMethod(signatures, input$globalColor)
+      
+      return(list(nGenesPlot=nGenesPlot,
+                  conditionNumberPlot=conditionNumberPlot,
+                  entropyPlot=entropyPlot))
     })
+    
+    # Number of genes Plot
+    output$signatureGenesPerMethod <- renderPlot({
+      req(barplotReactive)
+      barplotReactive()$nGenesPlot
+    })
+    
+    output$downloadSignatureGenesPerMethod <- downloadHandler(
+      filename = function() {
+        "signature_genes_plot.pdf"
+      },
+      content = function(file) {
+        req(barplotReactive)
+        ggsave(file, plot = barplotReactive()$nGenesPlot, device = 'pdf', width=6, height=6)
+      }
+    )
 
     # Condition Number Plot
     output$kappaPerMethod <- renderPlot({
-      req(length(internal$signatures) > 0)
-      signatures <- shiny::isolate(internal$signatures)
-      plot_conditionNumberPerMethod(signatures, input$globalColor)
+      req(barplotReactive)
+      barplotReactive()$conditionNumberPlot
     })
+    
+    output$downloadKappaPerMethod <- downloadHandler(
+      filename = function() {
+        "condition_number_plot.pdf"
+      },
+      content = function(file) {
+        req(barplotReactive)
+        ggsave(file, plot = barplotReactive()$conditionNumberPlot, device = 'pdf', width=6, height=6)
+      }
+    )
 
+    # Entropy Plot
     output$signatureEntropyPerMethod <- renderPlot({
-      req(length(internal$signatures) > 0)
-      signatures <- shiny::isolate(internal$signatures)
-      plot_meanEntropyPerMethod(signatures, input$globalColor)
+      req(barplotReactive)
+      barplotReactive()$entropyPlot
     })
+    
+    output$downloadSignatureEntropyPerMethod <- downloadHandler(
+      filename = function() {
+        "condition_number_plot.pdf"
+      },
+      content = function(file) {
+        req(barplotReactive)
+        ggsave(file, plot = barplotReactive()$entropyPlot, device = 'pdf', width=6, height=6)
+      }
+    )
+
 
     # plot interactive heatmap
     observe({
       req(
         input$signatureToHeatmap,
         input$signatureAnnotationScore,
-        input$signatureAnnotationPlotType
+        input$signatureAnnotationPlotType,
+        input$clusterCelltypes
       )
       signature <- isolate(internal$signatures[[input$signatureToHeatmap]])
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
@@ -1317,7 +1368,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         plot_signatureClustered(signature,
           scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
-          color_palette = input$globalColor
+          color_palette = input$globalColor,
+          order_rows = input$clusterCelltypes
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action

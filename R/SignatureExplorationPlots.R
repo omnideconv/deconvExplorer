@@ -172,7 +172,8 @@ plot_meanEntropyPerMethod <- function(signature_list,
 plot_signatureClustered <- function(signature_mat,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
-                                    color_palette = "Spectral") {
+                                    color_palette = "Spectral",
+                                    order_rows = 'cluster') {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
@@ -239,6 +240,12 @@ plot_signatureClustered <- function(signature_mat,
     }
   }
 
+  if(order_rows == 'cluster'){
+    cluster_rows <- TRUE
+  }else if(order_rows == 'no_cluster'){
+    mat <- mat[,order(colnames(mat))]
+    cluster_rows = FALSE
+  }
 
   # Plot with complex heatmap
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
@@ -246,7 +253,7 @@ plot_signatureClustered <- function(signature_mat,
     row_title = NULL, row_names_side = "left",
     border = TRUE, col = col_fun,
     # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
-    cluster_columns = TRUE, cluster_rows = TRUE, # clustering_method_columns = "euclidean",
+    cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )
 
@@ -321,15 +328,18 @@ plot_signatureUpset <- function(signature_list,
     upSetColors <- c("black")
   }
 
+  top_annotation <- ComplexHeatmap::upset_top_annotation(
+    mat,
+    add_numbers = TRUE,
+    numbers_gp = grid::gpar(
+     fontsize = "14",
+     fontface = "bold"
+    )
+  )
+  
   p <- ComplexHeatmap::UpSet(mat,
     comb_order = combOrder,
-    top_annotation = upset_top_annotation(mat,
-      add_numbers = TRUE,
-      numbers_gp = grid::gpar(
-        fontsize = "14",
-        fontface = "bold"
-      )
-    ),
+    top_annotation = top_annotation,
     pt_size = grid::unit(8, "mm"), lwd = 6,
     comb_col = upSetColors
   )
