@@ -863,8 +863,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     # General Setup -----------------------------------------------------------
     internal <- shiny::reactiveValues(
-      signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
-      deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))),
+      #signatures = list("dwls" = readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))),
+      #deconvolutions = list("dwls_dwls" = readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))),
+      signatures = list(),
+      deconvolutions = list(),
       bulk = list(),
       singleCell = list(),
       annotation = list(),
