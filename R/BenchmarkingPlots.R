@@ -47,24 +47,20 @@ plot_benchmark_scatter <- function(gtruth_df,
 
   # merge
   merged.df <- merge(df, ref, all.x = TRUE) # keep all deconvolution results
+  merged.df <- merged.df[complete.cases(merged.df),]
 
   # build plot
   plot <- ggplot(merged.df, aes(x = .data$truth, y = .data$estimate, color = .data$cell_type)) +
-    geom_point(show.legend = FALSE) +
-    ggpubr::stat_cor(label.sep = "\n", size = 3, color = "black", label.x.npc = 0.01) +
+    geom_point(show.legend = FALSE, size=3, alpha=.8) +
+    ggpubr::stat_cor(label.sep = "\n", size = 3, color = "black", label.x.npc = 0.05, label.y = max(merged.df$estimate)+0.05, vjust=1) +
     ggforce::facet_grid_paginate(method ~ .data$cell_type,
-      margins = c("cell_type"), scales = "free"
+      margins = c("cell_type")
     ) +
     ggplot2::theme_bw() +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1), strip.background = element_rect(fill = 'white')) +
     labs(x = "true cellular fractions", y = "cell type estimates", title = "") +
-    theme(legend.position = "none", text = element_text(size = 15))
-
-  plot <- plot + geom_abline() +
-    ggforce::facet_grid_paginate(method ~ .data$cell_type,
-      margins = c("cell_type"), scales = "free"
-    ) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+    theme(legend.position = "none", text = element_text(size = 15)) + 
+    geom_abline(linetype = 'dashed')
 
   # get palette
   max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()
