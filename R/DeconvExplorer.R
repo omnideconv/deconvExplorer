@@ -755,7 +755,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       menuItem("Further Information", tabName = "fInfo"),
       selectInput("globalColor", "Select Plot Color Palette",
         choices = c("Set1", "Set2", "Set3", "Paired", "Dark2", "Spectral", "Accent"),
-        selected = "Spectral"
+        selected = "Dark2"
       )
     )),
     dashboardBody(
