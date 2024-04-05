@@ -57,6 +57,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     "DWLS" = "dwls",
     "MOMF" = "momf"
   )
+  
+  overlay_color <- "rgb(51, 62, 72, .5)"
 
   # Data Upload Boxes -------------------------------------------------------
 
@@ -75,7 +77,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   data_deconvolution <- shinydashboard::box(
     id = "tour_upload",
-    title = "Deconvolution", solidHeader = TRUE, status = "primary", width = 12,
+    title = "Input files for Deconvolution", solidHeader = TRUE, status = "primary", width = 12,
     fileInput("userBulkUpload", "Upload Bulk Data"),
     div(style = "margin-top: -20px"),
     fileInput("userSingleCellUpload", "Upload Single Cell Data"),
@@ -91,10 +93,6 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   data_load_sample <- shinydashboard::box(
     id = "tour_sample",
     title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12,
-    column(
-      width = 4,
-      div(selectInput("sampleNumber", NULL, choices = c("Sample 1" = 1, "Sample2" = 2, "Sample3" = 3)), style = "margin-top:0.5em;")
-    ),
     column(
       width = 3,
       div(actionButton("loadSample", "Load Sample Files"), style = "margin-top:0.5em")
@@ -261,7 +259,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 5,
       selectInput("deconvolutionToPlot", "Select Deconvolution results",
-        choices = c("dwls_dwls"), selected = "dwls_dwls", multiple = TRUE
+        choices = c(""), multiple = TRUE
       )
     ),
     column(
@@ -747,6 +745,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     dashboardSidebar(sidebarMenu(
       shinyjs::useShinyjs(),
       rintrojs::introjsUI(),
+      waiter::use_waiter(),
+      waiter::waiter_show_on_load(html = tagList(waiter::spin_rotating_plane(), "Loading necessary packages ...")),
       menuItem("Data Upload", tabName = "data"),
       menuItem("Deconvolution", tabName = "deconv"),
       menuItem("Signature Exploration", tabName = "signatureExploration"),
@@ -860,6 +860,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   deconvexplorer_server <- shinyServer(function(input, output, session) {
     
     # nocov start
+    waiter::waiter_hide()
 
     # General Setup -----------------------------------------------------------
     internal <- shiny::reactiveValues(
@@ -939,28 +940,16 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     })
 
     observeEvent(input$loadSample, {
-      req(input$sampleNumber)
-      if (input$sampleNumber == 1) {
-        internal$bulk[["BulkSample"]] <- omnideconv::bulk
-        internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
-        internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
-        internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
-        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      } else if (input$sampleNumber == 2) {
-        internal$bulk[["BulkSample"]] <- omnideconv::bulk
-        internal$singleCell[["SingleCellSample2"]] <- omnideconv::single_cell_data_2
-        internal$annotation[["CellTypeAnnotation2"]] <- omnideconv::cell_type_annotations_2
-        internal$batch[["BatchIDs2"]] <- omnideconv::batch_ids_2
-        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      } else if (input$sampleNumber == 3) {
-        internal$bulk[["BulkSample"]] <- omnideconv::bulk
-        internal$singleCell[["SingleCellSample3"]] <- omnideconv::single_cell_data_3
-        internal$annotation[["CellTypeAnnotation3"]] <- omnideconv::cell_type_annotations_3
-        internal$batch[["BatchIDs3"]] <- omnideconv::batch_ids_3
-        internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      }
-
+      waiter::waiter_show(html = tagList(waiter::spin_rotating_plane(),"Loading example data ..."),color=overlay_color)
+      internal$bulk[["BulkSample"]] <- omnideconv::bulk
+      internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
+      internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
+      internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
+      internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
+      internal$signatures[["DWLS_example"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+      
       showNotification("Loaded Sample Data")
+      waiter::waiter_hide()
     })
 
     # update Signature Select Options
@@ -1147,6 +1136,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     # deconvolute when button is clicked
     observeEvent(input$deconvolute, {
       # reqs
+      
+      waiter::waiter_show(html = tagList(waiter::spin_rotating_plane(),"Starting deconvolution ..."),color=overlay_color)
 
       bulkData <- NULL
       singleCellData <- NULL
@@ -1163,6 +1154,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       # input$deconvMethod, signature_Method#
       if (is.null(input$bulkSelection) | input$bulkSelection == "") {
+        waiter::waiter_hide()
         showNotification("Bulk Data Missing", type = "error")
       }
       req(input$bulkSelection)
@@ -1171,6 +1163,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       # check if Single Cell Data Necessary
       if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
         if (is.null(input$singleCellSelection) | input$singleCellSelection == "") {
+          waiter::waiter_hide()
           showNotification("Single Cell Data Missing", type = "error")
         }
         req(input$singleCellSelection)
@@ -1179,6 +1172,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       # check if annotation necessary
       if (input$deconvMethod %in% c("music", "bisque", "autogenes", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
         if (is.null(input$annotationSelection) | input$annotationSelection == "") {
+          waiter::waiter_hide()
           showNotification("Cell type annotation missing", type = "error")
         }
         req(input$annotationSelection)
@@ -1188,6 +1182,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       # check if batch ids necessary
       if (input$deconvMethod %in% c("music", "bisque", "bseqsc", "cdseq", "scdc")) {
         if (is.null(input$batchSelection) | input$batchSelection == "") {
+          waiter::waiter_hide()
           showNotification("BatchIDs Missing", type = "error")
         }
         req(input$batchSelection)
@@ -1196,13 +1191,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       if (input$deconvMethod %in% c("bseqsc")) {
         if (is.null(input$markerSelection) | input$markerSelection == "") {
+          waiter::waiter_hide()
           showNotification("Markers Missing", type = "error")
         }
         req(input$markerSelection)
         markers <- internal$markers[[input$markerSelection]]
       }
 
-      waitress$start()
 
       # check if signature needs to be calculated or loaded
       if (grepl("precalculated", signature_Method)) {
@@ -1213,7 +1208,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         showNotification(paste0("Using Available Signature ", signature_Method, " for deconvolution"))
       } else {
         # calculate signature from signature method
-        showNotification(paste0("Building Signature: ", signature_Method), type = "warning")
+        waiter::waiter_update(html = tagList(waiter::spin_rotating_plane(),paste0("Building Signature: ", signature_Method)))
 
         signature <- omnideconv::build_model(
           single_cell_object = singleCellData,
@@ -1227,7 +1222,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       }
 
       # deconvolute
-      showNotification(paste0("Deconvolution started: ", input$deconvMethod), type = "warning")
+      waiter::waiter_update(html = tagList(waiter::spin_rotating_plane(),paste0("Deconvolution started: ", input$deconvMethod)))
       deconvolution_result <-
         omnideconv::deconvolute(
           bulk_gene_expression = bulkData,
@@ -1247,8 +1242,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         internal$signatures[[signature_Method]] <- signature
       }
 
-      waitress$close()
-      showNotification("Deconvolution finished", type = "message")
+      waiter::waiter_hide()
       message("Finished Deconvolution") # debug reasons
     })
 

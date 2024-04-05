@@ -3,7 +3,6 @@ element;intro
 .sidebar;DeconvExplorer is devided into six modules. You can always switch between modules but keep in mind that, while a deconvolution is running, plots are not updating.
 #tour_upload;Upload your data here as a csv, tsv, txt or rds file. Further data requirements are listed below.
 #tour_sample;To test the interface you can load three different sample datasets.
-#tour_simbu;If you want to use a simulated pseudo-bulk sample from SimBu you can upload your simulation in rds format.
 #tour_signatureUpload;If required you can upload a custom signature.
 #tour_deconvSettings;To perform a deconvolution, select a deconvolution method. If applicable you can choose a custom signature as well.
 #tour_deconvPlotSettings;All deconvolution results are collected here and can be selected for plotting below.
