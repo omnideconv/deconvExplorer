@@ -1691,7 +1691,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       deconvolution <- internal$deconvolutions[[input$deconvolutionToTable]]
 
       # turn rownames to column to enable DT search
-      deconvolution <- data.frame("Gene" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
+      deconvolution <- data.frame("Sample" = rownames(deconvolution), deconvolution, check.names = FALSE) # check.names prevents cell type names from beeing changed
       rownames(deconvolution) <- NULL
 
       columns <- colnames(deconvolution)[-1]
