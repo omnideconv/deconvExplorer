@@ -163,6 +163,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @param color_palette RColorBrewer Palette name, standard = Spectral
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
+#' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabeticaly
 #'
 #' @returns A Heatmap
 #' @export
