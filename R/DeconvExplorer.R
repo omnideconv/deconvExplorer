@@ -428,7 +428,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
                   choices = c('.. by cell-type similarity' = 'cluster', '.. alphabetically' = 'no_cluster'))
     ),
     column(
-      width = 2,
+      width = 1,
       div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
     ),
     column(
@@ -760,8 +760,86 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     )),
     dashboardBody(
       tags$head(tags$style(
-        HTML(".wrapper {height: auto !important;
-             position:relative; overflow-x:hidden; overflow-y:hidden}")
+        HTML("
+        .wrapper {height: auto !important;
+             position:relative; overflow-x:hidden; overflow-y:hidden}
+        /* logo */
+        .skin-blue .main-header .logo {
+                              background-color: #11415d;
+        }
+
+        /* logo when hovered */
+        .skin-blue .main-header .logo:hover {
+                              background-color: #11415d;
+        }
+
+        /* navbar (rest of the header) */
+        .skin-blue .main-header .navbar {
+                              background-color: #11415d;
+        }        
+
+        /* main sidebar */
+        .skin-blue .main-sidebar {
+                              background-color: #11415d;
+        }
+
+        /* active selected tab in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+                              background-color: #73bfa7;
+        }
+
+        /* other links in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu a{
+                              background-color: #3687ba;
+                              color: #000000;
+        }
+
+        /* other links in the sidebarmenu when hovered */
+         .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+                              background-color: #afdca4;
+         }
+        
+        /* toggle button when hovered  */                    
+         .skin-blue .main-header .navbar .sidebar-toggle:hover{
+                              background-color: #3687ba;
+         }
+        
+        /* primary box header and border */
+        .box.box-solid.box-primary>.box-header {
+                              color:#ffffff;
+                              background:#11415d
+        }
+        .box.box-solid.box-primary{
+                            border-bottom-color:#11415d;
+                            border-left-color:#11415d;
+                            border-right-color:#11415d;
+                            border-top-color:#11415d;
+        }  
+        
+        /* info box header and border */
+        .box.box-solid.box-info>.box-header {
+                              color:#ffffff;
+                              background:#3687ba
+        }
+        .box.box-solid.box-info{
+                            border-bottom-color:#3687ba;
+                            border-left-color:#3687ba;
+                            border-right-color:#3687ba;
+                            border-top-color:#3687ba;
+        } 
+        
+        /* warning box header and border */
+        .box.box-solid.box-warning>.box-header {
+                              color:#ffffff;
+                              background:#ee6d3d
+        }
+        .box.box-solid.box-warning{
+                            border-bottom-color:#ee6d3d;
+                            border-left-color:#ee6d3d;
+                            border-right-color:#ee6d3d;
+                            border-top-color:#ee6d3d;
+        }
+        ")
       )),
       tabItems(
         tabItem(tabName = "data", fluidPage(
