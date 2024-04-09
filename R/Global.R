@@ -28,6 +28,23 @@ returnSelectedDeconvolutions <- function(deconv_select, deconv_list) {
 }
 
 
+#' Modal window to print error messages or other warnings
+#'
+#' @param error_message 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+errorModal <- function(error_message=NULL){
+  modalDialog(
+    p(error_message,style="color:red;"),
+    easyClose = T,
+    modalButton("Cancel")
+  )
+}
+
+
 ###########################################
 ## Deprecated , but commented for testing #
 ###########################################
