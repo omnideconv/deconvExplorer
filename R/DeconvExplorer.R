@@ -1239,7 +1239,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       bulkData <- internal$bulk[[input$bulkSelection]]
 
       # check if Single Cell Data Necessary
-      if (input$deconvMethod %in% c("momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
+      if (input$deconvMethod %in% c("autogenes", "momf", "bisque", "music", "bseqsc", "cdseq", "cpm", "scdc", "scaden") | signature_Method %in% c("cibersortx", "dwls", "momf")) {
         if (is.null(input$singleCellSelection) | input$singleCellSelection == "") {
           waiter::waiter_hide()
           showNotification("Single Cell Data Missing", type = "error")
@@ -1357,12 +1357,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     output$plotBox <- plotly::renderPlotly({
       # req(userData$deconvolution_result)
       req(input$deconvolutionToPlot)
-      omnideconv::plot_deconvolution(
+      suppressWarnings(omnideconv::plot_deconvolution(
         returnSelectedDeconvolutions(input$deconvolutionToPlot, isolate(internal$deconvolutions)),
         input$plotMethod,
         input$facets,
         input$globalColor
-      )
+      ))
     })
 
     # barplots
