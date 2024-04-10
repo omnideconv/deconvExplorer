@@ -77,7 +77,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   
   data_deconvolution <- shinydashboard::box(
     id = "tour_upload",
-    title = "Input files for Deconvolution", solidHeader = TRUE, status = "primary", width = 12,
+    title = span("Input files for Deconvolution", icon("question-circle"), id = "uploadDeconvolutionQ"),
+    solidHeader = TRUE, status = "primary", width = 12,
     fileInput("userBulkUpload", "Upload Bulk Data"),
     div(style = "margin-top: -20px"),
     fileInput("userSingleCellUpload", "Upload Single Cell Data"),
@@ -87,35 +88,69 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     fileInput("userBatchUpload", "Upload Batch IDs"),
     div(style = "margin-top: -20px"),
     fileInput("userMarkerUpload", "Upload Marker Genes"),
-    div(style = "margin-top: -20px"),
+    div(style = "margin-top: -20px"),collapsible = T, collapsed = T
   )
+  
+  deconvUploadPopover <- 
+    shinyBS::bsPopover(
+      id = "uploadDeconvolutionQ",
+      title = "Title",
+      content = "TODO"
+    )
   
   data_load_sample <- shinydashboard::box(
     id = "tour_sample",
-    title = "Load Sample Data", solidHeader = TRUE, status = "primary", width = 12,
+    title = span("Load Example Data", icon("question-circle"), id = "exampleDataQ"),
+    solidHeader = TRUE, status = "primary", width = 12,
     column(
       width = 3,
-      div(actionButton("loadSample", "Load Sample Files"), style = "margin-top:0.5em")
+      div(actionButton("loadSample", "Load Example Files"), style = "margin-top:0.5em")
     ),
     column(
-      width = 5,
-      helpText("Ground truth data will be loaded as 'SampleReference'")
+      width = 8,
+      helpText("Ground truth data will be loaded as 'Example Ground-truth'")
     )
   )
   
+  exampleDataPopover <- 
+    shinyBS::bsPopover(
+      id = "exampleDataQ",
+      title = "Title",
+      content = "TODO"
+    )
+  
   data_load_signature <- shinydashboard::box(
     id = "tour_signatureUpload",
-    title = "Upload Signature", solidHeader = TRUE, status = "primary",
+    title = span("Upload Signature", icon("question-circle"), id = "uploadSignatureQ"),
+    solidHeader = TRUE, status = "primary",
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
-    div(style = "margin-top: -25px")
+    div(style = "margin-top: -25px"),
+    p('You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer.')
   )
   
-  data_load_reference <- shinydashboard::box(
-    title = "Upload a custom reference file", solidHeader = TRUE, status = "primary",
+  signatureUploadPopover <- 
+    shinyBS::bsPopover(
+      id = "uploadSignatureQ",
+      title = "Title",
+      content = "TODO"
+    )
+  
+  data_load_fractions <- shinydashboard::box(
+    title = span("Upload cell-type fractions", icon("question-circle"), id = "uploadFractionsQ"),
+    solidHeader = TRUE, status = "primary",
     width = 12,
-    fileInput("userReferenceUpload", "Upload Reference")
+    fileInput("userFractionsUpload", "Upload table with cell-type fractions"),
+    div(style = "margin-top: -25px"),
+    p('You can upload a table containing cell-type fractions, either coming from a deconvolution method or a ground-truth dataset with which you want to compare your deconvolution result.')
   )
+  
+  fractionsUploadPopover <- 
+    shinyBS::bsPopover(
+      id = "uploadFractionsQ",
+      title = "Title",
+      content = "TODO"
+    )
   
   data_info <- shinydashboard::box(
     title = span(icon("info-circle"), "Input data formats and requirements"),
@@ -839,6 +874,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
                             border-right-color:#ee6d3d;
                             border-top-color:#ee6d3d;
         }
+        
+        .popover{
+                            color:#000000
+        }
         ")
       )),
       tabItems(
@@ -846,13 +885,14 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           fluidRow(
             column(
               width = 6,
-              data_deconvolution
+              data_load_signature, signatureUploadPopover, 
+              data_load_fractions, fractionsUploadPopover
+              
             ),
             column(
               width = 6,
-              data_load_sample,
-              data_load_signature,
-              data_load_reference
+              data_load_sample, exampleDataPopover,
+              data_deconvolution, deconvUploadPopover
             )
           ),
           fluidRow(
@@ -1019,12 +1059,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     
     observeEvent(input$loadSample, {
       waiter::waiter_show(html = tagList(waiter::spin_rotating_plane(),"Loading example data ..."),color=overlay_color)
-      internal$bulk[["BulkSample"]] <- omnideconv::bulk
-      internal$singleCell[["SingleCellSample1"]] <- omnideconv::single_cell_data_1
-      internal$annotation[["CellTypeAnnotation1"]] <- omnideconv::cell_type_annotations_1
-      internal$batch[["BatchIDs1"]] <- omnideconv::batch_ids_1
-      internal$deconvolutions[["SampleReference"]] <- omnideconv::RefData
-      internal$signatures[["DWLS_example"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
+      internal$bulk[["Example Bulk"]] <- omnideconv::bulk
+      internal$singleCell[["Example Single-cell"]] <- omnideconv::single_cell_data_1
+      internal$annotation[["Example Cell-type annotation"]] <- omnideconv::cell_type_annotations_1
+      internal$batch[["Example Batch-IDs"]] <- omnideconv::batch_ids_1
+      internal$deconvolutions[["Example Ground-truth"]] <- omnideconv::RefData
+      internal$signatures[["Example Signature (DWLS)"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
       
       showNotification("Loaded Sample Data")
       waiter::waiter_hide()
@@ -1693,11 +1733,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     })
     
-    observeEvent(input$userReferenceUpload, {
-      name <- input$userReferenceUpload$name
+    observeEvent(input$userFractionsUpload, {
+      name <- input$userFractionsUpload$name
+
       tryCatch(
         {
-          internal$deconvolutions[[paste0("Reference", name)]] <- loadFile(input$userReferenceUpload)
+          internal$deconvolutions[[name]] <- loadFile(input$userFractionsUpload)
         },
         error = function(e) {
           showNotification("There was an error with your upload", type = "error")

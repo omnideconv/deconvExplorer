@@ -45,6 +45,7 @@ errorModal <- function(error_message=NULL){
 }
 
 
+
 ###########################################
 ## Deprecated , but commented for testing #
 ###########################################

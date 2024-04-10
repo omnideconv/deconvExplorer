@@ -23,6 +23,7 @@ Depends:
 Imports: 
     shiny,
     shinydashboard,
+    shinyBS,
     omnideconv, 
     plotly,
     ggplot2, 
