@@ -164,6 +164,8 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
 #' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabeticaly
+#' @param threshold the threshold for the z-scored expresion in the signature matrix to consider
+#'    a gene as being differentially expressed. Default: 1.5
 #'
 #' @returns A Heatmap
 #' @export
@@ -174,7 +176,8 @@ plot_signatureClustered <- function(signature_mat,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
                                     color_palette = "Spectral",
-                                    order_rows = 'cluster') {
+                                    order_rows = 'cluster',
+                                    threshold = 1.5) {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
@@ -240,21 +243,34 @@ plot_signatureClustered <- function(signature_mat,
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, BioQC::gini), which = "row"))
     }
   }
-
+  
+  
   if(order_rows == 'cluster'){
-    cluster_rows <- TRUE
+    cell.types.distance <- dist(t(mat), method='euclidean')  
+    cell.types.clustering <- hclust(cell.types.distance, method='complete')
+    cell.types.ordered <- cell.types.clustering$labels[cell.types.clustering$order]
   }else if(order_rows == 'no_cluster'){
-    mat <- mat[,order(colnames(mat))]
-    cluster_rows = FALSE
+    cell.types.ordered <- order(colnames(mat))
   }
-
+  
+  genes <- c()
+  for(c in cell.types.ordered){
+    highly.expr.genes <- names(which(mat[, c] > threshold))
+    genes <- union(genes, highly.expr.genes)
+  }
+  
+  genes <- union(genes, rownames(mat))
+  
   # Plot with complex heatmap
+  
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_names_side = "left",
     border = TRUE, col = col_fun,
+    column_order = genes,
+    row_order = cell.types.ordered,
     # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
-    cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
+    #cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )
 
