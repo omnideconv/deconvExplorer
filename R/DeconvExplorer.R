@@ -891,6 +891,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
             ),
             column(
               width = 6,
+              imageOutput("logoDeconvExplorer", height = "auto"),
               data_load_sample, exampleDataPopover,
               data_deconvolution, deconvUploadPopover
             )
@@ -1935,6 +1936,19 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         list(
           src = system.file("www", "omnideconv_logo_info.svg", package = "DeconvExplorer"),
           contentType = "image/svg+xml",
+          width = "100%"
+        )
+      },
+      deleteFile = TRUE
+    )
+    
+    
+    
+    output$logoDeconvExplorer <- renderImage(
+      {
+        list(
+          src = system.file("www", "deconvExplorer.png", package = "DeconvExplorer"),
+          contentType = "image/png",
           width = "100%"
         )
       },
