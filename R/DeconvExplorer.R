@@ -11,7 +11,7 @@
 #'
 #' @param deconvexp_singlecelldata Optional; a matrix, data frame, or SingleCellExperiment object
 #'   containing single-cell data used to calculate the signature matrix. Rows should represent genes,
-#'   and columns should represent single cells. 
+#'   and columns should represent single cells.
 #'
 #' @param deconvexp_cell_annotation Optional; a vector providing cell type annotations
 #'   for the single-cell data. Each entry corresponds to the cell type of the respective column
