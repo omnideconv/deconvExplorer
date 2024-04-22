@@ -31,10 +31,8 @@ returnSelectedDeconvolutions <- function(deconv_select, deconv_list) {
 #'
 #' @param error_message
 #'
-#' @return
+#' @return NULL
 #' @export
-#'
-#' @examples
 errorModal <- function(error_message = NULL) {
   modalDialog(
     p(error_message, style = "color:red;"),
