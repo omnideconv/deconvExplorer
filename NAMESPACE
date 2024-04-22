@@ -2,6 +2,7 @@
 
 export(DeconvExplorer)
 export(download_signatureUpset)
+export(errorModal)
 export(plot_benchmark_correlation)
 export(plot_benchmark_rmse)
 export(plot_benchmark_scatter)
