@@ -89,12 +89,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     fileInput("userMarkerUpload", "Upload Marker Genes"),
     div(style = "margin-top: -20px"), collapsible = T, collapsed = T
   )
-  
+
   deconvUploadPopover <-
     shinyBS::bsPopover(
       id = "uploadDeconvolutionQ",
       title = "Title",
-      content = "TODO", 
+      content = "TODO",
       trigger = "hover"
     )
 
@@ -111,7 +111,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       helpText("Ground truth data will be loaded as 'Example Ground-truth'")
     )
   )
-  
+
   exampleDataPopover <-
     shinyBS::bsPopover(
       id = "exampleDataQ",
