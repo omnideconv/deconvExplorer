@@ -1,10 +1,10 @@
 element;intro
-#logo;Welcome to DeconvExplorer, an interactive framework to perform, evaluate and enhance cell type deconvolution from transcriptome data. <br/>In this tour we will give an overview over DeconvExplorers functionality. DeconvExplorer performs deconvolution with the omnideconv toolset. 
+.main-header;Welcome to DeconvExplorer, an interactive framework to perform, evaluate and enhance cell type deconvolution from transcriptome data. <br/>In this tour we will give an overview over DeconvExplorers functionality. DeconvExplorer performs deconvolution with the omnideconv toolset. 
 .sidebar;DeconvExplorer is devided into six modules. You can always switch between modules but keep in mind that, while a deconvolution is running, plots are not updating.
-#tour_upload;Upload your data here as a csv, tsv, txt or rds file. Further data requirements are listed below.
+#uploadDeconvolutionQ;Upload your data here as a csv, tsv, txt or rds file. Further data requirements are listed below.
 #tour_sample;To test the interface you can load three different sample datasets.
 #tour_signatureUpload;If required you can upload a custom signature.
-#tour_deconvSettings;To perform a deconvolution, select a deconvolution method. If applicable you can choose a custom signature as well.
+#data;To perform a deconvolution, select a deconvolution method. If applicable you can choose a custom signature as well.
 #tour_deconvPlotSettings;All deconvolution results are collected here and can be selected for plotting below.
 #tour_deconvPlot;All chosen deconvolution results are visualized here. Feel free to explore the different available plotting options!
 #tour_genesPlot;The Signature Exploration module plots multiple metrics to analyse and compare expression signatures.
