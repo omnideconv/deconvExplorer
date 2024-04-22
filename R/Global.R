@@ -42,5 +42,3 @@ errorModal <- function(error_message = NULL) {
     modalButton("Cancel")
   )
 }
-
-
