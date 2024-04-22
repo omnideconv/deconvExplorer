@@ -89,17 +89,18 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     fileInput("userMarkerUpload", "Upload Marker Genes"),
     div(style = "margin-top: -20px"), collapsible = T, collapsed = T
   )
-
+  
   deconvUploadPopover <-
     shinyBS::bsPopover(
       id = "uploadDeconvolutionQ",
       title = "Title",
-      content = "TODO"
+      content = "TODO", 
+      trigger = "hover"
     )
 
   data_load_sample <- shinydashboard::box(
     id = "tour_sample",
-    title = span("Load Example Data", icon("question-circle"), id = "exampleDataQ"),
+    title = span("Load Example Data", icon("question-circle", id = "exampleDataQ")),
     solidHeader = TRUE, status = "primary", width = 12,
     column(
       width = 3,
@@ -110,7 +111,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       helpText("Ground truth data will be loaded as 'Example Ground-truth'")
     )
   )
-
+  
   exampleDataPopover <-
     shinyBS::bsPopover(
       id = "exampleDataQ",
