@@ -93,8 +93,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   deconvUploadPopover <-
     shinyBS::bsPopover(
       id = "uploadDeconvolutionQ",
-      title = "Title",
-      content = "TODO",
+      title = "Upload Data for deconvolution",
+      content = "Provide bulk and single cell data as well as the respective cell type annotation. This data will be used as input for deconvolution. Some methods might require additional batch labels or marker genes.",
       trigger = "hover"
     )
 
@@ -115,8 +115,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   exampleDataPopover <-
     shinyBS::bsPopover(
       id = "exampleDataQ",
-      title = "Title",
-      content = "TODO"
+      title = "Example Data",
+      content = "Load a sample dataset that can be used to showcase deconvExplorers capabilities."
     )
 
   data_load_signature <- shinydashboard::box(
@@ -132,8 +132,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   signatureUploadPopover <-
     shinyBS::bsPopover(
       id = "uploadSignatureQ",
-      title = "Title",
-      content = "TODO"
+      title = "Gene Expression Signature",
+      content = "Upload a gene expression signature. The signature can further be analyzed in the Signature Exploration and Refinement modules or used as input in deconvolution."
     )
 
   data_load_fractions <- shinydashboard::box(
@@ -148,8 +148,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   fractionsUploadPopover <-
     shinyBS::bsPopover(
       id = "uploadFractionsQ",
-      title = "Title",
-      content = "TODO"
+      title = "Deconvolution results or Ground Truth",
+      content = "Upload cell fractions or ground truth to be used in comparisons or benchmarking."
     )
 
   data_info <- shinydashboard::box(
