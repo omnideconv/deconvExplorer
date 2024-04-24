@@ -116,7 +116,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     shinyBS::bsPopover(
       id = "exampleDataQ",
       title = "Example Data",
-      content = "Load a sample dataset that can be used to showcase deconvExplorers capabilities."
+      content = "Load a sample dataset that can be used to showcase deconvExplorers features."
     )
 
   data_load_signature <- shinydashboard::box(
