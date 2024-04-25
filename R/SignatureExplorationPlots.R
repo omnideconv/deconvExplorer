@@ -176,7 +176,7 @@ plot_signatureClustered <- function(signature_mat,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
                                     color_palette = "Spectral",
-                                    order_rows = 'cluster',
+                                    order_rows = "cluster",
                                     threshold = 1.5) {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
@@ -243,26 +243,26 @@ plot_signatureClustered <- function(signature_mat,
       annotation <- ComplexHeatmap::columnAnnotation(gini_index = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, BioQC::gini), which = "row"))
     }
   }
-  
-  
-  if(order_rows == 'cluster'){
-    cell.types.distance <- dist(t(mat), method='euclidean')  
-    cell.types.clustering <- hclust(cell.types.distance, method='complete')
+
+
+  if (order_rows == "cluster") {
+    cell.types.distance <- dist(t(mat), method = "euclidean")
+    cell.types.clustering <- hclust(cell.types.distance, method = "complete")
     cell.types.ordered <- cell.types.clustering$labels[cell.types.clustering$order]
-  }else if(order_rows == 'no_cluster'){
+  } else if (order_rows == "no_cluster") {
     cell.types.ordered <- order(colnames(mat))
   }
-  
+
   genes <- c()
-  for(c in cell.types.ordered){
+  for (c in cell.types.ordered) {
     highly.expr.genes <- names(which(mat[, c] > threshold))
     genes <- union(genes, highly.expr.genes)
   }
-  
+
   genes <- union(genes, rownames(mat))
-  
+
   # Plot with complex heatmap
-  
+
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_names_side = "left",
@@ -270,7 +270,7 @@ plot_signatureClustered <- function(signature_mat,
     column_order = genes,
     row_order = cell.types.ordered,
     # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
-    #cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
+    # cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )
 
@@ -349,11 +349,11 @@ plot_signatureUpset <- function(signature_list,
     mat,
     add_numbers = TRUE,
     numbers_gp = grid::gpar(
-     fontsize = "14",
-     fontface = "bold"
+      fontsize = "14",
+      fontface = "bold"
     )
   )
-  
+
   p <- ComplexHeatmap::UpSet(mat,
     comb_order = combOrder,
     top_annotation = top_annotation,
