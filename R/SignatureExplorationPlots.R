@@ -128,7 +128,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 
   # calculate Mean Entropy for each signature
   for (name in names(signature_list)) {
-    meanEntropy <- mean(apply(signature_list[[name]], 1, scoreEntropy))
+    meanEntropy <- mean(BioQC::entropySpecificity(signature_list[[name]]))
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
 
@@ -155,7 +155,6 @@ plot_meanEntropyPerMethod <- function(signature_list,
 
 
 #' Calculate Clustered Heatmap of Signature Genes
-#'
 #' This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
@@ -232,9 +231,9 @@ plot_signatureClustered <- function(signature_mat,
 
   if (scoring_method == "entropy") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature_mat, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(BioQC::entropySpecificity(signature_mat), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(BioQC::entropySpecificity(signature_mat), which = "row"))
     }
   } else if (scoring_method == "gini") {
     if (annotation_type == "line") {
