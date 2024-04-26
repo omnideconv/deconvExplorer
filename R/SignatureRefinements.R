@@ -222,4 +222,3 @@ selectGenesByScore <- function(signature_mat,
 
   return(refinedSignature)
 }
-
