@@ -1639,7 +1639,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     output$refinementMeanEntropy <- shinydashboard::renderValueBox({
       req(signatureRefined())
-      meanEntropy <- round(mean(apply(signatureRefined(), 1, scoreEntropy)), 2)
+      meanEntropy <- round(mean(BioQC::entropySpecificity(signatureRefined())), 2)
       shinydashboard::valueBox(
         value = meanEntropy,
         subtitle = "Mean Entropy",

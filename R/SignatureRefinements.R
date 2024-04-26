@@ -188,7 +188,8 @@ selectGenesByScore <- function(signature_mat,
 
     score <- list()
     if (scoring_method == "entropy") {
-      score[gene] <- scoreEntropy(row) # calculate score and save named result
+      # score[gene] <- scoreEntropy(row) # calculate score and save named result
+      score[gene] <- BioQC::entropySpecificity(rbind(row, row))[1]
     } else if (scoring_method == "gini") {
       score[gene] <- 1 - BioQC::gini(row) # need to flip the value since lower scores schould be better (entropy!)
     }
@@ -222,34 +223,3 @@ selectGenesByScore <- function(signature_mat,
   return(refinedSignature)
 }
 
-#' Score Gene Expression of a single Gene based on information entropy
-#'
-#' Score Genes Expression of a single gene across celltypes. The function returns
-#' the calculated entropy of the expression value distribution.
-#'
-#' @param expression_feature row from Gene Expression Matrix = Expression Data for a single Gene
-#' @returns Score for the given gene based on information entropy
-#' Here: The lower the better
-#'
-#' @export
-#'
-#' @examples
-#' signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
-#'
-#' entropy <- scoreEntropy(signature[1, ]) # scoring the first gene
-scoreEntropy <- function(expression_feature) {
-  # TODO add parameter checks ####
-  probs <- list()
-
-  # turn expression data to a list of probabilities
-  for (val in expression_feature) {
-    if (val == 0) {
-      next
-    }
-    probs <- append(probs, val / sum(expression_feature)) # turn in to probabilities
-  }
-
-  entropy <- -sum(unlist(lapply(probs, function(x) log(x) * x)))
-
-  return(entropy)
-}
