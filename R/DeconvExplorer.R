@@ -699,7 +699,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         h3(icon("envelope"), style = "display: inline; margin-right:1em"),
         a("Francesca Finotello", href = "mailto:francesca.finotello@uibk.ac.at", style = "margin-right:1em"),
         a("Markus List", href = "mailto:markus.list@wzw.tum.de", style = "margin-right:1em"),
-        a("Gregor Sturm", href = "mailto:gregor.stum@i-med.ac.at", style = "margin-right:1em"),
+        a("Federico Marini", href = "mailto:marinif@uni-mainz.de", style = "margin-right:1em"),
+        a("Constantin Zackl", href = "mailto:Constantin.Zackl@student.uibk.ac.at", style = "margin-right:1em"),
+        a("Lorenzo Meretto", href = "mailto:Lorenzo.Merotto@uibk.ac.at", style = "margin-right:1em"),
+        a("Alexander Dietrich", href = "mailto:alex.dietrich@tum.de", style = "margin-right:1em"),
         style = "display:block; font-size:1.4em; margin-top:0.7em; "
       )
     ), br()
@@ -887,13 +890,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
             column(
               width = 6,
               data_load_signature, signatureUploadPopover,
-              data_load_fractions, fractionsUploadPopover
+              data_load_fractions, fractionsUploadPopover,
+              data_load_sample, exampleDataPopover,
+              data_deconvolution, deconvUploadPopover
             ),
             column(
               width = 6,
-              imageOutput("logoDeconvExplorer", height = "auto"),
-              data_load_sample, exampleDataPopover,
-              data_deconvolution, deconvUploadPopover
+              imageOutput("logoDeconvExplorer", height = "auto")
             )
           ),
           fluidRow(
