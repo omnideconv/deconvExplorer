@@ -121,7 +121,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   data_load_signature <- shinydashboard::box(
     id = "tour_signatureUpload",
-    title = span("Upload Signature", icon("question-circle"), id = "uploadSignatureQ"),
+    title = span("Upload Signature", icon("question-circle", id = "uploadSignatureQ")),
     solidHeader = TRUE, status = "primary",
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
@@ -137,7 +137,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     )
 
   data_load_fractions <- shinydashboard::box(
-    title = span("Upload cell-type fractions", icon("question-circle"), id = "uploadFractionsQ"),
+    title = span("Upload cell-type fractions", icon("question-circle", id = "uploadFractionsQ")),
     solidHeader = TRUE, status = "primary",
     width = 12,
     fileInput("userFractionsUpload", "Upload table with cell-type fractions"),
@@ -161,7 +161,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   # Deconvolution Boxes -------------------------------------------------------
   data_upload_box <- shinydashboard::box(
-    title = "Select your Data", status = "primary",
+    title = span("Select your Data", icon("question-circle", id = "deconvSelectDataQ")),
+    status = "primary",
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
     selectInput("bulkSelection", "Select a bulk dataset", choices = NULL),
     div(style = "margin-top: -10px"),
@@ -173,10 +174,18 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     div(style = "margin-top: -10px"),
     selectInput("markerSelection", "Select Marker Genes", choices = NULL)
   )
+  
+  deconvSelectDataPopover <-
+    shinyBS::bsPopover(
+      id = "deconvSelectDataQ",
+      title = "",
+      content = "Select the datasets you want to use as input for deconvolution. Upload your Data in the Data Upload module. Your first uploaded dataset will be selected automatically. "
+    )
 
   settings_box <- shinydashboard::box(
     id = "tour_deconvSettings",
-    title = "Deconvolution Settings", status = "primary",
+    title = span("Deconvolution Settings", icon("question-circle", id = "deconvSettingsQ")),
+    status = "primary",
     solidHeader = TRUE, height = "30em", # collapsible = TRUE, # used to be 30em
     imageOutput("logo", height = "auto"),
     column(
@@ -212,10 +221,17 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     waiter::useWaitress()
   )
+  
+  deconvSettingsPopover <-
+    shinyBS::bsPopover(
+      id = "deconvSettingsQ",
+      title = "",
+      content = "Select a deconvolution method to run. If required and supported by the deconvolution method you can additionally select a custom signature to be used in computation. Please note this is an advanced feature and should be used with caution. "
+    )
 
   deconv_plot_box <- shinydashboard::box(
     id = "tour_deconvPlot",
-    title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon")),
+    title = span("Deconvolution Plot ", icon("tasks", lib = "glyphicon"), icon("question-circle", id = "deconvPlotQ")),
     status = "warning", solidHeader = TRUE, width = 12,
     column(
       width = 3,
@@ -243,6 +259,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
+  
+  deconvPlotPopover <-
+    shinyBS::bsPopover(
+      id = "deconvPlotQ",
+      title = "",
+      content = "Customize plot type and grouping of the results. You can change the selected deconvolution results above. "
+    )
 
   deconv_table_box <- shinydashboard::box(
     title = span("Deconvolution Table ", icon("th", lib = "glyphicon")),
@@ -290,7 +313,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   deconv_all_results <- shinydashboard::box(
     id = "tour_deconvPlotSettings",
-    title = NULL, status = NULL, solidHeader = FALSE, width = 12,
+    title = span("Results", icon("question-circle", id = "deconvResultQ")), status = NULL, solidHeader = FALSE, width = 12,
     column(
       width = 5,
       selectInput("deconvolutionToPlot", "Select Deconvolution results",
@@ -314,13 +337,28 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
+  
+  deconvResultPopover <- shinyBS::bsPopover(
+    id = "deconvResultsQ",
+    title = "",
+    content = "Select one or multiple deconvolution results to be plotted below. "
+  )
+  
 
   # Benchmarking Boxes ------------------------------------------------------
   benchmark_deconvolutionSelection <- shinydashboard::box(
-    title = "Deconvolution Settings", status = "info", solidHeader = TRUE, width = 12,
+    title = span("Benchmarking Selection", icon("question-circle", id = "benchSettingsQ")),
+    status = "info", solidHeader = TRUE, width = 12,
     selectInput("benchmark_reference", "Reference", choices = NULL),
     selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices = NULL, multiple = TRUE)
   )
+  
+  benchSettingsPopover <-
+    shinyBS::bsPopover(
+      id = "benchSettingsQ",
+      title = "",
+      content = "Compare deconvolution results to a ground truth or between each other. The ground truth can be uploaded as cell fractions in the data module."
+    )
 
   benchmark_plot_box <- shinydashboard::tabBox(
     title = "Benchmark",
@@ -412,34 +450,59 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   # Signature Exploration Boxes ---------------------------------------------
   signature_genesPerMethod <- shinydashboard::box(
     id = "tour_genesPlot",
-    title = "Genes per Method", status = "info", solidHeader = TRUE,
+    title = span("Genes per Method", icon("question-circle", id = "sigGenesQ")),
+    status = "info", solidHeader = TRUE,
     width = 4,
     withSpinner(
       plotOutput("signatureGenesPerMethod")
     ),
     downloadButton("downloadSignatureGenesPerMethod", label = "Download as PDF")
   )
+  
+  sigGenesPopover <-
+    shinyBS::bsPopover(
+      id = "sigGenesQ",
+      title = "",
+      content = "Compare the size of available signatures. The plot displays the number of genes contained in each signature. Smaller signatures result in faster computation time."
+    )
 
   signature_kappaPerMethod <- shinydashboard::box(
-    title = "Condition Number per Method", status = "info", solidHeader = TRUE,
+    title = span("Condition Number per Method", icon("question-circle", id = "sigConditionNumberQ")),
+    status = "info", solidHeader = TRUE,
     width = 4,
     withSpinner(
       plotOutput("kappaPerMethod")
     ),
     downloadButton("downloadKappaPerMethod", label = "Download as PDF")
   )
+  
+  sigConditionNumberPopover <-
+    shinyBS::bsPopover(
+      id = "sigConditionNumberQ",
+      title = "",
+      content = "The condition number quantifies how robust the signature is to noise in the input bulk data. In general, a lower number is considered to provide more stable deconvolution results."
+    )
 
   signature_entropyPerMethod <- shinydashboard::box(
-    title = "Mean Entropy per Method", status = "info", solidHeader = TRUE,
+    title = span("Mean Entropy per Method", icon("question-circle", id = "sigEntropyQ")),
+    status = "info", solidHeader = TRUE,
     width = 4,
     withSpinner(
       plotOutput("signatureEntropyPerMethod")
     ),
     downloadButton("downloadSignatureEntropyPerMethod", label = "Download as PDF")
   )
+  
+  sigEntropyPopover <-
+    shinyBS::bsPopover(
+      id = "sigEntropyQ",
+      title = "",
+      content = "The entropy quantifies how informative a gene's expression pattern is across cell-types. Lower values indicate a more cell-type specific expression pattern. Please note that very low values could also hint sequencing artifacts."
+    )
 
   signature_clusteredHeatmap <- shinydashboard::box(
-    title = "Clustered Signature", status = "info", solidHeader = TRUE,
+    title = span("Clustered Signature", icon("question-circle", id = "sigHeatmapQ")),
+    status = "info", solidHeader = TRUE,
     width = 12,
     column(
       width = 4,
@@ -474,6 +537,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
+  
+  sigHeatmapPopover <-
+    shinyBS::bsPopover(
+      id = "sigHeatmapQ",
+      title = "",
+      content = "This heatmap displays the z-scored expression profile of all genes in the signature. By selecting a subsection of the plot a more in-depth analysis is possible in the next plot below."
+    )
 
   signature_clusteredHeatmapSubPlot <- shinydashboard::box(
     title = "Sub Selection Heatmap", status = "info", solidHeader = TRUE,
@@ -494,11 +564,20 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   )
 
   signature_upsetPlot <- shinydashboard::box(
-    title = "UpSet Plot", status = "info", solidHeader = TRUE, width = 8, height = "33em",
+    title = span("UpSet Plot", icon("question-circle", id = "sigUpsetQ")),
+    status = "info", solidHeader = TRUE, width = 8, height = "33em",
     withSpinner(
       plotOutput("signatureUpset")
     )
   )
+  
+  sigUpsetPopover <-
+    shinyBS::bsPopover(
+      id = "sigUpsetQ",
+      title = "",
+      content = "Compare and analyze the available genes and composition from all provided signatures."
+    )
+  
   signature_upsetPlotSettings <- shinydashboard::box(
     title = "UpSet Plot Settings", status = "info", solidHeader = TRUE,
     width = 4, height = "33em",
@@ -573,7 +652,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
   )
 
   refinementSettingsBox <- shinydashboard::box(
-    title = "Settings", solidHeader = TRUE, width = 4, status = "info",
+    title = span("Settings", icon("question-circle", id = "refSettingsQ")),
+    solidHeader = TRUE, width = 4, status = "info",
     column(
       width = 8,
       selectInput("signatureToRefine", "Choose a signature to refine", choices = NULL)
@@ -605,12 +685,19 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em")
     )
   )
+  
+  refSettingsPopover <-
+    shinyBS::bsPopover(
+      id = "refSettingsQ",
+      title = "",
+      content = "Load a signature for modifications. A new name is required for saving. If necessary, cell-types can be renamed."
+    )
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
     column(
       width = 4,
-      h1("Unzero")
+      h1("Unzero"), icon("question-circle", id = "refUnzeroQ")
     ),
     column(
       width = 7,
@@ -623,12 +710,19 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
     )
   )
+  
+  refUnzeroPopover <-
+    shinyBS::bsPopover(
+      id = "refUnzeroQ",
+      title = "",
+      content = "Remove genes that contain mostly 0 in their expression profile. All genes with more zeros than the provided percentage are removed. "
+    )
 
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "yellow",
     column(
       width = 4,
-      h1("Remove Unspecific")
+      h1("Remove Unspecific"), icon("question-circle", id = "refUnspecificQ")
     ),
     column(
       width = 7,
@@ -639,12 +733,19 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
     )
   )
+  
+  refUnspecificPopover <-
+    shinyBS::bsPopover(
+      id = "refUnspecificQ",
+      title = "",
+      content = "The overall expression is binned into “high”, “medium” and “low expression” for each gene. The number of cell types the gene has to be in the “high” bin can be modified and defaults to 1. Each gene expressed “high” in more cell types than this parameter is removed. "
+    )
 
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
     column(
       width = 4,
-      h1("Best n genes")
+      h1("Best n genes"), icon("question-circle", id = "refBestQ")
     ),
     column(
       width = 5,
@@ -659,12 +760,19 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
     )
   )
+  
+  refBestPopover <-
+    shinyBS::bsPopover(
+      id = "refBestQ",
+      title = "",
+      content = "Based on the selected scoring method, the top ranking genes are selected for each cell type. "
+    )
 
   refinementManualBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "purple",
     column(
       width = 4,
-      h1("Remove manually")
+      h1("Remove manually"), icon("question-circle", id = "refManuallyQ")
     ),
     column(
       width = 7,
@@ -675,6 +783,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
     )
   )
+  
+  refManuallyPopover <-
+    shinyBS::bsPopover(
+      id = "refManuallyQ",
+      title = "",
+      content = "Manually remove genes by providing a Gene Identifier. "
+    )
 
   # Info Boxes --------------------------------------------------------------
   info_overview <- shinydashboard::box(
@@ -909,26 +1024,26 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(
-            data_upload_box,
-            settings_box
+            data_upload_box, deconvSelectDataPopover, 
+            settings_box, deconvSettingsPopover
           ),
           fluidRow(
-            deconv_all_results
+            deconv_all_results, deconvResultPopover
           ),
           fluidRow(
-            deconv_plot_box,
+            deconv_plot_box, deconvPlotPopover,
             deconv_table_box,
             deconv_signature_box
           )
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(
-            signature_genesPerMethod,
-            signature_kappaPerMethod,
-            signature_entropyPerMethod
+            signature_genesPerMethod, sigGenesPopover, 
+            signature_kappaPerMethod, sigConditionNumberPopover, 
+            signature_entropyPerMethod, sigEntropyPopover
           ),
           fluidRow(
-            signature_clusteredHeatmap
+            signature_clusteredHeatmap, sigHeatmapPopover
           ),
           fluidRow(
             signature_clusteredHeatmapSubPlot
@@ -937,7 +1052,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
             signature_clusteredHeatmapSubTable
           ),
           fluidRow(
-            signature_upsetPlot,
+            signature_upsetPlot, sigUpsetPopover,
             signature_upsetPlotSettings
           )
         )),
@@ -948,17 +1063,17 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           fluidRow(
             column(
               width = 8,
-              refinementUnzeroBox,
-              refinementRemoveUnspecificBox,
-              refinementBestNBox,
-              refinementManualBox
+              refinementUnzeroBox, refUnzeroPopover,
+              refinementRemoveUnspecificBox, refUnspecificPopover,
+              refinementBestNBox, refBestPopover,
+              refinementManualBox, refManuallyPopover
             ),
-            refinementSettingsBox
+            refinementSettingsBox, refSettingsPopover
           )
         )),
         tabItem(tabName = "benchmark", fluidPage(
           fluidRow(
-            benchmark_deconvolutionSelection
+            benchmark_deconvolutionSelection, benchSettingsPopover
           ),
           fluidRow(
             benchmark_plot_box
