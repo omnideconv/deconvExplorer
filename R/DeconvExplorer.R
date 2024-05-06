@@ -888,11 +888,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     # start the tour
     observeEvent(input$startTour, {
-      tour_steps <- read.delim(system.file("extdata", "tour_intro.txt",
-        package = "DeconvExplorer"
-      ),
-      sep = ";", stringsAsFactors = FALSE,
-      row.names = NULL, quote = ""
+      tour_steps <- read.delim(
+        system.file("extdata", "tour_intro.txt",
+          package = "DeconvExplorer"
+        ),
+        sep = ";", stringsAsFactors = FALSE,
+        row.names = NULL, quote = ""
       )
       introjs(session, options = list(
         steps = tour_steps,
