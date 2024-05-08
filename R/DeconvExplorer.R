@@ -624,7 +624,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     checkboxGroupInput("upSetDownloadSelection", h3("Download Genes of a specific subset"),
       choices = NULL, inline = TRUE
     ),
-    downloadButton("upSetDownloadButton", label = "Download Subset Genes")
+    downloadButton("upSetDownloadButton", label = "Download Subset Genes"),
+    downloadButton("upSetPlotDownloadButton", label = "Download plot as PDF")
   )
 
   # Signature Refinement Boxes ----------------------------------------------
@@ -1619,38 +1620,56 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         brush_action = brush_action
       )
     })
-
-    # UpSet Plot
-    output$signatureUpset <- renderPlot({
+    
+    upsetReactive <- reactive({
       req(length(internal$signatures) > 0, input$upSetDegree, input$upSetOrder)
-
+      
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
       updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(isolate(internal$signatures)), inline = TRUE)
-
+      
       # get upset Degree Choices from slider Input
       minDegree <- input$upSetDegree[[1]]
       maxDegree <- input$upSetDegree[[2]]
-
+      
       # calculate the plot
       result <- plot_signatureUpset(shiny::isolate(internal$signatures),
-        upset_mode = input$upsetMode,
-        min_degree = minDegree,
-        max_degree = maxDegree,
-        order_sets = input$upSetOrder,
-        invert_sets = input$upSetInvert,
-        color_by_degrees = input$upSetColorDegrees,
-        color_palette = input$globalColor
+                                    upset_mode = input$upsetMode,
+                                    min_degree = minDegree,
+                                    max_degree = maxDegree,
+                                    order_sets = input$upSetOrder,
+                                    invert_sets = input$upSetInvert,
+                                    color_by_degrees = input$upSetColorDegrees,
+                                    color_palette = input$globalColor
       )
-
+      
       # update settings
       # probably going with a preselected range of values
       # might also be possible to update to min=1, max=numberofsamples, and if maxDegree now higher than selected: value=c(min, newmax)
       # updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
-
+      
       # show the plot
-      result[[1]]
+      return(list('plot'=result[[1]]))
     })
+
+    # UpSet Plot
+    output$signatureUpset <- renderPlot({
+      req(upsetReactive)
+      upsetReactive()$plot
+    })
+    
+    output$upSetPlotDownloadButton <- downloadHandler(
+      filename = function() {
+        "upset_signatures.pdf"
+      },
+      content = function(file) {
+        req(upsetReactive)
+        pdf(file = file, width = 9, height = 6)
+        print(upsetReactive()$plot)
+        dev.off()
+        #ggsave(file, plot = upsetReactive()$plot, device = "pdf", width = 9, height = 6)
+      }
+    )
 
     output$refinementHeatmapPlot <- renderPlot({
       req(input$refinementHeatmapScore, input$refinementHeatmapScorePlotType, signatureRefined()) # und die signatur
