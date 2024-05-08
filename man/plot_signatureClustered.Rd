@@ -2,7 +2,9 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{plot_signatureClustered}
 \alias{plot_signatureClustered}
-\title{Calculate Clustered Heatmap of Signature Genes}
+\title{Calculate Clustered Heatmap of Signature Genes
+This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
+by a gene scores ranking the distinctness of a gene in the signature.}
 \usage{
 plot_signatureClustered(
   signature_mat,
@@ -31,6 +33,7 @@ a gene as being differentially expressed. Default: 1.5}
 A Heatmap
 }
 \description{
+Calculate Clustered Heatmap of Signature Genes
 This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 by a gene scores ranking the distinctness of a gene in the signature.
 }
