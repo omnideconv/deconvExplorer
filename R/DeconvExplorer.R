@@ -174,7 +174,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     div(style = "margin-top: -10px"),
     selectInput("markerSelection", "Select Marker Genes", choices = NULL)
   )
-  
+
   deconvSelectDataPopover <-
     shinyBS::bsPopover(
       id = "deconvSelectDataQ",
@@ -221,7 +221,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     waiter::useWaitress()
   )
-  
+
   deconvSettingsPopover <-
     shinyBS::bsPopover(
       id = "deconvSettingsQ",
@@ -259,7 +259,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
-  
+
   deconvPlotPopover <-
     shinyBS::bsPopover(
       id = "deconvPlotQ",
@@ -337,13 +337,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
-  
+
   deconvResultPopover <- shinyBS::bsPopover(
     id = "deconvResultsQ",
     title = "",
     content = "Select one or multiple deconvolution results to be plotted below. "
   )
-  
+
 
   # Benchmarking Boxes ------------------------------------------------------
   benchmark_deconvolutionSelection <- shinydashboard::box(
@@ -352,7 +352,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     selectInput("benchmark_reference", "Reference", choices = NULL),
     selectInput("benchmark_ToPlot", "Select Deconvolution to benchmark", choices = NULL, multiple = TRUE)
   )
-  
+
   benchSettingsPopover <-
     shinyBS::bsPopover(
       id = "benchSettingsQ",
@@ -458,7 +458,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     downloadButton("downloadSignatureGenesPerMethod", label = "Download as PDF")
   )
-  
+
   sigGenesPopover <-
     shinyBS::bsPopover(
       id = "sigGenesQ",
@@ -475,7 +475,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     downloadButton("downloadKappaPerMethod", label = "Download as PDF")
   )
-  
+
   sigConditionNumberPopover <-
     shinyBS::bsPopover(
       id = "sigConditionNumberQ",
@@ -492,7 +492,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     ),
     downloadButton("downloadSignatureEntropyPerMethod", label = "Download as PDF")
   )
-  
+
   sigEntropyPopover <-
     shinyBS::bsPopover(
       id = "sigEntropyQ",
@@ -537,7 +537,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     )
   )
-  
+
   sigHeatmapPopover <-
     shinyBS::bsPopover(
       id = "sigHeatmapQ",
@@ -570,14 +570,14 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       plotOutput("signatureUpset")
     )
   )
-  
+
   sigUpsetPopover <-
     shinyBS::bsPopover(
       id = "sigUpsetQ",
       title = "",
       content = "Compare and analyze the available genes and composition from all provided signatures."
     )
-  
+
   signature_upsetPlotSettings <- shinydashboard::box(
     title = "UpSet Plot Settings", status = "info", solidHeader = TRUE,
     width = 4, height = "33em",
@@ -686,7 +686,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       div(actionButton("renameCellTypeGo", "Rename"), style = "margin-top:4.5em")
     )
   )
-  
+
   refSettingsPopover <-
     shinyBS::bsPopover(
       id = "refSettingsQ",
@@ -711,7 +711,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
     )
   )
-  
+
   refUnzeroPopover <-
     shinyBS::bsPopover(
       id = "refUnzeroQ",
@@ -734,7 +734,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
     )
   )
-  
+
   refUnspecificPopover <-
     shinyBS::bsPopover(
       id = "refUnspecificQ",
@@ -761,7 +761,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
     )
   )
-  
+
   refBestPopover <-
     shinyBS::bsPopover(
       id = "refBestQ",
@@ -784,7 +784,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
     )
   )
-  
+
   refManuallyPopover <-
     shinyBS::bsPopover(
       id = "refManuallyQ",
@@ -1025,7 +1025,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         )),
         tabItem(tabName = "deconv", fluidPage(
           fluidRow(
-            data_upload_box, deconvSelectDataPopover, 
+            data_upload_box, deconvSelectDataPopover,
             settings_box, deconvSettingsPopover
           ),
           fluidRow(
@@ -1039,8 +1039,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         )),
         tabItem(tabName = "signatureExploration", fluidPage(
           fluidRow(
-            signature_genesPerMethod, sigGenesPopover, 
-            signature_kappaPerMethod, sigConditionNumberPopover, 
+            signature_genesPerMethod, sigGenesPopover,
+            signature_kappaPerMethod, sigConditionNumberPopover,
             signature_entropyPerMethod, sigEntropyPopover
           ),
           fluidRow(
@@ -1621,36 +1621,36 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         brush_action = brush_action
       )
     })
-    
+
     upsetReactive <- reactive({
       req(length(internal$signatures) > 0, input$upSetDegree, input$upSetOrder)
-      
+
       # update checkbox of setting box before rendering the plot
       # needs to be done with every plot rerendering, data could have been changed!
       updateCheckboxGroupInput(session, "upSetDownloadSelection", choices = names(isolate(internal$signatures)), inline = TRUE)
-      
+
       # get upset Degree Choices from slider Input
       minDegree <- input$upSetDegree[[1]]
       maxDegree <- input$upSetDegree[[2]]
-      
+
       # calculate the plot
       result <- plot_signatureUpset(shiny::isolate(internal$signatures),
-                                    upset_mode = input$upsetMode,
-                                    min_degree = minDegree,
-                                    max_degree = maxDegree,
-                                    order_sets = input$upSetOrder,
-                                    invert_sets = input$upSetInvert,
-                                    color_by_degrees = input$upSetColorDegrees,
-                                    color_palette = input$globalColor
+        upset_mode = input$upsetMode,
+        min_degree = minDegree,
+        max_degree = maxDegree,
+        order_sets = input$upSetOrder,
+        invert_sets = input$upSetInvert,
+        color_by_degrees = input$upSetColorDegrees,
+        color_palette = input$globalColor
       )
-      
+
       # update settings
       # probably going with a preselected range of values
       # might also be possible to update to min=1, max=numberofsamples, and if maxDegree now higher than selected: value=c(min, newmax)
       # updateSliderInput(session, inputId = "upSetDegree", max=max(ComplexHeatmap::comb_degree(result[[2]])))
-      
+
       # show the plot
-      return(list('plot'=result[[1]]))
+      return(list("plot" = result[[1]]))
     })
 
     # UpSet Plot
@@ -1658,7 +1658,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       req(upsetReactive)
       upsetReactive()$plot
     })
-    
+
     output$upSetPlotDownloadButton <- downloadHandler(
       filename = function() {
         "upset_signatures.pdf"
@@ -1668,7 +1668,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         pdf(file = file, width = 9, height = 6)
         print(upsetReactive()$plot)
         dev.off()
-        #ggsave(file, plot = upsetReactive()$plot, device = "pdf", width = 9, height = 6)
+        # ggsave(file, plot = upsetReactive()$plot, device = "pdf", width = 9, height = 6)
       }
     )
 
