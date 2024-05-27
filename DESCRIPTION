@@ -23,6 +23,7 @@ Depends:
 Imports: 
     shiny,
     shinydashboard,
+    shinyBS,
     omnideconv, 
     plotly,
     ggplot2, 
@@ -49,7 +50,7 @@ Imports:
     stats,
     circlize,
     BioQC
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 Remotes: 
     github::omnideconv/omnideconv
@@ -59,5 +60,10 @@ Suggests:
     bookdown,
     testthat (>= 3.0.0), 
     markdown
+biocViews:
+    Software, GeneExpression, ImmunoOncology, Sequencing, Transcription, 
+    Classification, Transcriptomics, Visualization
+URL: https://github.com/omnideconv/DeconvExplorer/
+BugReports: https://github.com/omnideconv/DeconvExplorer/issues
 VignetteBuilder: knitr
 Config/testthat/edition: 3

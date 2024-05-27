@@ -11,7 +11,7 @@
 #' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip element_text
 #' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
-#' geom_hline scale_colour_brewer scale_fill_brewer ylim theme_minimal
+#' geom_hline scale_colour_brewer scale_fill_brewer ylim theme_minimal geom_rect
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom waiter Waitress
 #' @importFrom rlang .data
@@ -32,7 +32,8 @@
 #' @importFrom ggpubr stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
+#' @import shinyBS
 #'
 #' @name DeconvExplorer-pkg
 #' @docType package
-NULL
+"_PACKAGE"

@@ -2,8 +2,26 @@
 % Please edit documentation in R/DeconvExplorer-pkg.R
 \docType{package}
 \name{DeconvExplorer-pkg}
+\alias{DeconvExplorer-package}
 \alias{DeconvExplorer-pkg}
 \title{DeconvExplorer}
 \description{
 DeconvExplorer Interactive user interface for the omnideconv deconvolution toolset
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/omnideconv/DeconvExplorer/}
+  \item Report bugs at \url{https://github.com/omnideconv/DeconvExplorer/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Constantin Zackl \email{zacklcon@uni-mainz.de} (\href{https://orcid.org/0000-0003-1991-6943}{ORCID})
+
+Authors:
+\itemize{
+  \item Federico Marini \email{marinif@uni-mainz.de} (\href{https://orcid.org/0000-0003-3252-7758}{ORCID})
+}
+
 }

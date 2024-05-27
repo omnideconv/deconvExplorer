@@ -2,13 +2,17 @@
 % Please edit documentation in R/SignatureExplorationPlots.R
 \name{plot_signatureClustered}
 \alias{plot_signatureClustered}
-\title{Calculate Clustered Heatmap of Signature Genes}
+\title{Calculate Clustered Heatmap of Signature Genes
+This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
+by a gene scores ranking the distinctness of a gene in the signature.}
 \usage{
 plot_signatureClustered(
   signature_mat,
   scoring_method = "entropy",
   annotation_type = "line",
-  color_palette = "Spectral"
+  color_palette = "Spectral",
+  order_rows = "cluster",
+  threshold = 1.5
 )
 }
 \arguments{
@@ -19,11 +23,17 @@ plot_signatureClustered(
 \item{annotation_type}{How the score is rendered (line, bar)}
 
 \item{color_palette}{RColorBrewer Palette name, standard = Spectral}
+
+\item{order_rows}{Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabeticaly}
+
+\item{threshold}{the threshold for the z-scored expresion in the signature matrix to consider
+a gene as being differentially expressed. Default: 1.5}
 }
 \value{
 A Heatmap
 }
 \description{
+Calculate Clustered Heatmap of Signature Genes
 This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 by a gene scores ranking the distinctness of a gene in the signature.
 }

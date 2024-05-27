@@ -13,10 +13,14 @@
 - Counts are **not log-transformed**
 - Rownames (gene names) are provided in the same format as in the bulk RNA-seq data, for instance HGNC symbols
 
+<img src="../www/sc.png" alt="sc_image" width="800"/>
+
 #### Cell type annotations
 
 - Vector containing cell type annotations
 - Annotations are in the same order as the columns of the single cell matrix
+
+<img src="../www/cell_anno.png" alt="anno_image" width="100"/>
 
 #### Batch ids
 
@@ -24,28 +28,21 @@
 - Ids are in the same order as the columns of the single cell matrix
 - This is only necessary for Bisque, MuSiC and SCDC
 
+<img src="../www/batch.png" alt="batch_image" width="90"/>
+
 #### (Marker genes)
 
 - Vector containing gene names
 - This is only necessary for BSeq-sc
+
+<img src="../www/markers.png" alt="markers_image" width="90"/>
 
 #### Bulk RNA-seq data
 
 - **Genes** x **Samples** matrix
 - Rownames (gene names) are provided in the same format as in the sc RNA-seq data, for instance HGNC symbols
 
-#### SimBu data
-
-Upload your SimBu simulation as .rds file, as generated with this command
-
-```
-simulation <- SimBu::simulate_bulk(...)
-saveRDS(simulation, 'filepath.rds') # upload this file
-```
-
-<span class="help-block">
-  For further Information see the SimBu Documentation
-</span>
+<img src="../www/bulk.png" alt="bulk_image" width="800"/>
 
 #### Signature
 
@@ -58,3 +55,5 @@ Supported data types:
 <span class="help-block">
   For csv and tsv files the first column <strong>must</strong> contain gene identifiers
 </span>
+
+<img src="../www/signature.png" alt="signature_image" width="350"/>
