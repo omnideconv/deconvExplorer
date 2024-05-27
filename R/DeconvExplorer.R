@@ -2100,10 +2100,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       },
       deleteFile = TRUE
     )
-<<<<<<< HEAD
-    
-=======
->>>>>>> aa2a3bb4dc946dc1e3af93a5462df63292d64f52
+
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
