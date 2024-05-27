@@ -128,7 +128,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 
   # calculate Mean Entropy for each signature
   for (name in names(signature_list)) {
-    meanEntropy <- mean(apply(signature_list[[name]], 1, scoreEntropy))
+    meanEntropy <- mean(BioQC::entropySpecificity(signature_list[[name]]))
     entropies[nrow(entropies) + 1, ] <- list(name, meanEntropy)
   }
 
@@ -155,7 +155,6 @@ plot_meanEntropyPerMethod <- function(signature_list,
 
 
 #' Calculate Clustered Heatmap of Signature Genes
-#'
 #' This Heatmap displays a z-scored signature in heatmap form. The plot is annotated
 #' by a gene scores ranking the distinctness of a gene in the signature.
 #'
@@ -163,6 +162,9 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @param color_palette RColorBrewer Palette name, standard = Spectral
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
+#' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabeticaly
+#' @param threshold the threshold for the z-scored expresion in the signature matrix to consider
+#'    a gene as being differentially expressed. Default: 1.5
 #'
 #' @returns A Heatmap
 #' @export
@@ -172,7 +174,9 @@ plot_meanEntropyPerMethod <- function(signature_list,
 plot_signatureClustered <- function(signature_mat,
                                     scoring_method = "entropy",
                                     annotation_type = "line",
-                                    color_palette = "Spectral") {
+                                    color_palette = "Spectral",
+                                    order_rows = "cluster",
+                                    threshold = 1.5) {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
   }
@@ -227,9 +231,9 @@ plot_signatureClustered <- function(signature_mat,
 
   if (scoring_method == "entropy") {
     if (annotation_type == "line") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(apply(signature_mat, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_lines(BioQC::entropySpecificity(signature_mat), which = "row"))
     } else if (annotation_type == "bar") {
-      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(apply(signature_mat, 1, scoreEntropy), which = "row"))
+      annotation <- ComplexHeatmap::columnAnnotation(entropy = ComplexHeatmap::anno_barplot(BioQC::entropySpecificity(signature_mat), which = "row"))
     }
   } else if (scoring_method == "gini") {
     if (annotation_type == "line") {
@@ -240,13 +244,32 @@ plot_signatureClustered <- function(signature_mat,
   }
 
 
+  if (order_rows == "cluster") {
+    cell.types.distance <- dist(t(mat), method = "euclidean")
+    cell.types.clustering <- hclust(cell.types.distance, method = "complete")
+    cell.types.ordered <- cell.types.clustering$labels[cell.types.clustering$order]
+  } else if (order_rows == "no_cluster") {
+    cell.types.ordered <- order(colnames(mat))
+  }
+
+  genes <- c()
+  for (c in cell.types.ordered) {
+    highly.expr.genes <- names(which(mat[, c] > threshold))
+    genes <- union(genes, highly.expr.genes)
+  }
+
+  genes <- union(genes, rownames(mat))
+
   # Plot with complex heatmap
+
   heatmap <- ComplexHeatmap::Heatmap(t(mat),
     name = "z-score", show_column_dend = FALSE, show_row_dend = FALSE, show_column_names = FALSE,
     row_title = NULL, row_names_side = "left",
     border = TRUE, col = col_fun,
+    column_order = genes,
+    row_order = cell.types.ordered,
     # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
-    cluster_columns = TRUE, cluster_rows = TRUE, # clustering_method_columns = "euclidean",
+    # cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )
 
@@ -321,15 +344,18 @@ plot_signatureUpset <- function(signature_list,
     upSetColors <- c("black")
   }
 
+  top_annotation <- ComplexHeatmap::upset_top_annotation(
+    mat,
+    add_numbers = TRUE,
+    numbers_gp = grid::gpar(
+      fontsize = "14",
+      fontface = "bold"
+    )
+  )
+
   p <- ComplexHeatmap::UpSet(mat,
     comb_order = combOrder,
-    top_annotation = upset_top_annotation(mat,
-      add_numbers = TRUE,
-      numbers_gp = grid::gpar(
-        fontsize = "14",
-        fontface = "bold"
-      )
-    ),
+    top_annotation = top_annotation,
     pt_size = grid::unit(8, "mm"), lwd = 6,
     comb_col = upSetColors
   )

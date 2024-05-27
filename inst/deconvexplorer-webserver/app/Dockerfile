@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y \
 # omnideconv and DeconvExplorer
 #RUN install2.r --error textshaping
 
-RUN install2.r --error pak car matlib remotes
+RUN R -e "install.packages('pak')"
+RUN R -e "pak::pkg_install(c('car', 'matlib', 'remotes'))"
 RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
 RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
 

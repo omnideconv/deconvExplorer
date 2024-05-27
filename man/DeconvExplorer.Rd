@@ -8,39 +8,36 @@ DeconvExplorer(
   deconvexp_bulk = NULL,
   deconvexp_singlecelldata = NULL,
   deconvexp_cell_annotation = NULL,
-  deconvexp_batch = NULL
+  deconvexp_batch = NULL,
+  maxsize_upload = 50
 )
 }
 \arguments{
-\item{deconvexp_bulk}{Bulk Sequencing data which will be deconvoluted}
+\item{deconvexp_bulk}{Optional; a matrix or data frame containing bulk sequencing data to be deconvoluted.
+Rows should represent genes, and columns should represent samples. The data can also be
+uploaded directly in the app.}
 
-\item{deconvexp_singlecelldata}{Single Cell Data which is used to calculate the signature matrix}
+\item{deconvexp_singlecelldata}{Optional; a matrix, data frame, or SingleCellExperiment object
+containing single-cell data used to calculate the signature matrix. Rows should represent genes,
+and columns should represent single cells.}
 
-\item{deconvexp_cell_annotation}{Cell Type annotations for the single cell data}
+\item{deconvexp_cell_annotation}{Optional; a vector providing cell type annotations
+for the single-cell data. Each entry corresponds to the cell type of the respective column
+in `deconvexp_singlecelldata`.}
 
-\item{deconvexp_batch}{Batch IDs, only for some deconvolution methods}
+\item{deconvexp_batch}{Optional; a vector indicating the batch ID for each sample or cell
+in `deconvexp_singlecelldata`. This is relevant for methods that can adjust for batch effects.}
+
+\item{maxsize_upload}{Numeric; specifies the maximum file size in MB acceptable for upload
+during runtime. This is particularly important when files are uploaded directly through the
+app interface. Defaults to 50 MB.}
 }
 \value{
-A Shiny app object is returned
+Starts a shiny app
 }
 \description{
-Run DeconvExplorer
-}
-\examples{
-if (interactive()) {
-  DeconvExplorer::DeconvExplorer()
-}
-
-# COSTODO: an example where the parameters are provided before starting the app
-# my_deconvexp_bulk <- ...
-# my_deconvexp_singlecelldata <- ...
-# my_deconvexp_cell_annotation <- ...
-# my_deconvexp_batch <- ...
-# if (interactive()) {
-#   DeconvExplorer::DeconvExplorer(deconvexp_bulk = ...,
-#                                  deconvexp_singlecelldata = ...,
-#                                  deconvexp_cell_annotation = ...,
-#                                  deconvexp_batch = ...
-#   )
-# }
+This function launches a Shiny app to facilitate cell type deconvolution using both bulk
+and single-cell RNA sequencing data. It provides a comprehensive interface for data upload,
+deconvolution execution, and result visualization. The app supports various deconvolution
+methods and offers tools for signature matrix refinement.
 }
