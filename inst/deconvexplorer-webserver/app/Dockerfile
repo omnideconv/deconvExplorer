@@ -27,11 +27,10 @@ RUN apt-get update && apt-get install -y \
 # omnideconv and DeconvExplorer
 #RUN install2.r --error textshaping
 
-#RUN install2.r --error pak car matlib remotes
+
 RUN R -e "install.packages('pak')"
 RUN R -e "pak::pkg_install(c('car', 'matlib', 'remotes'))"
-RUN echo  "GITHUB_PAT=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" >> /root/.Renviron
-RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE,  auth_token='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')"
+RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
 RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
 #RUN R -e "reticulate::install_miniconda()" # will not install automatically
