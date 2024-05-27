@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 
-FROM rocker/r-base
+FROM rocker/r-base:4.4.0
 
 # github setup
 ARG GITHUB_PAT
@@ -27,8 +27,6 @@ RUN apt-get update && apt-get install -y \
 # omnideconv and DeconvExplorer
 #RUN install2.r --error textshaping
 
-
-
 RUN R -e "install.packages('pak')"
 RUN R -e "pak::pkg_install(c('car', 'matlib', 'remotes'))"
 RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
@@ -46,7 +44,7 @@ RUN R -e "omnideconv::install_all_python()"
 
 # Cibersort Source Code
 COPY CIBERSORT.R .
-RUN R -e "omnideconv::bseqsc_config(file = 'CIBERSORT.R')"
+#RUN R -e "omnideconv::bseqsc_config(file = 'CIBERSORT.R')"
 
 RUN groupadd  shiny \
 && useradd --gid shiny --shell /bin/bash --create-home shiny

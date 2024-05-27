@@ -1149,11 +1149,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
     # start the tour
     observeEvent(input$startTour, {
-      tour_steps <- read.delim(system.file("extdata", "tour_intro.txt",
-        package = "DeconvExplorer"
-      ),
-      sep = ";", stringsAsFactors = FALSE,
-      row.names = NULL, quote = ""
+      tour_steps <- read.delim(
+        system.file("extdata", "tour_intro.txt",
+          package = "DeconvExplorer"
+        ),
+        sep = ";", stringsAsFactors = FALSE,
+        row.names = NULL, quote = ""
       )
       introjs(session, options = list(
         steps = tour_steps,
@@ -2099,7 +2100,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       },
       deleteFile = TRUE
     )
+<<<<<<< HEAD
     
+=======
+>>>>>>> aa2a3bb4dc946dc1e3af93a5462df63292d64f52
 
     # functions ---------------------------------------------------------------
     brush_action <- function(df, input, output, session) {
