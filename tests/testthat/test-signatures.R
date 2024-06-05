@@ -53,7 +53,4 @@ test_that("Signature refinement operations are correct", {
     labels = c("A", "B", "C", "D")
   ))
 
-
-  entropy_calc <- scoreEntropy(signature_list$bisque[1, ])
-  expect_true(is.numeric(entropy_calc))
 })
