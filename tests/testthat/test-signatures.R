@@ -52,5 +52,4 @@ test_that("Signature refinement operations are correct", {
     max_count = 3,
     labels = c("A", "B", "C", "D")
   ))
-
 })
