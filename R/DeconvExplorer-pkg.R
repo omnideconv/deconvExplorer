@@ -38,7 +38,7 @@
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
 #' @importFrom BioQC entropySpecificity gini
-#' @import shinyBS
+#' @importFrom shinyBS bsPopover
 #'
 #' @name DeconvExplorer-pkg
 #' @docType package
