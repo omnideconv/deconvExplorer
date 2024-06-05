@@ -21,6 +21,8 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Alexander Dietrich \email{your@email.here} (\href{https://orcid.org/0000-0002-8661-0453}{ORCID})
+  \item Lorenzo Merotto \email{your@email.here} (\href{https://orcid.org/xxxx-yyyy-xxxx-yyyy}{ORCID})
   \item Federico Marini \email{marinif@uni-mainz.de} (\href{https://orcid.org/0000-0003-3252-7758}{ORCID})
 }
 
