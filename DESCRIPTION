@@ -14,7 +14,7 @@ Authors@R:
         ),
         person(
             given = "Lorenzo", family = "Merotto", role = c("aut"), 
-            email = "your@email.here", comment = c(ORCID = "xxxx-yyyy-xxxx-yyyy")
+            email = "lorenzo.merotto@uibk.ac.at", comment = c(ORCID = "0009-0006-0637-8436")
         ),
 		    person(
             given = "Federico", family = "Marini", role = c("aut"), 
