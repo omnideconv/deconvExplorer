@@ -717,92 +717,92 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
-    column(
-      width = 4,
-      h1("Unzero"), icon("question-circle", id = "refUnzeroQ")
-    ),
-    column(
-      width = 7,
-      sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
-        min = 0, max = 100, value = 90, step = 1, post = "%"
+    fluidRow(
+      column(
+        width = 4,
+        h1("Unzero")
+      ),
+      column(
+        width = 7,
+        sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
+                    min = 0, max = 100, value = 90, step = 1, post = "%"
+        )
+      ),
+      column(
+        width = 1,
+        actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
       )
     ),
-    column(
-      width = 1,
-      actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Remove genes that contain mostly 0 in their expression profile. All genes with more zeros than the provided percentage are removed. "))
     )
   )
-
-  refUnzeroPopover <-
-    shinyBS::bsPopover(
-      id = "refUnzeroQ",
-      title = "",
-      content = "Remove genes that contain mostly 0 in their expression profile. All genes with more zeros than the provided percentage are removed. "
-    )
 
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "yellow",
-    column(
-      width = 4,
-      h1("Remove Unspecific"), icon("question-circle", id = "refUnspecificQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Remove Unspecific")
+      ),
+      column(
+        width = 7,
+        numericInput("refineUnspecific", "Remove unspecific genes", 1)
+      ),
+      column(
+        width = 1,
+        actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 7,
-      numericInput("refineUnspecific", "Remove unspecific genes", 1)
-    ),
-    column(
-      width = 1,
-      actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("The expression of each gene over all cell types is binned into 'high', 'medium' and 'low'. A gene is considered 'specific' if its expression is 'high' in no more than n cell types; a gene with a 'high' expression in more than n cell types is removed. The 'n' parameter can be modified in the field on the side."))
     )
   )
-
-  refUnspecificPopover <-
-    shinyBS::bsPopover(
-      id = "refUnspecificQ",
-      title = "",
-      content = "The overall expression is binned into “high”, “medium” and “low expression” for each gene. The number of cell types the gene has to be in the “high” bin can be modified and defaults to 1. Each gene expressed “high” in more cell types than this parameter is removed. "
-    )
 
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
-    column(
-      width = 4,
-      h1("Best n genes"), icon("question-circle", id = "refBestQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Best n genes")
+      ),
+      column(
+        width = 5,
+        numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
+      ),
+      column(
+        width = 2,
+        selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+      ),
+      column(
+        width = 1,
+        actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 5,
-      numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
-    ),
-    column(
-      width = 2,
-      selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
-    ),
-    column(
-      width = 1,
-      actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Based on the selected scoring method, the top ranking genes are selected for each cell type. "))
     )
   )
 
-  refBestPopover <-
-    shinyBS::bsPopover(
-      id = "refBestQ",
-      title = "",
-      content = "Based on the selected scoring method, the top ranking genes are selected for each cell type. "
-    )
 
   refinementManualBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "purple",
-    column(
-      width = 4,
-      h1("Remove manually"), icon("question-circle", id = "refManuallyQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Remove manually")
+      ),
+      column(
+        width = 7,
+        textInput("refinementManualGene", "Type in a Gene Identifier to remove")
+      ),
+      column(
+        width = 1,
+        actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 7,
-      textInput("refinementManualGene", "Type in a Gene Identifier to remove")
-    ),
-    column(
-      width = 1,
-      actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Manually remove genes by providing a Gene Identifier. "))
     )
   )
 
@@ -810,7 +810,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     shinyBS::bsPopover(
       id = "refManuallyQ",
       title = "",
-      content = "Manually remove genes by providing a Gene Identifier. "
+      content = 
     )
 
   # Info Boxes --------------------------------------------------------------
@@ -1086,10 +1086,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           fluidRow(
             column(
               width = 8,
-              refinementUnzeroBox, refUnzeroPopover,
-              refinementRemoveUnspecificBox, refUnspecificPopover,
-              refinementBestNBox, refBestPopover,
-              refinementManualBox, refManuallyPopover
+              refinementUnzeroBox,
+              refinementRemoveUnspecificBox,
+              refinementBestNBox,
+              refinementManualBox
             ),
             refinementSettingsBox, refSettingsPopover
           )

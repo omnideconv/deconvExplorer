@@ -75,7 +75,7 @@ removePercentZeros <- function(signature_mat, max_percentage_zeroes = 0.5) {
 #' Remove unspecific Genes of a Gene Expression Signature
 #'
 #' Remove genes expressed in an unspecific manner. The expression range is divided into
-#' a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
+#' a user selected number of bins. Only genes expressed high in <max_count> cell types are returned.
 #' Genes expressed high in more than <max_count> cell types are discarded.
 #'
 #' @param signature_mat gene Expression Signature
@@ -116,25 +116,26 @@ removeUnspecificGenes <- function(signature_mat,
 
   signature_mat <- as.matrix(signature_mat)
 
-  to_keep <- vector(length = nrow(signature_mat))
-
-  for (i in 1:nrow(signature_mat)) {
+  to_keep <- sapply(1:nrow(signature_mat), function(i){
     row <- signature_mat[i, ] # has colnames! drop FALSE is mandatory !!!!!
-
+    
     # calculate bins to prevent error
     breaks <- seq(floor(min(row)), ceiling(max(row)), length.out = number_of_bins + 1)
-
+    
     # cut into bins, seperate for each gene
     bins <- cut(row, breaks = breaks, labels = labels, include.lowest = TRUE)
-
+    
     nHighBins <- sum(bins == "high") # not working when labels is something else
-
+    
     # this value needs to be greater than one, depending of the step in the pipeline there arent
     # any rows producing zeros left but that is not the case for all signatures
     if (nHighBins <= max_count & nHighBins > 0) {
-      to_keep[i] <- TRUE
+      return(TRUE)
+    }else{
+      return(FALSE)
     }
-  }
+  })
+  
 
   refinedSignature <- signature_mat[to_keep, ]
 
