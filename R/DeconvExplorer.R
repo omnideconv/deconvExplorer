@@ -1598,7 +1598,6 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       }
     )
 
-
     # plot interactive heatmap
     observe({
       req(
@@ -2026,7 +2025,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       # load file, depending on extension
       if (ext == "txt") {
-        content <- utils::read.table(path)
+        content <- utils::read.table(path, header = T)
       } else if (ext == "csv") {
         content <- vroom::vroom(path, delim = ",")
       } else if (ext == "tsv") {
