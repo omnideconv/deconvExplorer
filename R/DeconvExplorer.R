@@ -87,7 +87,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     fileInput("userBatchUpload", "Upload Batch IDs"),
     div(style = "margin-top: -20px"),
     fileInput("userMarkerUpload", "Upload Marker Genes"),
-    div(style = "margin-top: -20px"), collapsible = T, collapsed = T
+    div(style = "margin-top: -20px"), collapsible = T, collapsed = T,
+    shinyWidgets::actionBttn('selectDeconvolution', 'Perform deconvolution', icon = icon('arrow-right'), color = 'success', style = 'simple')
   )
 
   deconvUploadPopover <-
@@ -126,7 +127,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px"),
-    p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer.")
+    p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer. Multiple uploads are possible."),
+    fluidRow(
+      column(4, shinyWidgets::actionBttn('selectSigExploration', 'Explore the signature', icon = icon('arrow-right'), color = 'success', style = 'simple')),
+      column(4, shinyWidgets::actionBttn('selectSigRefinement', 'Refine the signature', icon = icon('arrow-right'), color = 'success', style = 'simple'))
+    )
+    
   )
 
   signatureUploadPopover <-
@@ -142,7 +148,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userFractionsUpload", "Upload table with cell-type fractions"),
     div(style = "margin-top: -25px"),
-    p("You can upload a table containing cell-type fractions, either coming from a deconvolution method or a ground-truth dataset with which you want to compare your deconvolution result.")
+    p("You can upload a table containing cell-type fractions, either coming from a deconvolution method or a ground-truth dataset with which you want to compare your deconvolution result. Multiple uploads are possible."),
+    shinyWidgets::actionBttn('selectBenchmark', 'Compare fractions', icon = icon('arrow-right'), color = 'success', style = 'simple')
   )
 
   fractionsUploadPopover <-
@@ -897,7 +904,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         )
       )
     ),
-    dashboardSidebar(sidebarMenu(
+    dashboardSidebar(sidebarMenu(id = 'tabs',
       shinyjs::useShinyjs(),
       rintrojs::introjsUI(),
       waiter::use_waiter(),
@@ -1175,6 +1182,22 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     observe({
       updateSelectInput(session, "benchmark_reference", choices = names(internal$deconvolutions))
       updateSelectInput(session, "benchmark_ToPlot", choices = names(internal$deconvolutions))
+    })
+    
+    observeEvent(input$selectDeconvolution, {
+      updateTabItems(session, inputId = "tabs", selected = "deconv") 
+    })
+    
+    observeEvent(input$selectSigExploration, {
+      updateTabItems(session, inputId = "tabs", selected = "signatureExploration") 
+    })
+    
+    observeEvent(input$selectSigRefinement, {
+      updateTabItems(session, inputId = "tabs", selected = "signatureRefinement") 
+    })
+    
+    observeEvent(input$selectBenchmark, {
+      updateTabItems(session, inputId = "tabs", selected = "benchmark") 
     })
 
     observeEvent(input$loadSample, {
