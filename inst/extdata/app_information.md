@@ -27,11 +27,10 @@ uploaded as txt as well.**
   - Vector containing gene names
   - This is only necessary for BSeq-sc
 
-
 #### Custom Signature and Ground Truth Reference
 
 The signature matrix you upload, needs to have gene symbols as the first column. The other columns need to be cell types,
-which signature-specific values in each cell. 
+which signature-specific values in each cell.
 
 # Deconvolution
 
