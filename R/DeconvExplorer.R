@@ -511,36 +511,50 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     title = span("Clustered Signature", icon("question-circle", id = "sigHeatmapQ")),
     status = "info", solidHeader = TRUE,
     width = 12,
-    column(
-      width = 4,
-      selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
-    ),
-    column(
-      width = 2,
-      selectInput("signatureAnnotationScore", "Select an annotation score",
-        choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+    fluidRow(    
+      column(
+        width = 4,
+        selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
+      ),
+      column(
+        width = 2,
+        selectInput("signatureAnnotationScore", "Select an annotation score",
+                    choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("signatureAnnotationPlotType", "Annotation Type",
+                    choices = c("Bars" = "bar", "Lines" = "line")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("clusterCelltypes", "Order rows (cell types)",
+                    choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("clusterGenes", "Order columns (genes)",
+                    choices = c(".. by maximal z-score per cell type" = "z-score cutoff",
+                                ".. hierarchically based on euclidean distance" = "hierarchical clustering",
+                                ".. alphabetically" = "alphabetical")
+        )
       )
     ),
-    column(
-      width = 2,
-      selectInput("signatureAnnotationPlotType", "Annotation Type",
-        choices = c("Bars" = "bar", "Lines" = "line")
+    fluidRow(
+      column(
+        width = 12,
+        InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
+                                                         width = "1250px", height = "450px", containment = TRUE
+        )
       )
     ),
-    column(
-      width = 2,
-      selectInput("clusterCelltypes", "Order rows",
-        choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
-      )
-    ),
-    column(
-      width = 1,
-      div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
-    ),
-    column(
-      width = 12,
-      InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-        width = "1250px", height = "450px", containment = TRUE
+    fluidRow(
+      column(
+        width = 2,
+        div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
       )
     )
   )
@@ -1628,7 +1642,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
         input$signatureToHeatmap,
         input$signatureAnnotationScore,
         input$signatureAnnotationPlotType,
-        input$clusterCelltypes
+        input$clusterCelltypes,
+        input$clusterGenes
       )
       signature <- isolate(internal$signatures[[input$signatureToHeatmap]])
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
@@ -1638,7 +1653,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
           color_palette = input$globalColor,
-          order_rows = input$clusterCelltypes
+          order_rows = input$clusterCelltypes, 
+          order_columns = input$clusterGenes
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action
