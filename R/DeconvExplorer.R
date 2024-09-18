@@ -126,7 +126,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px"),
-    p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer.")
+    p("You can upload a previosuly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer.")
   )
 
   signatureUploadPopover <-

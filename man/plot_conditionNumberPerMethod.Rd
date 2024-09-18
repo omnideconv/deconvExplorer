@@ -12,11 +12,11 @@ plot_conditionNumberPerMethod(signature_list, color_palette = "Set1")
 \item{color_palette}{RColorBrewer Palette name, standard = Set1}
 }
 \value{
-A Barplot
+A Barplot as ggplot object
 }
 \description{
 This plot focuses on the condition number for each signature and simplifies
-the comparison by providion a barplot
+the comparison by providing a barplot
 }
 \examples{
 signature <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
