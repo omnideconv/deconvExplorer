@@ -202,7 +202,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 4,
       selectInput("deconvMethod", "Deconvolution Method",
-        choices = omnideconv::deconvolution_methods
+        choices = c('MuSiC'='music', omnideconv::deconvolution_methods[-10])
       )
     ),
     column(
@@ -221,10 +221,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 3,
       div(
-        actionButton("deconvolute", "Deconvolute"),
+        shinyBS::popify(shinyWidgets::actionBttn("deconvolute", "Deconvolute", style = 'simple', icon = icon('triangle-exclamation'), color = 'warning'),
+                        "Attention", "Some methods are considerably slower than others; please keep this in mind when using DeconvExplorer for deconvolution."),
         style = "margin-top:1.7em"
-      ),
-      # actionButton("deconvoluteAll", "Deconvolute All")
+      )
     ),
     waiter::useWaitress()
   )
@@ -235,6 +235,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       title = "",
       content = "Select a deconvolution method to run. If required and supported by the deconvolution method you can additionally select a custom signature to be used in computation. Please note this is an advanced feature and should be used with caution. "
     )
+  
 
   deconv_plot_box <- shinydashboard::box(
     id = "tour_deconvPlot",

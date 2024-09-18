@@ -32,6 +32,7 @@
 #' @importFrom ggpubr stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
+#' @importFrom shinyWidgets actionBttn
 #' @import shinyBS
 #'
 #' @name DeconvExplorer-pkg
