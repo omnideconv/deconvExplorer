@@ -127,6 +127,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px"),
+
     p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer. Multiple uploads are possible."),
     fluidRow(
       column(4, shinyWidgets::actionBttn("selectSigExploration", "Explore the signature", icon = icon("arrow-right"), color = "success", style = "simple")),

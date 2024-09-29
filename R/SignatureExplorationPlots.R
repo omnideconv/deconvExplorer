@@ -56,12 +56,12 @@ plot_signatureGenesPerMethod <- function(signature_list,
 #' Calculate Condition Number per Method
 #'
 #' This plot focuses on the condition number for each signature and simplifies
-#' the comparison by providion a barplot
+#' the comparison by providing a barplot
 #'
 #' @param signature_list Named List of signatures, names are the calculation methods
 #' @param color_palette RColorBrewer Palette name, standard = Set1
 #'
-#' @returns A Barplot
+#' @returns A Barplot as ggplot object
 #'
 #' @export
 #'
@@ -162,8 +162,8 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @param color_palette RColorBrewer Palette name, standard = Spectral
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
-#' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabeticaly
-#' @param threshold the threshold for the z-scored expresion in the signature matrix to consider
+#' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabetically
+#' @param threshold the threshold for the z-scored expression in the signature matrix to consider
 #'    a gene as being differentially expressed. Default: 1.5
 #'
 #' @returns A Heatmap
