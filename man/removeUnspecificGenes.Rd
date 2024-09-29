@@ -26,7 +26,7 @@ a gene expression signature containing only genes matching the passed requiremen
 }
 \description{
 Remove genes expressed in an unspecific manner. The expression range is divided into
-a user selected number of bins. Only genes expressed high in <max_count> celltypes are returned.
+a user selected number of bins. Only genes expressed high in <max_count> cell types are returned.
 Genes expressed high in more than <max_count> cell types are discarded.
 }
 \examples{

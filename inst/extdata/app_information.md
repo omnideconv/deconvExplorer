@@ -27,21 +27,10 @@ uploaded as txt as well.**
   - Vector containing gene names
   - This is only necessary for BSeq-sc
 
-#### SimBu Simulation
-
-If no ground truth data is available for your bulk dataset you can
-benchmark by simulating a pseudo-bulk sample with known cell type
-fraction using SimBu. To transfer your simulation to DeconvExplorer save
-it in rds format and upload it to retrieve the simulated bulk file and
-the corresponding ground truth.
-
-    simulation <- SimBu::simulate_bulk(...)
-    saveRDS(simulation, 'filepath.rds') # upload this file
-
 #### Custom Signature and Ground Truth Reference
 
-Please make sure the first column contains gene identifiers matching the
-bulk sample.
+The signature matrix you upload, needs to have gene symbols as the first column. The other columns need to be cell types,
+which signature-specific values in each cell.
 
 # Deconvolution
 
