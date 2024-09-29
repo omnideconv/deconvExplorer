@@ -759,6 +759,13 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     )
   )
 
+refUnspecificPopover <-
+    shinyBS::bsPopover(
+      id = "refUnspecificQ",
+      title = "",
+      content = "The overall expression is binned into 'high', 'medium' and 'low expression' for each gene. The number of cell types the gene has to be in the 'high' bin can be modified and defaults to 1. Each gene expressed 'high' in more cell types than this parameter is removed. "
+    )
+
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
     fluidRow(

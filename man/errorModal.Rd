@@ -7,7 +7,8 @@
 errorModal(error_message = NULL)
 }
 \arguments{
-\item{error_message}{}
+\item{error_message}{Character string, with the content of the error to
+display}
 }
 \description{
 Modal window to print error messages or other warnings

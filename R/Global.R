@@ -29,7 +29,8 @@ returnSelectedDeconvolutions <- function(deconv_select, deconv_list) {
 
 #' Modal window to print error messages or other warnings
 #'
-#' @param error_message
+#' @param error_message Character string, with the content of the error to
+#' display
 #'
 #' @return NULL
 #' @export
