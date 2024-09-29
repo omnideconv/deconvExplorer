@@ -87,7 +87,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     fileInput("userBatchUpload", "Upload Batch IDs"),
     div(style = "margin-top: -20px"),
     fileInput("userMarkerUpload", "Upload Marker Genes"),
-    div(style = "margin-top: -20px"), collapsible = T, collapsed = T
+    div(style = "margin-top: -20px"), collapsible = T, collapsed = T,
+    shinyWidgets::actionBttn("selectDeconvolution", "Perform deconvolution", icon = icon("arrow-right"), color = "success", style = "simple")
   )
 
   deconvUploadPopover <-
@@ -126,7 +127,12 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px"),
-    p("You can upload a previosuly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer.")
+
+    p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer. Multiple uploads are possible."),
+    fluidRow(
+      column(4, shinyWidgets::actionBttn("selectSigExploration", "Explore the signature", icon = icon("arrow-right"), color = "success", style = "simple")),
+      column(4, shinyWidgets::actionBttn("selectSigRefinement", "Refine the signature", icon = icon("arrow-right"), color = "success", style = "simple"))
+    )
   )
 
   signatureUploadPopover <-
@@ -142,7 +148,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userFractionsUpload", "Upload table with cell-type fractions"),
     div(style = "margin-top: -25px"),
-    p("You can upload a table containing cell-type fractions, either coming from a deconvolution method or a ground-truth dataset with which you want to compare your deconvolution result.")
+    p("You can upload a table containing cell-type fractions, either coming from a deconvolution method or a ground-truth dataset with which you want to compare your deconvolution result. Multiple uploads are possible."),
+    shinyWidgets::actionBttn("selectBenchmark", "Compare fractions", icon = icon("arrow-right"), color = "success", style = "simple")
   )
 
   fractionsUploadPopover <-
@@ -195,7 +202,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 4,
       selectInput("deconvMethod", "Deconvolution Method",
-        choices = omnideconv::deconvolution_methods
+        choices = c('MuSiC'='music', omnideconv::deconvolution_methods[-10])
       )
     ),
     column(
@@ -214,10 +221,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 3,
       div(
-        actionButton("deconvolute", "Deconvolute"),
+        shinyBS::popify(shinyWidgets::actionBttn("deconvolute", "Deconvolute", style = 'simple', icon = icon('triangle-exclamation'), color = 'warning'),
+                        "Attention", "Some methods are considerably slower than others; please keep this in mind when using DeconvExplorer for deconvolution."),
         style = "margin-top:1.7em"
-      ),
-      # actionButton("deconvoluteAll", "Deconvolute All")
+      )
     ),
     waiter::useWaitress()
   )
@@ -228,6 +235,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       title = "",
       content = "Select a deconvolution method to run. If required and supported by the deconvolution method you can additionally select a custom signature to be used in computation. Please note this is an advanced feature and should be used with caution. "
     )
+  
 
   deconv_plot_box <- shinydashboard::box(
     id = "tour_deconvPlot",
@@ -504,36 +512,50 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     title = span("Clustered Signature", icon("question-circle", id = "sigHeatmapQ")),
     status = "info", solidHeader = TRUE,
     width = 12,
-    column(
-      width = 4,
-      selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
-    ),
-    column(
-      width = 2,
-      selectInput("signatureAnnotationScore", "Select an annotation score",
-        choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+    fluidRow(    
+      column(
+        width = 4,
+        selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
+      ),
+      column(
+        width = 2,
+        selectInput("signatureAnnotationScore", "Select an annotation score",
+                    choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("signatureAnnotationPlotType", "Annotation Type",
+                    choices = c("Bars" = "bar", "Lines" = "line")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("clusterCelltypes", "Order rows (cell types)",
+                    choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
+        )
+      ),
+      column(
+        width = 2,
+        selectInput("clusterGenes", "Order columns (genes)",
+                    choices = c(".. by maximal z-score per cell type" = "z-score cutoff",
+                                ".. hierarchically based on euclidean distance" = "hierarchical clustering",
+                                ".. alphabetically" = "alphabetical")
+        )
       )
     ),
-    column(
-      width = 2,
-      selectInput("signatureAnnotationPlotType", "Annotation Type",
-        choices = c("Bars" = "bar", "Lines" = "line")
+    fluidRow(
+      column(
+        width = 12,
+        InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
+                                                         width = "1250px", height = "450px", containment = TRUE
+        )
       )
     ),
-    column(
-      width = 2,
-      selectInput("clusterCelltypes", "Order rows",
-        choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
-      )
-    ),
-    column(
-      width = 1,
-      div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
-    ),
-    column(
-      width = 12,
-      InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-        width = "1250px", height = "450px", containment = TRUE
+    fluidRow(
+      column(
+        width = 2,
+        div(downloadButton("signatureSelectedGenesDownloadButton", "Download selected Genes"), style = "margin-top:1.9em")
       )
     )
   )
@@ -696,46 +718,49 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   refinementUnzeroBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "aqua",
-    column(
-      width = 4,
-      h1("Unzero"), icon("question-circle", id = "refUnzeroQ")
-    ),
-    column(
-      width = 7,
-      sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
-        min = 0, max = 100, value = 90, step = 1, post = "%"
+    fluidRow(
+      column(
+        width = 4,
+        h1("Unzero")
+      ),
+      column(
+        width = 7,
+        sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
+                    min = 0, max = 100, value = 90, step = 1, post = "%"
+        )
+      ),
+      column(
+        width = 1,
+        actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
       )
     ),
-    column(
-      width = 1,
-      actionButton("refinePercentZeroGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Remove genes that contain mostly 0 in their expression profile. All genes with more zeros than the provided percentage are removed. "))
     )
   )
-
-  refUnzeroPopover <-
-    shinyBS::bsPopover(
-      id = "refUnzeroQ",
-      title = "",
-      content = "Remove genes that contain mostly 0 in their expression profile. All genes with more zeros than the provided percentage are removed. "
-    )
 
   refinementRemoveUnspecificBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "yellow",
-    column(
-      width = 4,
-      h1("Remove Unspecific"), icon("question-circle", id = "refUnspecificQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Remove Unspecific")
+      ),
+      column(
+        width = 7,
+        numericInput("refineUnspecific", "Remove unspecific genes", 1)
+      ),
+      column(
+        width = 1,
+        actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 7,
-      numericInput("refineUnspecific", "Remove unspecific genes", 1)
-    ),
-    column(
-      width = 1,
-      actionButton("refineUnspecificGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("The expression of each gene over all cell types is binned into 'high', 'medium' and 'low'. A gene is considered 'specific' if its expression is 'high' in no more than n cell types; a gene with a 'high' expression in more than n cell types is removed. The 'n' parameter can be modified in the field on the side."))
     )
   )
 
-  refUnspecificPopover <-
+refUnspecificPopover <-
     shinyBS::bsPopover(
       id = "refUnspecificQ",
       title = "",
@@ -744,44 +769,48 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
   refinementBestNBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "red",
-    column(
-      width = 4,
-      h1("Best n genes"), icon("question-circle", id = "refBestQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Best n genes")
+      ),
+      column(
+        width = 5,
+        numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
+      ),
+      column(
+        width = 2,
+        selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
+      ),
+      column(
+        width = 1,
+        actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 5,
-      numericInput("refineBestN", "Number of genes to select for each cell type", 20, 1)
-    ),
-    column(
-      width = 2,
-      selectInput("refineBestNScore", "How to score genes", choices = c("Entropy" = "entropy", "Gini Index" = "gini"))
-    ),
-    column(
-      width = 1,
-      actionButton("refineBestNGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Based on the selected scoring method, the top ranking genes are selected for each cell type. "))
     )
   )
 
-  refBestPopover <-
-    shinyBS::bsPopover(
-      id = "refBestQ",
-      title = "",
-      content = "Based on the selected scoring method, the top ranking genes are selected for each cell type. "
-    )
 
   refinementManualBox <- shinydashboard::box(
     solidHeader = FALSE, width = NULL, background = "purple",
-    column(
-      width = 4,
-      h1("Remove manually"), icon("question-circle", id = "refManuallyQ")
+    fluidRow(
+      column(
+        width = 4,
+        h1("Remove manually")
+      ),
+      column(
+        width = 7,
+        textInput("refinementManualGene", "Type in a Gene Identifier to remove")
+      ),
+      column(
+        width = 1,
+        actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+      )
     ),
-    column(
-      width = 7,
-      textInput("refinementManualGene", "Type in a Gene Identifier to remove")
-    ),
-    column(
-      width = 1,
-      actionButton("refinementManualGo", "Run", style = "margin-top: 1.7em")
+    fluidRow(
+      column(10, p("Manually remove genes by providing a Gene Identifier. "))
     )
   )
 
@@ -789,7 +818,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     shinyBS::bsPopover(
       id = "refManuallyQ",
       title = "",
-      content = "Manually remove genes by providing a Gene Identifier. "
+      content = 
     )
 
   # Info Boxes --------------------------------------------------------------
@@ -898,6 +927,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       )
     ),
     dashboardSidebar(sidebarMenu(
+      id = "tabs",
       shinyjs::useShinyjs(),
       rintrojs::introjsUI(),
       waiter::use_waiter(),
@@ -1064,10 +1094,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           fluidRow(
             column(
               width = 8,
-              refinementUnzeroBox, refUnzeroPopover,
-              refinementRemoveUnspecificBox, refUnspecificPopover,
-              refinementBestNBox, refBestPopover,
-              refinementManualBox, refManuallyPopover
+              refinementUnzeroBox,
+              refinementRemoveUnspecificBox,
+              refinementBestNBox,
+              refinementManualBox
             ),
             refinementSettingsBox, refSettingsPopover
           )
@@ -1177,6 +1207,22 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       updateSelectInput(session, "benchmark_ToPlot", choices = names(internal$deconvolutions))
     })
 
+    observeEvent(input$selectDeconvolution, {
+      updateTabItems(session, inputId = "tabs", selected = "deconv")
+    })
+
+    observeEvent(input$selectSigExploration, {
+      updateTabItems(session, inputId = "tabs", selected = "signatureExploration")
+    })
+
+    observeEvent(input$selectSigRefinement, {
+      updateTabItems(session, inputId = "tabs", selected = "signatureRefinement")
+    })
+
+    observeEvent(input$selectBenchmark, {
+      updateTabItems(session, inputId = "tabs", selected = "benchmark")
+    })
+
     observeEvent(input$loadSample, {
       waiter::waiter_show(html = tagList(waiter::spin_rotating_plane(), "Loading example data ..."), color = overlay_color)
       internal$bulk[["Example Bulk"]] <- omnideconv::bulk
@@ -1184,6 +1230,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       internal$annotation[["Example Cell-type annotation"]] <- omnideconv::cell_type_annotations_1
       internal$batch[["Example Batch-IDs"]] <- omnideconv::batch_ids_1
       internal$deconvolutions[["Example Ground-truth"]] <- omnideconv::RefData
+      internal$deconvolutions[["Example Deconvolution Result (DWLS)"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
       internal$signatures[["Example Signature (DWLS)"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
       showNotification("Loaded Sample Data")
@@ -1598,14 +1645,14 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       }
     )
 
-
     # plot interactive heatmap
     observe({
       req(
         input$signatureToHeatmap,
         input$signatureAnnotationScore,
         input$signatureAnnotationPlotType,
-        input$clusterCelltypes
+        input$clusterCelltypes,
+        input$clusterGenes
       )
       signature <- isolate(internal$signatures[[input$signatureToHeatmap]])
       InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input,
@@ -1615,7 +1662,8 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
           scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
           color_palette = input$globalColor,
-          order_rows = input$clusterCelltypes
+          order_rows = input$clusterCelltypes, 
+          order_columns = input$clusterGenes
         ),
         "clusteredHeatmapOneSignature",
         brush_action = brush_action
@@ -2026,7 +2074,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
 
       # load file, depending on extension
       if (ext == "txt") {
-        content <- utils::read.table(path)
+        content <- utils::read.table(path, header = T)
       } else if (ext == "csv") {
         content <- vroom::vroom(path, delim = ",")
       } else if (ext == "tsv") {

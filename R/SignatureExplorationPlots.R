@@ -176,6 +176,7 @@ plot_signatureClustered <- function(signature_mat,
                                     annotation_type = "line",
                                     color_palette = "Spectral",
                                     order_rows = "cluster",
+                                    order_columns = "z-score cutoff",
                                     threshold = 1.5) {
   if (is.null(signature_mat)) {
     stop("Please provide a signature")
@@ -252,13 +253,25 @@ plot_signatureClustered <- function(signature_mat,
     cell.types.ordered <- order(colnames(mat))
   }
 
-  genes <- c()
-  for (c in cell.types.ordered) {
-    highly.expr.genes <- names(which(mat[, c] > threshold))
-    genes <- union(genes, highly.expr.genes)
+  if(order_columns == 'z-score cutoff'){
+    genes <- c()
+    for (c in cell.types.ordered) {
+      highly.expr.genes <- names(which(mat[, c] > threshold))
+      genes <- union(genes, highly.expr.genes)
+    }
+    
+    genes <- union(genes, rownames(mat))
+  }else if(order_columns == 'hierarchical clustering'){
+    
+    # use hierarchical ward D2 clustering based on euclidean distance
+    clustering <- hclust(dist(mat), method = 'ward.D2')
+    genes <- rownames(mat)[clustering$order]
+    
+  }else if(order_columns == 'alphabetical'){
+    
+    genes <- sort(rownames(mat))
   }
 
-  genes <- union(genes, rownames(mat))
 
   # Plot with complex heatmap
 
@@ -268,7 +281,6 @@ plot_signatureClustered <- function(signature_mat,
     border = TRUE, col = col_fun,
     column_order = genes,
     row_order = cell.types.ordered,
-    # cluster_columns = agnes(mat), cluster_rows = diana(t(mat))
     # cluster_columns = TRUE, cluster_rows = cluster_rows, # clustering_method_columns = "euclidean",
     top_annotation = annotation
   )

@@ -12,6 +12,7 @@ plot_signatureClustered(
   annotation_type = "line",
   color_palette = "Spectral",
   order_rows = "cluster",
+  order_columns = "z-score cutoff",
   threshold = 1.5
 )
 }

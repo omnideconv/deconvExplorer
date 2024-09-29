@@ -8,11 +8,10 @@
 #' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu valueBox valueBoxOutput renderValueBox
 #' tabItem tabItems
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly layout config
-#' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip
-#' element_rect element_text facet_wrap geom_abline geom_boxplot geom_col
-#' geom_jitter geom_point geom_tile ggplot guide_colorbar guides labs
-#' scale_fill_gradient theme geom_text element_blank geom_hline ggsave
-#' scale_colour_brewer scale_fill_brewer ylim theme_minimal geom_rect
+#' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip element_text
+#' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point
+#' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
+#' geom_hline scale_colour_brewer scale_fill_brewer ylim theme_minimal geom_rect element_rect
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom waiter Waitress waiter_hide waiter_show waiter_show_on_load
 #' waiter_update
@@ -37,8 +36,8 @@
 #' @importFrom ggpubr stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
-#' @importFrom BioQC entropySpecificity gini
-#' @importFrom shinyBS bsPopover
+#' @importFrom shinyWidgets actionBttn
+#' @import shinyBS
 #'
 #' @name DeconvExplorer-pkg
 #' @docType package
