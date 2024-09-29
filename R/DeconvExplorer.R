@@ -1222,6 +1222,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       internal$annotation[["Example Cell-type annotation"]] <- omnideconv::cell_type_annotations_1
       internal$batch[["Example Batch-IDs"]] <- omnideconv::batch_ids_1
       internal$deconvolutions[["Example Ground-truth"]] <- omnideconv::RefData
+      internal$deconvolutions[["Example Deconvolution Result (DWLS)"]] <- readRDS(system.file("extdata", "deconvolution_example.rds", package = "DeconvExplorer"))
       internal$signatures[["Example Signature (DWLS)"]] <- readRDS(system.file("extdata", "signature_example.rds", package = "DeconvExplorer"))
 
       showNotification("Loaded Sample Data")
