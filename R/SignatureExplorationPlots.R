@@ -253,22 +253,19 @@ plot_signatureClustered <- function(signature_mat,
     cell.types.ordered <- order(colnames(mat))
   }
 
-  if(order_columns == 'z-score cutoff'){
+  if (order_columns == "z-score cutoff") {
     genes <- c()
     for (c in cell.types.ordered) {
       highly.expr.genes <- names(which(mat[, c] > threshold))
       genes <- union(genes, highly.expr.genes)
     }
-    
+
     genes <- union(genes, rownames(mat))
-  }else if(order_columns == 'hierarchical clustering'){
-    
+  } else if (order_columns == "hierarchical clustering") {
     # use hierarchical ward D2 clustering based on euclidean distance
-    clustering <- hclust(dist(mat), method = 'ward.D2')
+    clustering <- hclust(dist(mat), method = "ward.D2")
     genes <- rownames(mat)[clustering$order]
-    
-  }else if(order_columns == 'alphabetical'){
-    
+  } else if (order_columns == "alphabetical") {
     genes <- sort(rownames(mat))
   }
 
