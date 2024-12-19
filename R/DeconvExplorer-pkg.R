@@ -6,10 +6,10 @@
 #' @import omnideconv
 #' @importFrom shinydashboard box dashboardBody dashboardHeader dashboardPage
 #' dashboardSidebar dropdownMenu menuItem notificationItem sidebarMenu valueBox valueBoxOutput renderValueBox
-#' tabItem tabItems
+#' tabItem tabItems updateTabItems
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly layout config
 #' @importFrom ggplot2 aes aes_ aes_string coord_cartesian coord_flip element_text
-#' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point
+#' facet_wrap geom_abline geom_boxplot geom_col geom_jitter geom_point ggsave
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
 #' geom_hline scale_colour_brewer scale_fill_brewer ylim theme_minimal geom_rect element_rect
 #' @importFrom shinycssloaders withSpinner
