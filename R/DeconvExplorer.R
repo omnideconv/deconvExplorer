@@ -127,7 +127,6 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     width = 12,
     fileInput("userSignatureUpload", "Upload Signature"),
     div(style = "margin-top: -25px"),
-
     p("You can upload a previsouly generated signature matrix of a deconvolution method and analyse it with DeconvExplorer. Multiple uploads are possible."),
     fluidRow(
       column(4, shinyWidgets::actionBttn("selectSigExploration", "Explore the signature", icon = icon("arrow-right"), color = "success", style = "simple")),
@@ -202,7 +201,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 4,
       selectInput("deconvMethod", "Deconvolution Method",
-        choices = c('MuSiC'='music', omnideconv::deconvolution_methods[-10])
+        choices = c("MuSiC" = "music", omnideconv::deconvolution_methods[-10])
       )
     ),
     column(
@@ -221,8 +220,10 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     column(
       width = 3,
       div(
-        shinyBS::popify(shinyWidgets::actionBttn("deconvolute", "Deconvolute", style = 'simple', icon = icon('triangle-exclamation'), color = 'warning'),
-                        "Attention", "Some methods are considerably slower than others; please keep this in mind when using DeconvExplorer for deconvolution."),
+        shinyBS::popify(
+          shinyWidgets::actionBttn("deconvolute", "Deconvolute", style = "simple", icon = icon("triangle-exclamation"), color = "warning"),
+          "Attention", "Some methods are considerably slower than others; please keep this in mind when using DeconvExplorer for deconvolution."
+        ),
         style = "margin-top:1.7em"
       )
     ),
@@ -235,7 +236,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       title = "",
       content = "Select a deconvolution method to run. If required and supported by the deconvolution method you can additionally select a custom signature to be used in computation. Please note this is an advanced feature and should be used with caution. "
     )
-  
+
 
   deconv_plot_box <- shinydashboard::box(
     id = "tour_deconvPlot",
@@ -512,7 +513,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     title = span("Clustered Signature", icon("question-circle", id = "sigHeatmapQ")),
     status = "info", solidHeader = TRUE,
     width = 12,
-    fluidRow(    
+    fluidRow(
       column(
         width = 4,
         selectInput("signatureToHeatmap", "Select a Signature", choices = NULL)
@@ -520,27 +521,29 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       column(
         width = 2,
         selectInput("signatureAnnotationScore", "Select an annotation score",
-                    choices = c("Entropy" = "entropy", "Gini Index" = "gini")
+          choices = c("Entropy" = "entropy", "Gini Index" = "gini")
         )
       ),
       column(
         width = 2,
         selectInput("signatureAnnotationPlotType", "Annotation Type",
-                    choices = c("Bars" = "bar", "Lines" = "line")
+          choices = c("Bars" = "bar", "Lines" = "line")
         )
       ),
       column(
         width = 2,
         selectInput("clusterCelltypes", "Order rows (cell types)",
-                    choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
+          choices = c(".. by cell-type similarity" = "cluster", ".. alphabetically" = "no_cluster")
         )
       ),
       column(
         width = 2,
         selectInput("clusterGenes", "Order columns (genes)",
-                    choices = c(".. by maximal z-score per cell type" = "z-score cutoff",
-                                ".. hierarchically based on euclidean distance" = "hierarchical clustering",
-                                ".. alphabetically" = "alphabetical")
+          choices = c(
+            ".. by maximal z-score per cell type" = "z-score cutoff",
+            ".. hierarchically based on euclidean distance" = "hierarchical clustering",
+            ".. alphabetically" = "alphabetical"
+          )
         )
       )
     ),
@@ -548,7 +551,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       column(
         width = 12,
         InteractiveComplexHeatmap::originalHeatmapOutput("clusteredHeatmapOneSignature",
-                                                         width = "1250px", height = "450px", containment = TRUE
+          width = "1250px", height = "450px", containment = TRUE
         )
       )
     ),
@@ -726,7 +729,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
       column(
         width = 7,
         sliderInput("refinePercentZero", "Maximum percentage of zeroes allowed for each gene",
-                    min = 0, max = 100, value = 90, step = 1, post = "%"
+          min = 0, max = 100, value = 90, step = 1, post = "%"
         )
       ),
       column(
@@ -760,7 +763,7 @@ DeconvExplorer <- function(deconvexp_bulk = NULL,
     )
   )
 
-refUnspecificPopover <-
+  refUnspecificPopover <-
     shinyBS::bsPopover(
       id = "refUnspecificQ",
       title = "",
@@ -818,8 +821,8 @@ refUnspecificPopover <-
     shinyBS::bsPopover(
       id = "refManuallyQ",
       title = "",
-      content = 
-    )
+      content =
+      )
 
   # Info Boxes --------------------------------------------------------------
   info_overview <- shinydashboard::box(
@@ -1662,7 +1665,7 @@ refUnspecificPopover <-
           scoring_method = input$signatureAnnotationScore,
           annotation_type = input$signatureAnnotationPlotType,
           color_palette = input$globalColor,
-          order_rows = input$clusterCelltypes, 
+          order_rows = input$clusterCelltypes,
           order_columns = input$clusterGenes
         ),
         "clusteredHeatmapOneSignature",
