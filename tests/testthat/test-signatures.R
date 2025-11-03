@@ -9,7 +9,6 @@ test_that("Signature refinement operations are correct", {
   expect_true("B.cells" %in% colnames(signature_renamed))
 
 
-
   signature_nozeros <- removePercentZeros(
     signature_mat = signature_list$bisque,
     max_percentage_zeroes = 0.5
