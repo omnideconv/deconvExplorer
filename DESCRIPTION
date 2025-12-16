@@ -8,6 +8,14 @@ Authors@R:
             given = "Constantin", family = "Zackl", role = c("aut", "cre"), 
             email = "zacklcon@uni-mainz.de", comment = c(ORCID = "0000-0003-1991-6943")
         ),
+        person(
+            given = "Alexander", family = "Dietrich", role = c("aut"), 
+            email = "alex.dietrich@tum.de", comment = c(ORCID = "0000-0002-8661-0453")
+        ),
+        person(
+            given = "Lorenzo", family = "Merotto", role = c("aut"), 
+            email = "lorenzo.merotto@uibk.ac.at", comment = c(ORCID = "0009-0006-0637-8436")
+        ),
 		    person(
             given = "Federico", family = "Marini", role = c("aut"), 
             email = "marinif@uni-mainz.de", comment = c(ORCID = "0000-0003-3252-7758")

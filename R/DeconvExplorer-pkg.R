@@ -13,22 +13,26 @@
 #' geom_tile ggplot guide_colorbar guides labs scale_fill_gradient theme geom_text element_blank
 #' geom_hline scale_colour_brewer scale_fill_brewer ylim theme_minimal geom_rect element_rect
 #' @importFrom shinycssloaders withSpinner
-#' @importFrom waiter Waitress
+#' @importFrom waiter Waitress waiter_hide waiter_show waiter_show_on_load
+#' waiter_update
 #' @importFrom rlang .data
 #' @importFrom rintrojs introBox introjs introjsUI readCallback
-#' @importFrom DT datatable dataTableOutput renderDataTable formatRound formatPercentage
+#' @importFrom DT datatable dataTableOutput renderDataTable formatRound
+#' formatPercentage
 #' @importFrom shinyjs useShinyjs hide show
 #' @importFrom utils write.csv write.table read.delim
 #' @importFrom stringr str_to_title str_split
 #' @importFrom tidyr pivot_longer
-#' @importFrom stats sd cor.test
-#' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size upset_top_annotation extract_comb
+#' @importFrom stats sd cor.test complete.cases dist hclust
+#' @importFrom ComplexHeatmap Heatmap make_comb_mat UpSet comb_size
+#' upset_top_annotation extract_comb
 #' @importFrom grid gpar unit
-#' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput makeInteractiveComplexHeatmap
+#' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput
+#' makeInteractiveComplexHeatmap
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom circlize colorRamp2
 #' @importFrom ggforce facet_grid_paginate
-#' @importFrom grDevices colorRampPalette
+#' @importFrom grDevices colorRampPalette dev.off pdf
 #' @importFrom ggpubr stat_cor
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assays
