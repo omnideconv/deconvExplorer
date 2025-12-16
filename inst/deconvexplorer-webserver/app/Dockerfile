@@ -27,9 +27,11 @@ RUN apt-get update && apt-get install -y \
 # omnideconv and DeconvExplorer
 #RUN install2.r --error textshaping
 
-RUN R -e "install.packages('pak')"
+RUN R -e "install.packages(c('pak','devtools'))"
 RUN R -e "pak::pkg_install(c('car', 'matlib', 'remotes'))"
-RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE)"
+RUN R -e "remotes::install_github('renozao/NMF@devel', auth_token='TOKEN')"
+RUN R -e "remotes::install_github('omnideconv/BayesPrism', auth_token='TOKEN')"
+RUN R -e "remotes::install_github('omnideconv/omnideconv', dependencies=TRUE, auth_token='TOKEN')"
 RUN R -e "pak::pkg_install('omnideconv/DeconvExplorer', dependencies=TRUE)"
 
 #RUN R -e "reticulate::install_miniconda()" # will not install automatically
