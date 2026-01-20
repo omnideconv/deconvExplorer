@@ -163,6 +163,7 @@ plot_meanEntropyPerMethod <- function(signature_list,
 #' @param scoring_method The score used to annotate the genes (entropy, gini)
 #' @param annotation_type How the score is rendered (line, bar)
 #' @param order_rows Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabetically
+#' @param order_columns Character, either 'z-score cutoff', 'hierarchical clustering' or 'alphabetical'
 #' @param threshold the threshold for the z-scored expression in the signature matrix to consider
 #'    a gene as being differentially expressed. Default: 1.5
 #'

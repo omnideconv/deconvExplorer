@@ -60,7 +60,7 @@ plot_benchmark_scatter <- function(gtruth_df,
     theme(axis.text.x = element_text(angle = 60, hjust = 1), strip.background = ggplot2::element_rect(fill = "white")) +
     labs(x = "true cellular fractions", y = "cell type estimates", title = "") +
     theme(legend.position = "none", text = element_text(size = 15)) +
-    ggplot::geom_abline(linetype = "dashed")
+    ggplot2::geom_abline(linetype = "dashed")
 
   # get palette
   max_colors <- RColorBrewer::brewer.pal.info[color_palette, ]$maxcolors # for brewer.pal()

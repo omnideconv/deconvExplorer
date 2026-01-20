@@ -27,6 +27,8 @@ plot_signatureClustered(
 
 \item{order_rows}{Either 'cluster' to order cell types by similarity or 'no_cluster' to order alphabetically}
 
+\item{order_columns}{Character, either 'z-score cutoff', 'hierarchical clustering' or 'alphabetical'}
+
 \item{threshold}{the threshold for the z-scored expression in the signature matrix to consider
 a gene as being differentially expressed. Default: 1.5}
 }
