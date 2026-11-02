@@ -7,7 +7,6 @@ suppressPackageStartupMessages({
 message("- Done!")
 
 
-
 message("--- Generating objects for the testing setup...")
 data("RefData", package = "omnideconv")
 RefData <- as.data.frame(RefData)
